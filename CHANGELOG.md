@@ -2,6 +2,10 @@
 
 ## Unreleased — public presentation
 
+- Added a contributor bootstrap (`Develop.cmd` / `scripts/setup_dev.ps1`) that
+  clones or reuses the canonical Git checkout without resetting local work.
+  Developer mode installs test tools and an editable `syncfl` CLI; offline setup
+  skips FL deployment and assistant configuration by default.
 - Added 36 exact-layout stock profiles covering 2,911 named controls, with 273 retained numeric/menu mappings after 3,644 independent live checks. Added per-plugin coverage, official manual references and explicit detection-only/normalized-only limits.
 - Support measured stock-plugin normalized quantization for physical writes while preserving numeric display verification and strict explicit-normalized writes. Added literal degrees, cents and octave-unit parsing and clearer background loading obstruction diagnostics.
 

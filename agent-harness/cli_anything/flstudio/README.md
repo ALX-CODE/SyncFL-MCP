@@ -3,11 +3,16 @@
 Install the main package/environment first, then install the harness from the repository root:
 
 ```powershell
-uv pip install --python .venv/Scripts/python.exe --no-deps --editable ./agent-harness
-cli-anything-flstudio --help
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Cli
+.\.venv\Scripts\syncfl.exe --help
 ```
 
-The entry point is `cli-anything-flstudio`, installed in this environment's `Scripts` directory. Run `.\.venv\Scripts\cli-anything-flstudio.exe --help` if that directory is not on your PATH. A `flstudio` shortcut is not installed by this package. The harness also requires Click (`click>=8`, declared in its setup metadata and included by the main environment).
+The branded command is `syncfl`, installed in this environment's `Scripts`
+directory. `cli-anything-flstudio` remains an equivalent command. Activate the
+environment to use either name without its full path. A `flstudio` shortcut is
+not installed. The harness requires Click (`click>=8`, declared in its setup
+metadata and included by the main environment). Contributor setup through
+`Develop.cmd` installs the editable CLI automatically.
 
 Use `--help` for current commands and subcommands. The CLI shares native transport, target checks and background policy with the server. GUI-backed commands need explicit interactive mode. Native calls and batches can partially apply; inspect the result before recovery.
 

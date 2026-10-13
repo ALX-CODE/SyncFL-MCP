@@ -45,6 +45,12 @@ Choose `-Client claude-desktop`, `-Client claude-code`, or `-Client none` instea
 
 Use `-Plan` to preview without downloads or file changes. `-NoBootstrap` requires an existing uv installation. `-SkipDependencies` reuses a prepared environment. The legacy `scripts/setup_laptop.ps1` forwards to this same installer, preserving its Codex default and `-SkipCodex` option.
 
+Add `-Cli` for the optional `syncfl` command. Contributors should use
+**`Develop.cmd`** or the [developer setup command](DEVELOPER-SETUP.md), which adds
+editable packages and development tools. `-Development -SkipFlIntegration` on
+the root installer prepares an existing checkout for offline code work without
+deploying FL files or running FL-specific doctor checks.
+
 The execution policy applies only to that process. No Windows service/driver is installed and no machine execution policy is changed.
 
 For relocated data or an explicit Windows helper:

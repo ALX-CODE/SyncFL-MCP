@@ -4,6 +4,11 @@ Contributions should make a concrete FL Studio task easier while preserving exac
 
 ## Start here
 
+Download the source ZIP and run **`Develop.cmd`**, or run it inside your existing
+clone. It prepares a Git checkout, editable packages, test tools and the `syncfl`
+CLI. [Developer setup](docs/DEVELOPER-SETUP.md) covers private-repository access,
+custom directories and optional FL integration.
+
 1. Read [architecture](docs/ARCHITECTURE.md) and [development](docs/DEVELOPMENT.md).
 2. For a bug, describe the smallest reproducible case and the actual evidence. Use a disposable project, synthetic MIDI/audio and redacted paths.
 3. For a feature, explain the musical task, current workaround, intended input mode and verification method before a large implementation.

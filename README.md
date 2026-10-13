@@ -57,6 +57,10 @@ The default bridge requires compatible **Windows MIDI Services loopback support*
 
 **[Full setup →](docs/GETTING-STARTED.md)** includes client configuration, custom FL folders and verification. **[Troubleshooting →](docs/TROUBLESHOOTING.md)** covers missing endpoints, stale controllers and refused operations.
 
+**Contributing? Run `Develop.cmd`.** It clones or reuses your local SyncFL Git
+checkout and installs development tools plus the `syncfl` CLI. Offline developer
+setup leaves FL and assistant settings alone. [Developer setup →](docs/DEVELOPER-SETUP.md)
+
 ## A useful first session
 
 - “Inspect this project and list the channels, mixer routing and loaded effects. Don't change anything yet.”

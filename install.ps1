@@ -7,6 +7,9 @@ param(
     [ValidateSet('none', 'codex', 'claude-desktop', 'claude-code')][string]$Client = 'none',
     [string]$ClientConfig,
     [ValidateSet('3.12', '3.13', '3.14')][string]$PythonVersion = '3.13',
+    [switch]$Development,
+    [switch]$Cli,
+    [switch]$SkipFlIntegration,
     [switch]$SkipDependencies,
     [switch]$SkipClaude,
     [switch]$NoBootstrap,
@@ -15,14 +18,17 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $RepoRoot = $PSScriptRoot
+$InstallCli = [bool]($Cli -or $Development)
 if ($SkipClaude -and $Client -like 'claude-*') { throw '-SkipClaude conflicts with the selected Claude client.' }
 if ($ClientConfig -and $Client -eq 'none') { throw '-ClientConfig requires an explicit -Client.' }
 if ($Plan) {
     [ordered]@{
         root = $RepoRoot; python = $PythonVersion; client = $Client
-        dependencies = @('audio', 'serum'); development_tools = $false
-        downloads = -not [bool]$SkipDependencies
-        bootstrap_uv_if_missing = -not [bool]($SkipDependencies -or $NoBootstrap)
+        dependencies = @('audio', 'serum') + $(if ($Development) { @('dev') } else { @() })
+        development_tools = [bool]$Development; cli = $InstallCli
+        installs_fl_integration = -not [bool]$SkipFlIntegration
+        downloads = (-not [bool]$SkipDependencies) -or $InstallCli
+        bootstrap_uv_if_missing = (-not [bool]$NoBootstrap) -and ((-not [bool]$SkipDependencies) -or $InstallCli)
         fl_user_data = $FlUserData; midi_port = $MidiPort; windows_server = $WindowsServer
         client_config = $ClientConfig; writes_client_config = ($Client -ne 'none')
         fl_installer = 'scripts/install_fl_integration.py'; creates_midi_endpoints = $false
@@ -80,6 +86,10 @@ if ($WindowsServer) { $WindowsServer = $ExecutionContext.SessionState.Path.GetUn
 if ($ClientConfig) { $ClientConfig = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ClientConfig) }
 Push-Location $RepoRoot
 try {
+    $Uv = $null
+    if ($InstallCli -and -not (Test-Path -LiteralPath (Join-Path $RepoRoot 'agent-harness\setup.py') -PathType Leaf)) {
+        throw 'CLI source is missing; use the complete SyncFL source release.'
+    }
     if ($FlUserData) {
         $FlUserData = [IO.Path]::GetFullPath($FlUserData)
         if (-not (Test-Path -LiteralPath $FlUserData -PathType Container)) { throw 'FlUserData must be the existing Image-Line root containing FL Studio.' }
@@ -98,18 +108,31 @@ try {
         $Uv = Get-SyncFlUv
         & $Uv python install $PythonVersion
         if ($LASTEXITCODE -ne 0) { throw 'Python installation failed.' }
-        & $Uv sync --project $RepoRoot --locked --no-dev --python $PythonVersion --extra audio --extra serum
+        $SyncArgs = @('sync', '--project', $RepoRoot, '--locked', '--python', $PythonVersion, '--extra', 'audio', '--extra', 'serum')
+        if ($Development) { $SyncArgs += @('--extra', 'dev') } else { $SyncArgs += '--no-dev' }
+        & $Uv @SyncArgs
         if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed. No controller files were replaced.' }
     }
     $Python = Join-Path $RepoRoot '.venv\Scripts\python.exe'
     if (-not (Test-Path -LiteralPath $Python -PathType Leaf)) { throw 'Repository Python is missing; rerun without -SkipDependencies.' }
-    Write-Host '[2/4] Installing and verifying the FL integration, with backups...'
-    $InstallArgs = @((Join-Path $RepoRoot 'scripts\install_fl_integration.py'), '--apply')
-    if ($FlUserData) { $InstallArgs += @('--fl-user-data', $FlUserData) }
-    $InstallJson = & $Python @InstallArgs
-    if ($LASTEXITCODE -ne 0) { throw "FL integration was not installed: $InstallJson" }
-    $Installed = $InstallJson | ConvertFrom-Json
-    Write-Host "Verified FL integration. Changed files: $($Installed.changed). Backup: $($Installed.backup)"
+    if ($InstallCli) {
+        if (-not $Uv) { $Uv = Get-SyncFlUv }
+        & $Uv pip install --python $Python --no-deps --editable (Join-Path $RepoRoot 'agent-harness')
+        if ($LASTEXITCODE -ne 0) { throw 'CLI installation failed.' }
+        & $Python -m cli_anything.flstudio --help | Out-Host
+        if ($LASTEXITCODE -ne 0) { throw 'CLI startup check failed.' }
+    }
+    if ($SkipFlIntegration) {
+        Write-Host '[2/4] FL integration skipped; no FL installation is required for offline development.'
+    } else {
+        Write-Host '[2/4] Installing and verifying the FL integration, with backups...'
+        $InstallArgs = @((Join-Path $RepoRoot 'scripts\install_fl_integration.py'), '--apply')
+        if ($FlUserData) { $InstallArgs += @('--fl-user-data', $FlUserData) }
+        $InstallJson = & $Python @InstallArgs
+        if ($LASTEXITCODE -ne 0) { throw "FL integration was not installed: $InstallJson" }
+        $Installed = $InstallJson | ConvertFrom-Json
+        Write-Host "Verified FL integration. Changed files: $($Installed.changed). Backup: $($Installed.backup)"
+    }
     & $Python -c 'from fl_studio_mcp.utils.native_midi import verify_runtime; print(verify_runtime())'
     if ($LASTEXITCODE -ne 0) { throw 'Native runtime verification failed; restore the complete source release.' }
     Write-Host "[3/4] Configuring assistant: $Client"
@@ -130,13 +153,22 @@ try {
         Write-Host 'Client arguments: -m fl_studio_mcp.server'
         Write-Host "Client working directory: $RepoRoot"
     }
-    Write-Host '[4/4] Checking the installation without changing the FL session...'
-    & $Python (Join-Path $RepoRoot 'scripts\doctor.py')
-    if ($LASTEXITCODE -ne 0) { throw 'Installation check needs attention; see the failed checks above.' }
+    if ($SkipFlIntegration) {
+        Write-Host '[4/4] Bundled runtime verified. FL deployment and connection checks skipped.'
+    } else {
+        Write-Host '[4/4] Checking the installation without changing the FL session...'
+        & $Python (Join-Path $RepoRoot 'scripts\doctor.py')
+        if ($LASTEXITCODE -ne 0) { throw 'Installation check needs attention; see the failed checks above.' }
+    }
     Write-Host ''
     Write-Host 'SyncFL installed. Keep this folder in place; your assistant points to it.'
-    Write-Host 'Next: restart your assistant, start SyncFL, then open FL Studio.'
-    Write-Host 'In Options > MIDI settings, enable ALX FL Bridge (FL Studio) and select FL Studio MCP Controller.'
+    if ($SkipFlIntegration) {
+        Write-Host 'Offline workspace ready. See docs/DEVELOPMENT.md for tests and contribution commands.'
+    } else {
+        Write-Host 'Next: restart your assistant, start SyncFL, then open FL Studio.'
+        Write-Host 'In Options > MIDI settings, enable ALX FL Bridge (FL Studio) and select FL Studio MCP Controller.'
+    }
+    if ($InstallCli) { Write-Host 'CLI: .\.venv\Scripts\syncfl.exe --help (or activate .venv, then run syncfl --help).' }
     Write-Host 'Native MIDI needs Windows MIDI Services loopback support and the x64 Visual C++ runtime.'
     Write-Host 'No driver/service installation, elevation, live MIDI send or keyboard/mouse input was performed.'
     Write-Host 'An existing configured MIDI port is an optional fallback via -MidiPort / FL_MCP_MIDI_PORT.'

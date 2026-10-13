@@ -2,6 +2,11 @@
 
 Start a focused branch from `main` and keep live DAW tests separate from ordinary code/test work. Source changes do not reload a running MCP server or FL controller.
 
+Run **`Develop.cmd`** for the guided contributor setup, or use
+`scripts/setup_dev.ps1 -Destination 'D:\Code\SyncFL-MCP'`. The bootstrap prepares
+the editable environment and CLI without requiring FL Studio. See
+[developer setup](DEVELOPER-SETUP.md) for all options and the `syncfl` command.
+
 ## Environment and tests
 
 ```powershell
@@ -39,6 +44,6 @@ For live tests, use a disposable saved project, stop playback unless the test ex
 
 ## Packaging and releasing
 
-`pyproject.toml` packages the Python source and three pinned native runtime folders. Runtime hash checks must continue to pass after packaging. Build and inspect an actual wheel after packaging changes.
+`pyproject.toml` packages the Python source and four pinned native runtime folders. Runtime hash checks must continue to pass after packaging. Build and inspect an actual wheel after packaging changes.
 
 Keep production material outside this source repository. Use the [source export process](PUBLIC-RELEASE.md); it has an explicit file allowlist, local-content checks and per-file hashes. Never merge private development history or copy its `.git` directory into this repository.

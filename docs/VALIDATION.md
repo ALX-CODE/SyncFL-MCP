@@ -20,6 +20,21 @@ the download-and-execute bootstrap path was not run on a fresh Windows machine.
 No live MIDI commands, FL reloads or desktop input were part of this installation
 test. Windows MIDI Services and the Visual C++ runtime were already installed.
 
+Contributor setup was tested with isolated Git command fixtures for cloning,
+reuse, failure handling, option forwarding and refusing unrelated checkouts.
+A source export was also prepared as a separate local Git checkout and installed
+with the real developer bootstrap using cached dependencies. All 342 exported
+file hashes remained unchanged; development dependencies and the branded
+`syncfl` command were installed. Its CLI help and 114 focused tests passed.
+The default developer flow did not deploy FL files or register an assistant.
+Private GitHub authentication and first-time network cloning were not exercised
+by this local installation test.
+
+The final integrated developer setup passed **2,765 Python tests with 2 skips**
+on Python 3.13.13, including the CLI and installer suites. Targeted Ruff checks,
+all 45 public guides, 424 local links, 9 examples and the generated reference for
+143 tools also passed.
+
 ## Stock effects and instruments: October 12, 2026
 
 The integrated checkout passed **2,735 Python tests with 2 skips** on Python

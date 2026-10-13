@@ -110,7 +110,10 @@ def test_setup_failure_stops_before_client_configuration(isolated_setup):
     assert not (isolated_setup / "calls.jsonl").exists()
 
 
-def test_normal_dependency_command_does_not_install_development_tools(isolated_setup):
+@pytest.mark.parametrize("development,cli,skip_fl", [
+    (False, False, False), (False, True, False), (True, False, True),
+])
+def test_dependency_selection_and_cli_are_explicit(isolated_setup, development, cli, skip_fl):
     tools = isolated_setup / "tools"
     tools.mkdir()
     python = isolated_setup / ".venv/Scripts/python.exe"
@@ -131,16 +134,56 @@ def test_normal_dependency_command_does_not_install_development_tools(isolated_s
         os.environ, PATH=str(tools) + os.pathsep + os.environ["PATH"],
         UV_PROJECT_ENVIRONMENT=str(isolated_setup / "unrelated environment"),
     )
-    result = run(isolated_setup / "install.ps1", "-NoBootstrap", env=environment)
+    if development or cli:
+        (isolated_setup / "agent-harness").mkdir()
+        (isolated_setup / "agent-harness/setup.py").touch()
+        package = isolated_setup / "cli_anything/flstudio"
+        package.mkdir(parents=True)
+        (package / "__init__.py").touch()
+        (package / "__main__.py").write_text("print('CLI help fixture')\n")
+    options = ["-NoBootstrap"]
+    if development:
+        options.append("-Development")
+    if cli:
+        options.append("-Cli")
+    if skip_fl:
+        options.append("-SkipFlIntegration")
+    result = run(isolated_setup / "install.ps1", *options, env=environment)
     assert result.returncode == 0, result.stdout + result.stderr
     commands = [
         json.loads(line) for line in (isolated_setup / "uv-calls.jsonl").read_text().splitlines()
     ]
-    assert commands == [
+    sync = ["sync", "--project", str(isolated_setup), "--locked", "--python", "3.13",
+            "--extra", "audio", "--extra", "serum"]
+    sync += ["--extra", "dev"] if development else ["--no-dev"]
+    expected = [
         ["python", "install", "3.13"],
-        ["sync", "--project", str(isolated_setup), "--locked", "--no-dev", "--python", "3.13",
-         "--extra", "audio", "--extra", "serum"],
+        sync,
     ]
+    if development or cli:
+        expected.append(["pip", "install", "--python", str(python), "--no-deps", "--editable",
+                         str(isolated_setup / "agent-harness")])
+    assert commands == expected
+    if skip_fl:
+        assert not (isolated_setup / "calls.jsonl").exists()
+
+
+def test_development_plan_includes_cli_and_can_skip_fl(tmp_path):
+    result = run(ROOT / "install.ps1", "-Plan", "-Development", "-SkipFlIntegration")
+    assert result.returncode == 0, result.stdout + result.stderr
+    plan = json.loads(result.stdout)
+    assert plan["dependencies"] == ["audio", "serum", "dev"]
+    assert plan["development_tools"] is True
+    assert plan["cli"] is True
+    assert plan["installs_fl_integration"] is False
+    assert plan["writes_client_config"] is False
+
+
+def test_missing_cli_source_stops_before_changing_fl(isolated_setup):
+    result = run(isolated_setup / "install.ps1", "-Cli", "-SkipDependencies")
+    assert result.returncode != 0
+    assert "CLI source is missing" in result.stderr
+    assert not (isolated_setup / "calls.jsonl").exists()
 
 
 def test_relative_user_paths_resolve_from_the_invocation_directory(isolated_setup, tmp_path):

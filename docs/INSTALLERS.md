@@ -17,6 +17,19 @@ The client choices are `codex`, `claude-desktop`, `claude-code` and `none`. The 
 
 The source ZIP is small; Python and dependencies are additional first-install downloads. Plugins, licenses, songs and raw calibration recordings are not bundled. The package uses local stdio and requires no SyncFL cloud account.
 
+## Developer and CLI installation
+
+Contributors can run **`Develop.cmd`** to clone or reuse a local Git checkout and
+prepare the editable development environment. It preserves existing branches and
+changes. Offline setup skips FL deployment and client registration by default.
+See [developer setup](DEVELOPER-SETUP.md) for private-repository access and the
+command-line bootstrap.
+
+For an existing checkout, `install.ps1 -Development -SkipFlIntegration` installs
+the development dependencies and CLI without requiring FL Studio. Use
+`install.ps1 -Cli` to add just the CLI to the normal runtime installation. The
+branded command is `.\.venv\Scripts\syncfl.exe --help`; no PATH changes are made.
+
 ## Preview and custom paths
 
 ```powershell

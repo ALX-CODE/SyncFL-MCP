@@ -5,12 +5,13 @@ tuning speed in milliseconds, or an exact mode label. The adapter resolves the
 parameter from a fresh host inspection; callers do not need remembered parameter
 numbers or screen coordinates.
 
-**Status, 2026-10-12:** 14 exact-layout profiles expose 1,961 named controls.
-All 14 retain qualified mappings: 420 numeric and 455 enum after 7,059 independent
-live holdout checks. Failed taper endpoints are excluded from retained ranges;
-unqualified controls remain explicitly normalized. The committed
+**Status, 2026-10-12:** 50 exact-layout profiles expose 4,872 named controls.
+37 profiles retain qualified mappings: 576 numeric and 572 enum after 10,703 independent
+live holdout checks. Failed mappings remain explicitly normalized; no physical
+conversion is inferred from a manual or control name. The committed
 [calibration evidence](plugin-calibration-evidence.json) records counts, layout
-hashes, withheld controls and restricted ranges.
+hashes, withheld controls and restricted ranges. The [stock plugin guide](STOCK-PLUGIN-GUIDE.md)
+covers all 36 stock profiles and their 2,911 named controls.
 
 An evening pass on the same date qualified Auto-Tune Pro and Decapitator with the
 final settling protocol and added EchoBoy, MicroShift and Little AlterBoy profiles.
@@ -19,6 +20,8 @@ Mode-locked controls carry declared requirements (see
 Harmony Player and MIDI options remain normalized: they were outside that sweep.
 Read current metadata before each job. These checks establish host parameter
 mapping, not license status, processing behavior or audible quality.
+
+The table below covers third-party profiles; the [stock coverage table](STOCK-PLUGIN-GUIDE.md) lists the 36 stock profiles.
 
 | Profile | Numeric | Enum | Normalized only |
 |---|---:|---:|---:|
@@ -74,6 +77,11 @@ or a numeric control marked `calibration_required`, has no approved physical
 conversion. Do not invent a linear/logarithmic mapping from the knob position.
 `display_unit` can differ from the semantic unit when a plugin omits units from
 its host text; that correspondence belongs to the particular profile.
+
+Some stock plugins quantize normalized values. A calibrated numeric control may
+declare `normalized_tolerance`, bounded to 0.01 and measured before holdout
+testing. Physical writes must still pass the original numeric display target
+and tolerance. This allowance never applies to an explicit normalized request.
 
 Conditions apply to normalized writes too. Change a mode selector separately,
 inspect again, then change dependent controls. A selector and a control that

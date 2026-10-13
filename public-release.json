@@ -40,6 +40,7 @@
     "scripts/setup_laptop.ps1", "scripts/verify_mcp_runtime.py", "scripts/verify_project_bundle.py",
     "scripts/write_pattern_bank.py", "scripts/generate_tool_docs.py",
     "scripts/check_public_docs.py", "scripts/export_public_release.py", "scripts/register_claude.py",
-    "docs/SOURCE-PROVENANCE.md"
+    "docs/SOURCE-PROVENANCE.md", "Install.cmd",
+    "docs/STOCK-PLUGIN-GUIDE.md", "docs/stock-plugin-manuals.json"
   ]
 }

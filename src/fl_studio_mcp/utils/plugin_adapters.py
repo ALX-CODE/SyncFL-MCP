@@ -4,6 +4,10 @@ Physical writes require a finite current display with a compatible calibrated
 unit. Sentinel displays such as -inf must first transition through an explicit
 normalized request. Unit checks cannot distinguish modes sharing a unit; those
 dependencies must be declared with ``requires``.
+
+Calibrated numeric controls may declare a measured normalized readback tolerance.
+It applies only to physical writes that also verify the original numeric target;
+explicit normalized writes keep the plugin-state workflow's strict default.
 """
 
 from __future__ import annotations
@@ -73,6 +77,7 @@ def _validate_control(control, count):
     allowed = {
         "key", "parameter", "name", "kind", "unit", "minimum", "maximum", "tolerance",
         "curve", "points", "choices", "notes", "caution", "cautions", "display_unit", "requires",
+        "normalized_tolerance",
     }
     if not isinstance(control, dict) or set(control) - allowed:
         raise ValueError("Invalid adapter control fields")
@@ -157,6 +162,12 @@ def _validate_control(control, count):
     if "points" in control or _curve(control) is not None:
         if "unit" not in control or "tolerance" not in control:
             raise ValueError("Calibrated numeric controls require an explicit unit and tolerance")
+    if "normalized_tolerance" in control:
+        if kind != "numeric" or not ("points" in control or _curve(control) is not None):
+            raise ValueError(
+                "normalized_tolerance is only supported on calibrated numeric controls"
+            )
+        _number(control["normalized_tolerance"], "normalized_tolerance", 0, 0.01)
     if kind == "enum":
         choices = control.get("choices")
         if not isinstance(choices, list) or not 1 <= len(choices) <= 2048:
@@ -482,6 +493,8 @@ def compile_changes(adapter, changes):
                 "value": value, "unit": control.get("display_unit", control["unit"]),
                 "tolerance": control["tolerance"],
             }
+            if "normalized_tolerance" in control:
+                result["normalized_tolerance"] = control["normalized_tolerance"]
         elif control["kind"] == "enum":
             value = change["value"]
             choices = [choice for choice in control["choices"] if choice["label"] == value]

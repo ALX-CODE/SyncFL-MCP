@@ -1,0 +1,373 @@
+[
+  {
+    "pluginId": "fruity_blood_overdrive",
+    "title": "Fruity Blood Overdrive",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Blood%20Overdrive.htm"
+    ],
+    "notes": [
+      "Distortion drive, filtering and post gain are coupled; qualify high-gain x100 behavior separately."
+    ]
+  },
+  {
+    "pluginId": "fruity_chorus",
+    "title": "Fruity Chorus",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Chorus.htm"
+    ],
+    "notes": [
+      "Delay, depth, stereo phase and crossover controls interact; qualify wet-only and crossover modes as state."
+    ]
+  },
+  {
+    "pluginId": "fruity_compressor",
+    "title": "Fruity Compressor",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Compressor.htm"
+    ],
+    "notes": [
+      "Threshold, ratio, gain, attack, release and type are documented; sidechain choices depend on mixer routing."
+    ]
+  },
+  {
+    "pluginId": "fruity_convolver",
+    "title": "Fruity Convolver",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Convolver.htm"
+    ],
+    "notes": [
+      "Impulse identity is part of the sound; editor, file and IR operations need guarded handling beyond parameter sweeps."
+    ]
+  },
+  {
+    "pluginId": "fruity_delay",
+    "title": "Fruity Delay",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay.htm"
+    ],
+    "notes": [
+      "Echo timing depends on Tempo and Steps; legacy baseline exposes named parameters but no host display text."
+    ]
+  },
+  {
+    "pluginId": "fruity_delay_2",
+    "title": "Fruity Delay 2",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%202.htm"
+    ],
+    "notes": [
+      "TIME uses step:tick timing, OFS is directional, and repeated VOL labels must stay section-qualified."
+    ]
+  },
+  {
+    "pluginId": "fruity_delay_3",
+    "title": "Fruity Delay 3",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%203.htm"
+    ],
+    "notes": [
+      "Tempo Sync changes Time units; delay model, feedback, diffusion, distortion and output sections should be qualified independently."
+    ]
+  },
+  {
+    "pluginId": "fruity_delay_bank",
+    "title": "Fruity Delay Bank",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Delay%20Bank.htm"
+    ],
+    "notes": [
+      "Eight repeated banks require bank-qualified names; NEXT routing, feedback and filter modes are unsafe to collapse across sections."
+    ]
+  },
+  {
+    "pluginId": "fruity_fast_dist",
+    "title": "Fruity Fast Dist",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Fast%20Dist.htm"
+    ],
+    "notes": [
+      "PRE, THRES and POST all affect level or distortion differently; algorithm A/B should be qualified as a selector."
+    ]
+  },
+  {
+    "pluginId": "fruity_flanger",
+    "title": "Fruity Flanger",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Flanger.htm"
+    ],
+    "notes": [
+      "Delay/depth/rate/phase shape modulation; dry, wet and cross gains include negative-infinity endpoints."
+    ]
+  },
+  {
+    "pluginId": "fruity_flangus",
+    "title": "Fruity Flangus",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Flangus.htm"
+    ],
+    "notes": [
+      "Stack count, spread and polarity-capable dry/wet/cross controls interact; physical units are mostly undocumented."
+    ]
+  },
+  {
+    "pluginId": "fruity_limiter",
+    "title": "Fruity Limiter",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Limiter.htm"
+    ],
+    "notes": [
+      "Compressor, limiter and gate sections share labels but have different semantics; limiter attack adds lookahead latency."
+    ]
+  },
+  {
+    "pluginId": "fruity_love_philter",
+    "title": "Fruity Love Philter",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Love%20Philter.htm"
+    ],
+    "notes": [
+      "Eight filter banks and articulator targets need bank/target-qualified names; pattern and editor actions are not blind sweep targets."
+    ]
+  },
+  {
+    "pluginId": "fruity_multiband_compressor",
+    "title": "Fruity Multiband Compressor",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Multiband%20Compressor.htm"
+    ],
+    "notes": [
+      "Low, mid and high bands repeat threshold, ratio, knee, attack, release and gain; crossover controls can create missing frequency ranges."
+    ]
+  },
+  {
+    "pluginId": "fruity_parametric_eq_2",
+    "title": "Fruity Parametric EQ 2",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Parametric%20EQ%202.htm"
+    ],
+    "notes": [
+      "Seven bands repeat type, slope, gain, frequency and bandwidth; LIN, HQ and monitor options affect latency or analysis state."
+    ]
+  },
+  {
+    "pluginId": "fruity_phaser",
+    "title": "Fruity Phaser",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Phaser.htm"
+    ],
+    "notes": [
+      "Sweep frequency range depends on the range selector; min/max depth and feedback should be guarded."
+    ]
+  },
+  {
+    "pluginId": "fruity_reeverb",
+    "title": "Fruity Reeverb",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Reeverb.htm"
+    ],
+    "notes": [
+      "Legacy reverb; baseline exposes named parameters but no host display text, so physical display qualification should remain conservative."
+    ]
+  },
+  {
+    "pluginId": "fruity_reeverb_2",
+    "title": "Fruity Reeverb 2",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%2520Reeverb%25202.htm"
+    ],
+    "notes": [
+      "Predelay tempo sync, mid/side mode, damping bypass and long tails need separate guarded qualification."
+    ]
+  },
+  {
+    "pluginId": "fruity_soft_clipper",
+    "title": "Fruity Soft Clipper",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Soft%20Clipper.htm"
+    ],
+    "notes": [
+      "Threshold and post gain jointly affect clipping and level; level-display editing is UI state unless exposed by the host."
+    ]
+  },
+  {
+    "pluginId": "fruity_stereo_enhancer",
+    "title": "Fruity Stereo Enhancer",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Stereo%20Enhancer.htm"
+    ],
+    "notes": [
+      "Stereo separation, phase delay, invert, pan and output controls require stereo-aware test material."
+    ]
+  },
+  {
+    "pluginId": "fruity_stereo_shaper",
+    "title": "Fruity Stereo Shaper",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Fruity%20Stereo%20Shaper.htm"
+    ],
+    "notes": [
+      "Matrix coefficients, phase/delay and sidechain difference routing can cancel or reroute audio; qualify one axis at a time."
+    ]
+  },
+  {
+    "pluginId": "maximus",
+    "title": "Maximus",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Maximus_Controls.htm"
+    ],
+    "notes": [
+      "Selected band context changes control meaning; envelope editors, lookahead latency and saturation modes need careful state handling."
+    ]
+  },
+  {
+    "pluginId": "soundgoodizer",
+    "title": "Soundgoodizer",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Soundgoodizer.htm"
+    ],
+    "notes": [
+      "Manual describes four Maximus-based modes and one amount control; current baseline exposes zero host parameters."
+    ]
+  },
+  {
+    "pluginId": "transient_processor",
+    "title": "Transient Processor",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Transient%20Processor.htm"
+    ],
+    "notes": [
+      "Split frequency/balance gate what attack and release shape; attack, drive and gain can raise peaks."
+    ]
+  },
+  {
+    "pluginId": "gross_beat",
+    "title": "Gross Beat",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Gross%20Beat.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/GrossBeat_MainOptions.htm"
+    ],
+    "notes": [
+      "Time and volume slots, envelopes, MIDI triggering and rolling-buffer state are highly stateful; slot-note documentation needs runtime confirmation."
+    ]
+  },
+  {
+    "pluginId": "tuner",
+    "title": "Tuner",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Tuner.htm"
+    ],
+    "notes": [
+      "Monophonic visual pitch detector; reference, reactivity, bass and visual mode are not audio-processing controls."
+    ]
+  },
+  {
+    "pluginId": "3x_osc",
+    "title": "3x Osc",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning-content/fl-studio-online-manual/html/plugins/3x%20Osc.htm"
+    ],
+    "notes": [
+      "Three oscillators use hierarchical mixing, coarse/fine pitch, phase, invert, AM and HQ controls; phase/invert can cancel signals."
+    ]
+  },
+  {
+    "pluginId": "fl_keys",
+    "title": "FL Keys",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Keys.htm"
+    ],
+    "notes": [
+      "Instrument selection changes the response surface; pan, LFO frequency, overdrive and stretch should be qualified by sample/model context."
+    ]
+  },
+  {
+    "pluginId": "fl_slayer",
+    "title": "FL Slayer",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/FL%20Slayer.htm"
+    ],
+    "notes": [
+      "Deprecated in modern FL Studio; absence should not be treated as a qualification failure."
+    ]
+  },
+  {
+    "pluginId": "morphine",
+    "title": "Morphine",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Morphine_General.htm"
+    ],
+    "notes": [
+      "Four additive generators, morphing, resynthesis and editors create stored synthesis data; editor/import/randomize actions need guarded flows."
+    ]
+  },
+  {
+    "pluginId": "ogun",
+    "title": "Ogun",
+    "officialManualURLs": [
+      "https://ww2.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Ogun.htm"
+    ],
+    "notes": [
+      "Additive harmonic masking, timbre impulse controls, resynthesis and XY modulation are interdependent and editor-heavy."
+    ]
+  },
+  {
+    "pluginId": "poizone",
+    "title": "PoiZone",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/PoiZone.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/PoiZone_Controls.htm"
+    ],
+    "notes": [
+      "Oscillators, filters, envelopes, LFO target amounts, arpeggiator and unison sections should be qualified by mode and target."
+    ]
+  },
+  {
+    "pluginId": "sakura",
+    "title": "Sakura",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sakura.htm"
+    ],
+    "notes": [
+      "Physical-model excitation, string, damping, pickup and body controls interact strongly; avoid blind multi-control sweeps."
+    ]
+  },
+  {
+    "pluginId": "sawer",
+    "title": "Sawer",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-beta-online-manual/html/plugins/Sawer_General.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-beta-online-manual/html/plugins/Sawer_OSC.htm"
+    ],
+    "notes": [
+      "Oscillator, filter, unison, envelope, LFO, effects and arpeggiator sections are mode-coupled; source manual pages are beta URLs."
+    ]
+  },
+  {
+    "pluginId": "sytrus",
+    "title": "Sytrus",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sytrus.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sytrus_opsettings.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/Sytrus_modmatrix.htm"
+    ],
+    "notes": [
+      "Six operators can be carriers or modulators depending on matrix routing; graph/editor pages should not be treated as simple knobs."
+    ]
+  },
+  {
+    "pluginId": "toxic_biohazard",
+    "title": "Toxic Biohazard",
+    "officialManualURLs": [
+      "https://www.image-line.com/fl-studio-learning/fl-studio-beta-online-manual/html/plugins/Toxic%20Biohazard.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_oscillators.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_filter.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_FMmatrix.htm",
+      "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/plugins/ToxicBio_sequencer.htm"
+    ],
+    "notes": [
+      "Six FM operators, matrix routing, filters, sequencer and effects are tightly coupled; source overview page is a beta URL."
+    ]
+  }
+]

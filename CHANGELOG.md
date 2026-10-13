@@ -2,6 +2,11 @@
 
 ## Unreleased — public presentation
 
+- Added 36 exact-layout stock profiles covering 2,911 named controls, with 273 retained numeric/menu mappings after 3,644 independent live checks. Added per-plugin coverage, official manual references and explicit detection-only/normalized-only limits.
+- Support measured stock-plugin normalized quantization for physical writes while preserving numeric display verification and strict explicit-normalized writes. Added literal degrees, cents and octave-unit parsing and clearer background loading obstruction diagnostics.
+
+- Added a double-click Windows installer with Codex, Claude Desktop and Claude Code selection. Setup prepares Python 3.13 and locked runtime dependencies without development tools, verifies the pinned uv bootstrap, delegates guarded FL file deployment and preserves client settings with backups. The legacy laptop setup script now uses the same installation path.
+
 - Added `fl_audio_bpm` with an original, dependency-free Rust tempo core, bundled Windows x64 runtime, hash verification and a bounded read-only Python wrapper. It reports decimal BPM, alternative pulses, half/double-time relationships and analysis coverage without changing FL tempo or sending desktop input. The server now exposes 143 tools and workflow revision 12.
 
 - Added `fl_audio_key` and a standalone NumPy key analyzer: bounded WAV decoding, 4096/1024 Hann STFT, all 24 Krumhansl–Kessler major/minor profiles, ranked correlations and relative confidence. Supports PCM and IEEE float WAVs without desktop input or heavy audio dependencies; silence returns no candidates. Added a lightweight `key` extra, self-tests, decoding/STFT regression checks and a fresh-process MCP test. The server now exposes 142 tools and workflow revision 11.

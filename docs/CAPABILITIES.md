@@ -17,7 +17,7 @@
 | Built-in mixer EQ/switches | `fl_mixer_controls_inspect`, `fl_mixer_controls_set` | Background | Normalized EQ writes with native dB/Hz readback; effects enable, polarity and stereo swap. Stopped transport, exact revision/name and new receipt required for writes |
 | Sends/buses/sidechains | `fl_routing_inspect`, `fl_routing_scene` | Background | Exact current routing and later readback |
 | Generic plugins | `fl_plugin_inspect`, `fl_plugin_apply`, parameter tools | Background where exposed | FL-exposed controls only; host caches may be stale |
-| Named plugins | `fl_plugin_adapter_catalog`, `fl_plugin_controls_inspect`, `fl_plugin_controls_set` | Background | Exact layout; qualified units/enums, explicit normalized fallback |
+| Named plugins | `fl_plugin_adapter_catalog`, `fl_plugin_controls_inspect`, `fl_plugin_controls_set` | Background | Exact layout; qualified units/enums, explicit normalized fallback; [stock coverage](STOCK-PLUGIN-GUIDE.md) |
 | Assets and loading | `fl_find_assets`, `fl_sample_add`, `fl_instrument_add`, `fl_effect_add`, `fl_preset_load` | Discovery offline; loading interactive | Exact names/paths; plugin FSTs, not complete mixer-track FSTs |
 | Selected-track effect load | `fl_background_effect_inspect`, `fl_background_effect_load` | Experimental background | Empty slot on the selected track whose drop point is visibly exposed; earlier declines were traced to FL's Playlist covering the Mixer |
 | Serum | `fl_serum_inspect`, `fl_serum_apply`, preset build/edit tools | Background/offline; preset load interactive | Serum 2-specific mappings/templates |
@@ -51,3 +51,9 @@
 Full background piano editing, general loading and rendering are not implemented. The native SDK note-write prototype is disabled. Some plugin controls remain normalized-only, including Auto-Tune's Harmony Player and EchoBoy Rhythm Time, and other Soundtoys plugins have no profile. There is no universally qualified perfect vocal chain, automatic mastering, complete transcription or perceptual reference matching.
 
 Technical verification and musical acceptance differ. Listen in context and retain source projects. See [validation](VALIDATION.md) and [roadmap](ROADMAP.md).
+
+Stock profiles also have explicit limits: Soundgoodizer provides detection only,
+and legacy plugins without display strings remain normalized-only. Sakura and
+Sawer have named inventories but no physical qualification from this pass. A
+named control is not a promise that every physical value or hidden editor state
+can be reproduced.

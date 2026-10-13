@@ -122,7 +122,7 @@ def test_shipped_identities_controls_and_evidence_are_unambiguous(packaged_regis
             assert binding not in bindings, context
             bindings.add(binding)
         controls = adapter["controls"]
-        assert controls, context
+        assert controls or adapter["parameter_count"] == 0, context
         assert len({control["key"] for control in controls}) == len(controls), context
         assert len({control["parameter"] for control in controls}) == len(controls), context
         by_key = {control["key"]: control for control in controls}

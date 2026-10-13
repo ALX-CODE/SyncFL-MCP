@@ -9,7 +9,7 @@ SyncFL is the public product name; SyncFL-MCP is the repository name. The Python
 | Component | Required for |
 |---|---|
 | Windows x64 and FL Studio | Primary tested live workflow; FL 26.1.4 is the recorded qualification build |
-| Python 3.13 and [uv](https://docs.astral.sh/uv/getting-started/installation/) | Recommended setup from `uv.lock`; 3.12 and 3.14 are also checked in CI |
+| Internet for initial setup | The installer prepares uv, Python 3.13 and locked dependencies; 3.12 and 3.14 are also checked in CI |
 | Windows MIDI Services with loopback support, x64 VC++ runtime | Default native bridge; runtime probe must pass |
 | An MCP client supporting local stdio | Assistant connection |
 | Your own plugins and licenses | Third-party controls; no commercial plugin is bundled |
@@ -27,25 +27,31 @@ git clone https://github.com/ALX-CODE/SyncFL-MCP.git
 cd SyncFL-MCP
 ```
 
-Install uv, open FL once, and find **Options → File settings → User data folder**. Finish active MCP work before upgrading controller files. You may close FL during installation and reopen it afterward.
+For the simplest Windows setup, extract the repository ZIP and double-click **`Install.cmd`**. Git is not required for an extracted ZIP. Choose your assistant when prompted. The command-line equivalent is below.
+
+Open FL once and find **Options → File settings → User data folder**. Finish active MCP work before upgrading controller files. You may close FL during installation and reopen it afterward.
 
 ## 2. Install dependencies and controller files
 
 From the repository root:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_laptop.ps1 -SkipCodex
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Client codex
 ```
 
-This installs Python 3.13, synchronizes locked Serum/audio/development dependencies, verifies/creates native MIDI endpoints, deploys six FL integration files with backups, and runs the offline doctor. `-SkipCodex` leaves client configuration unchanged. Omit it to register this checkout in Codex.
+This prepares Python 3.13, installs locked Serum/audio runtime dependencies **without development tools**, deploys six FL integration files with backups, registers the selected client and runs the offline doctor. A missing uv installation is bootstrapped from the pinned official installer after checking its SHA-256; no shell-profile or PATH changes are made. See [uv installer options](https://docs.astral.sh/uv/reference/installer/).
+
+Choose `-Client claude-desktop`, `-Client claude-code`, or `-Client none` instead. Omit `-Client` for manual configuration; no client file is changed. `-ClientConfig` selects a nonstandard client configuration file. Existing unrelated entries and unspecified environment settings are preserved.
+
+Use `-Plan` to preview without downloads or file changes. `-NoBootstrap` requires an existing uv installation. `-SkipDependencies` reuses a prepared environment. The legacy `scripts/setup_laptop.ps1` forwards to this same installer, preserving its Codex default and `-SkipCodex` option.
 
 The execution policy applies only to that process. No Windows service/driver is installed and no machine execution policy is changed.
 
 For relocated data or an explicit Windows helper:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_laptop.ps1 `
-  -SkipCodex `
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 `
+  -Client codex `
   -FlUserData 'D:\Music\Image-Line' `
   -WindowsServer 'C:\Tools\WindowsMCP\Sbroenne.WindowsMcp.exe'
 ```
@@ -65,7 +71,7 @@ In **Options → MIDI settings**:
 
 The assistant sends to **ALX FL Bridge (Send)**. FL receives on **ALX FL Bridge (FL Studio)**. Numeric suffixes can change after reboot; the server resolves the stable unique name.
 
-After reboot or a MIDI-service restart, run the server/setup before opening FL so endpoints exist for its scan. If FL was already running, refresh MIDI devices or restart it after finishing work.
+After reboot or a MIDI-service restart, start the server before opening FL so endpoints exist for its scan. If FL was already running, refresh MIDI devices or restart it after finishing work.
 
 ## 4. Connect a client
 

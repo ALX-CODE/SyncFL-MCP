@@ -2,7 +2,7 @@
 
 ![SyncFL logo](docs/assets/syncfl-logo.png)
 
-**143 tools. Precision plugin control. Music production from one conversation.**
+**143 tools. 4,872 named plugin controls. Music production from one conversation.**
 
 Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
@@ -17,9 +17,9 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 **SyncFL** (**SyncFL-MCP**) brings live session control, composition, arrangement, mixing, sound design, automation, audio analysis and project packaging into one local [Model Context Protocol](https://modelcontextprotocol.io/) server. Give a compatible AI assistant the tools to inspect your session, shape a synth, adjust a vocal chain, route a mix and work with your project files.
 
-| **143** MCP tools | **1,961** named plugin controls | **875** qualified mappings | **7,059** calibration checks |
+| **143** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
 |:---:|:---:|:---:|:---:|
-| Documented schemas | Across 14 profiles | Numeric units and menu values | Independent host-display holdouts |
+| Documented schemas | Across 50 profiles | Numeric units and menu values | Independent host-display holdouts |
 
 **As of October 12, 2026, following a broad source-based review, we believe SyncFL is one of the most comprehensive FL Studio MCP toolkits available.** The review screened 157 repository trees from 179 public candidates, with deeper examination of 23 projects. [Read the comparison, evidence and remaining gaps →](docs/COMPARISON-2026-10-12.md)
 
@@ -34,7 +34,7 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 | **Inspect a session** | Live transport, channels, mixer, plugins, native capabilities and workflow prerequisites |
 | **Compose and arrange** | Persistent notes through the piano bridge, pattern banks, step sequences, note transforms and saved-FLP clip editing |
 | **Mix with exact targets** | Guarded mixer scenes, built-in EQ and strip switches, sends, buses, sidechains, plugin parameter batches and bounded peak-meter observations |
-| **Control familiar plugins** | 14 named profiles, 1,961 named controls and 875 qualified numeric/menu mappings; explicit normalized access where calibration is withheld |
+| **Control familiar plugins** | 50 profiles, 4,872 named controls and 1,148 qualified numeric/menu mappings; explicit normalized access where calibration is withheld |
 | **Design Serum sounds** | Live mapped controls, native preset inspection/editing, kick/808/lead/pad builders and measured audio probes |
 | **Work with audio** | Rust tempo analysis, ranked musical-key estimates, WAV inspection/editing, integrated loudness and true peaks, reference-level comparisons and evidence-based gain proposals |
 | **Manage projects** | Saved-FLP inspection, automation edits, source-preserving project packages, guarded open/save and recording/render jobs |
@@ -43,17 +43,15 @@ The [capability matrix](docs/CAPABILITIES.md) explains input requirements and li
 
 ## Get connected
 
-Use a checkout of the current **`main`** branch or an extracted source release. Install [uv](https://docs.astral.sh/uv/getting-started/installation/), launch FL once to create its user-data folder, then finish active bridge work before installing:
+Download the repository ZIP (or clone `main`), extract it to a permanent folder, and **double-click `Install.cmd`**. Choose Codex, Claude Desktop, Claude Code, or manual client setup. Open FL once before installing so its user-data folder exists.
 
 ```powershell
-# From the repository root. -SkipCodex leaves client configuration to you.
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_laptop.ps1 -SkipCodex
+powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Client codex
 ```
 
-1. In FL's MIDI settings, enable **ALX FL Bridge (FL Studio)** and select **FL Studio MCP Controller**.
-2. Connect your MCP client to this checkout's Python, using `-m fl_studio_mcp.server` and the repository as its working directory.
-3. Reload the FL controller after an upgrade and reconnect your MCP client.
-4. Ask the assistant to call `fl_build_info`, `fl_connection_status`, then `fl_session_inspect` before editing.
+The installer prepares Python 3.13, runtime dependencies and the FL controller, then configures the selected client with backups. If uv is missing, it downloads a pinned, checksum-verified official installer into your user account. Development tools are excluded.
+
+Start your assistant/SyncFL before opening FL. In **Options → MIDI settings**, enable **ALX FL Bridge (FL Studio)** and select **FL Studio MCP Controller**. Ask the assistant to run `fl_build_info`, `fl_connection_status` and `fl_session_inspect` before editing.
 
 The default bridge requires compatible **Windows MIDI Services loopback support** and Microsoft's x64 VC++ runtime. It needs no loopMIDI process, custom resident broker, driver installation or elevation. Existing MIDI ports remain an explicit alternative. Start the server before FL after a reboot so endpoints exist when FL scans them.
 
@@ -79,9 +77,11 @@ Key analysis also works as a [standalone NumPy module](docs/KEY-ANALYSIS.md), wi
 | Coverage | Profiles |
 |---|---|
 | Qualified numeric/menu controls; other controls remain normalized-only | Auto-Tune Pro; MetaTune; FabFilter Pro-Q 4, Pro-C 3, Pro-DS, Pro-L 2, Pro-R 2 and Saturn 2; soothe2; Tube-Tech CL 1B mk II; Soundtoys Decapitator, EchoBoy, MicroShift and Little AlterBoy |
+| Stock effects | 26 profiles, including Parametric EQ 2, Limiter, Maximus, Delay 3, Reeverb 2 and Gross Beat; [coverage and limits](docs/STOCK-PLUGIN-GUIDE.md) |
+| Stock instruments | 3x Osc, FL Keys, FL Slayer, Morphine, Ogun, PoiZone, Sakura, Sawer, Sytrus and Toxic Biohazard |
 | Separate Serum integration | Serum 2 live controls, native preset tools and audio probing |
 
-Mappings bind to the **exact exposed parameter layout**. Changed layouts are refused. All 14 profiles retain qualified mappings, 420 numeric and 455 menu, after 7,059 independent host-display holdout checks. Mode-dependent controls declare the selector setting they were qualified under. Counts include repeated band controls; they do not mean every control is calibrated. Host readback does not certify audible DSP behavior.
+Mappings bind to the **exact exposed parameter layout**. Changed layouts are refused. 37 of the 50 profiles retain qualified mappings: 576 numeric and 572 menu controls, after 10,703 independent host-display holdout checks. Other profiles expose named normalized controls or detection only. Mode-dependent controls declare the selector setting they were qualified under. Counts include repeated band controls; they do not mean every control is calibrated. Host readback does not certify audible DSP behavior.
 
 [Plugin units, conditions and limitations →](docs/PLUGIN-CONTROL-GUIDE.md)
 

@@ -44,6 +44,90 @@ def test_seconds_alias_has_one_canonical_unit():
 
 
 @pytest.mark.parametrize(
+    "display,expected",
+    [("59 degrees", 59), ("118 degrees", 118), (" -45.5 DEGREES ", -45.5)],
+)
+def test_observed_degrees_are_explicit_angle_values(display, expected):
+    assert parse_display_number(display, "degrees") == expected
+    assert canonical_display_unit(" DEGREES ") == "degrees"
+
+
+@pytest.mark.parametrize(
+    "display,unit",
+    [
+        ("59 degrees", ""),
+        ("59 degrees", "%"),
+        ("59 degrees", "Hz"),
+        ("59 degrees", "semitones"),
+        ("59 degrees", "bpm"),
+        ("59", "degrees"),
+        ("59%", "degrees"),
+        ("59 degree", "degrees"),
+        ("59 deg", "degrees"),
+        ("59°", "degrees"),
+        ("59 radians", "degrees"),
+        ("59 degrees degrees", "degrees"),
+        ("59 de grees", "degrees"),
+        ("NaN degrees", "degrees"),
+        ("1e9999 degrees", "degrees"),
+    ],
+)
+def test_degrees_require_exact_unit_without_conversion(display, unit):
+    with pytest.raises(ValueError):
+        parse_display_number(display, unit)
+
+
+@pytest.mark.parametrize(
+    "display,unit,expected",
+    [
+        ("+20.00 cents", "cents", 20),
+        ("-12.5 cents", "cents", -12.5),
+        (" 20 CENTS ", "cents", 20),
+        ("0.000 oct", "oct", 0),
+        ("+1.25 oct", "oct", 1.25),
+        (" -2 OCT ", "oct", -2),
+    ],
+)
+def test_observed_cents_and_oct_are_separate_literal_units(display, unit, expected):
+    assert parse_display_number(display, unit) == expected
+    assert canonical_display_unit(f" {unit.upper()} ") == unit
+
+
+@pytest.mark.parametrize(
+    "display,unit",
+    [
+        ("20 cents", ""),
+        ("20 cents", "%"),
+        ("20 cents", "Hz"),
+        ("20 cents", "semitones"),
+        ("20 cents", "oct"),
+        ("1 oct", ""),
+        ("1 oct", "Hz"),
+        ("1 oct", "semitones"),
+        ("1 oct", "cents"),
+        ("1 semitones", "cents"),
+        ("1 semitones", "oct"),
+        ("20", "cents"),
+        ("1", "oct"),
+        ("20 cent", "cents"),
+        ("1 octave", "oct"),
+        ("1 octaves", "oct"),
+        ("20 cents cents", "cents"),
+        ("1 oct oct", "oct"),
+        ("20 ce nts", "cents"),
+        ("1 o ct", "oct"),
+        ("NaN cents", "cents"),
+        ("inf oct", "oct"),
+        ("1e9999 cents", "cents"),
+        ("1e-999 oct", "oct"),
+    ],
+)
+def test_cents_and_oct_require_exact_unit_without_conversion(display, unit):
+    with pytest.raises(ValueError):
+        parse_display_number(display, unit)
+
+
+@pytest.mark.parametrize(
     "display,unit",
     [
         ("2k5", "Hz"), ("2k5", ""), ("2k5 ms", "ms"), ("2k5 Hz", "ms"),

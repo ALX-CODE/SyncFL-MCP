@@ -11,6 +11,7 @@ Start with the task you want to complete. These guides describe current behavior
 | Find tools and parameters | [Tool reference](reference/TOOLS.md), [JSON schemas](reference/tools.json) |
 | Configure a client | [Configuration](CONFIGURATION.md) |
 | Adjust supported plugins | [Plugin control guide](PLUGIN-CONTROL-GUIDE.md) |
+| Control stock effects and instruments | [Stock plugin guide](STOCK-PLUGIN-GUIDE.md) |
 | Estimate the key of a WAV | [Key analysis](KEY-ANALYSIS.md) |
 | Estimate BPM with the Rust core | [Tempo analysis](TEMPO-ANALYSIS.md) |
 | Design Serum sounds | [Serum guide](../SERUM-WORKFLOW.md) |

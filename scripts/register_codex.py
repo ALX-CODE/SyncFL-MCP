@@ -9,6 +9,7 @@ import json
 import os
 import re
 import shutil
+import sys
 import tempfile
 import time
 from pathlib import Path
@@ -16,6 +17,11 @@ from pathlib import Path
 import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _python(root):
+    relative = ".venv/Scripts/python.exe" if sys.platform == "win32" else ".venv/bin/python"
+    return Path(root).resolve() / relative
 
 
 def _value(value):
@@ -65,23 +71,32 @@ def render_registration(text, root, overrides=None):
     """Return new text and safe status; semantic validation guards unusual TOML."""
     parsed = tomllib.loads(text)
     servers = parsed.get("mcp_servers", {})
+    if not isinstance(servers, dict) or any(not isinstance(v, dict) for v in servers.values()):
+        raise ValueError("mcp_servers must contain server tables")
     matches = [name for name, value in servers.items() if (
-        name in {"fl_studio", "fl-studio", "fl_studio_mcp", "fl-studio-mcp"}
-        or "fl-studio-mcp" in str(value.get("command", "")).lower()
-        or any(marker in str(value.get("args", "")).lower()
-               for marker in ("fl_studio_mcp", "fl-studio-mcp"))
+        name.casefold() in {
+            "syncfl", "syncfl-mcp", "syncfl_mcp",
+            "fl_studio", "fl-studio", "fl_studio_mcp", "fl-studio-mcp",
+        }
+        or any(marker in str(value.get("command", "")).casefold()
+               or marker in str(value.get("args", "")).casefold()
+               for marker in ("fl_studio_mcp", "fl-studio-mcp", "syncfl-mcp"))
     )]
     name = "fl_studio" if "fl_studio" in matches else (matches[0] if matches else "fl_studio")
     settings = copy.deepcopy(servers.get(name, {}))
     for duplicate in matches:
         _merge_missing(settings, servers[duplicate])
     root = Path(root).resolve()
-    settings.update(command=str(root / ".venv/Scripts/python.exe"),
+    settings.update(command=str(_python(root)),
                     args=["-m", "fl_studio_mcp.server"], cwd=str(root))
     settings.setdefault("startup_timeout_sec", 30)
     settings.setdefault("tool_timeout_sec", 120)
+    environment = settings.setdefault("env", {})
+    if not isinstance(environment, dict):
+        raise ValueError("SyncFL environment must be a table")
+    environment.setdefault("FL_MCP_INTERACTION_POLICY", "background")
     if overrides:
-        settings.setdefault("env", {}).update(overrides)
+        environment.update(overrides)
     expected = copy.deepcopy(parsed)
     expected_servers = expected.setdefault("mcp_servers", {})
     for old in matches:
@@ -122,9 +137,9 @@ def register(config, root=ROOT, overrides=None, apply=False):
     updated, status = render_registration(text, root, overrides)
     status.update(applied=False, config=str(config))
     if apply and status["changed"]:
-        executable = Path(root).resolve() / ".venv/Scripts/python.exe"
+        executable = _python(root)
         if not executable.is_file():
-            raise FileNotFoundError("Repository Python missing; run setup_laptop.ps1 first")
+            raise FileNotFoundError("Repository Python missing; run the installer first")
         config.parent.mkdir(parents=True, exist_ok=True)
         if (config.read_bytes() if config.exists() else b"") != original:
             raise RuntimeError("Codex config changed during registration; retry")
@@ -158,11 +173,13 @@ def main():
     parser.add_argument("--fl-user-data", help="Image-Line root, not its Settings folder")
     parser.add_argument("--midi-port", help="Exact dedicated MIDI output port name")
     parser.add_argument("--windows-server", help="Optional Windows MCP executable")
+    parser.add_argument("--interaction-policy", choices=("background", "interactive"))
     args = parser.parse_args()
     overrides = {key: value for key, value in {
         "FL_USER_DATA_FOLDER": args.fl_user_data,
         "FL_MCP_MIDI_PORT": args.midi_port,
         "FL_MCP_WINDOWS_SERVER": args.windows_server,
+        "FL_MCP_INTERACTION_POLICY": args.interaction_policy,
     }.items() if value is not None}
     try:
         result = register(args.config, args.root, overrides, args.apply)

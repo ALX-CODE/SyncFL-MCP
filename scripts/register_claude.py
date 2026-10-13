@@ -15,7 +15,52 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def configure(path: Path, root: Path = ROOT, *, apply: bool = False, replace: bool = False) -> dict:
+def _python(root: Path) -> Path:
+    relative = ".venv/Scripts/python.exe" if sys.platform == "win32" else ".venv/bin/python"
+    return root / relative
+
+
+def _is_syncfl(name: str, entry) -> bool:
+    if name.casefold() in {
+        "syncfl", "syncfl-mcp", "syncfl_mcp",
+        "fl_studio", "fl-studio", "fl_studio_mcp", "fl-studio-mcp",
+    }:
+        return True
+    if not isinstance(entry, dict):
+        return False
+    return any(
+        marker in str(entry.get("command", "")).casefold()
+        or marker in str(entry.get("args", "")).casefold()
+        for marker in ("fl_studio_mcp", "fl-studio-mcp", "syncfl-mcp")
+    )
+
+
+def _same_project(entry: dict, root: Path) -> bool:
+    arguments = entry.get("args", [])
+    if not isinstance(arguments, list):
+        return False
+    command = entry.get("command")
+    if isinstance(command, str) and Path(command).resolve() == _python(root):
+        return arguments == ["-m", "fl_studio_mcp.server"]
+    if "--directory" in arguments:
+        index = arguments.index("--directory") + 1
+        if index < len(arguments) and isinstance(arguments[index], str):
+            return Path(arguments[index]).resolve() == root
+    return False
+
+
+def _merge_missing(destination: dict, source: dict) -> None:
+    for key, value in source.items():
+        if key not in destination:
+            destination[key] = copy.deepcopy(value)
+        elif isinstance(value, dict) and isinstance(destination[key], dict):
+            _merge_missing(destination[key], value)
+
+
+def configure(
+    path: Path, root: Path = ROOT, *, apply: bool = False, replace: bool = False,
+    overrides: dict | None = None,
+) -> dict:
     """Preserve unrelated configuration; refuse invalid JSON and entry conflicts."""
     path, root = path.expanduser().absolute(), root.resolve()
     before = path.read_bytes() if path.exists() else None
@@ -24,29 +69,32 @@ def configure(path: Path, root: Path = ROOT, *, apply: bool = False, replace: bo
         raise ValueError("Configuration and mcpServers must be JSON objects")
     updated = copy.deepcopy(document)
     servers = updated.setdefault("mcpServers", {})
-    entry = {
-        "command": "uv",
-        "args": ["run", "--directory", str(root), "syncfl-mcp"],
-        "env": {"FL_MCP_INTERACTION_POLICY": "background"},
-    }
-    existing = servers.get("syncfl")
-    if existing is not None and existing != entry:
+    matches = [name for name, entry in servers.items() if _is_syncfl(name, entry)]
+    # Prefer the canonical entry when merging duplicate names, preserving its settings.
+    matches.sort(key=lambda name: name != "syncfl")
+    entry = {}
+    for name in matches:
+        existing = servers[name]
         if not isinstance(existing, dict):
             raise ValueError("Existing syncfl entry is not an object")
-        arguments = existing.get("args", [])
-        same_project = (
-            isinstance(arguments, list)
-            and "--directory" in arguments
-            and arguments.index("--directory") + 1 < len(arguments)
-            and Path(arguments[arguments.index("--directory") + 1]).resolve() == root
-        )
-        if not (same_project or replace):
+        if not (_same_project(existing, root) or replace):
             raise ValueError("A different syncfl entry exists; review it before using --replace")
-        entry = {**existing, **entry, "env": {**entry["env"], **existing.get("env", {})}}
+        _merge_missing(entry, existing)
+    entry.update(command=str(_python(root)), args=["-m", "fl_studio_mcp.server"])
+    environment = entry.setdefault("env", {})
+    if not isinstance(environment, dict):
+        raise ValueError("SyncFL environment must be an object")
+    environment.setdefault("FL_MCP_INTERACTION_POLICY", "background")
+    if overrides:
+        environment.update(overrides)
+    for name in matches:
+        servers.pop(name)
     servers["syncfl"] = entry
     changed = document != updated
     backup = None
     if apply and changed:
+        if not _python(root).is_file():
+            raise FileNotFoundError("Repository Python missing; run the installer first")
         path.parent.mkdir(parents=True, exist_ok=True)
         current = path.read_bytes() if path.exists() else None
         if current != before:
@@ -103,10 +151,21 @@ def main() -> int:
         "--apply", action="store_true", help="Write the reviewed entry and retain a backup"
     )
     parser.add_argument("--replace", action="store_true", help="Replace a conflicting syncfl entry")
+    parser.add_argument("--fl-user-data", help="Image-Line root, not its Settings folder")
+    parser.add_argument("--midi-port", help="Exact dedicated MIDI output port name")
+    parser.add_argument("--windows-server", help="Optional Windows MCP executable")
+    parser.add_argument("--interaction-policy", choices=("background", "interactive"))
     args = parser.parse_args()
+    overrides = {key: value for key, value in {
+        "FL_USER_DATA_FOLDER": args.fl_user_data,
+        "FL_MCP_MIDI_PORT": args.midi_port,
+        "FL_MCP_WINDOWS_SERVER": args.windows_server,
+        "FL_MCP_INTERACTION_POLICY": args.interaction_policy,
+    }.items() if value is not None}
     try:
         result = configure(
-            args.config or default_config(args.client), apply=args.apply, replace=args.replace
+            args.config or default_config(args.client), apply=args.apply, replace=args.replace,
+            overrides=overrides,
         )
     except (ValueError, TypeError, OSError, RuntimeError) as exc:
         print(json.dumps({"success": False, "error": str(exc)}))

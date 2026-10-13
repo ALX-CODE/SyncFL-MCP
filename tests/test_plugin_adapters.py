@@ -271,6 +271,79 @@ def test_unitless_numeric_mapping_passes_empty_unit_to_display_verification(regi
     assert "binary/build" in inspected["limitations"][0]
 
 
+@pytest.mark.parametrize("tolerance", [0, 0.005, 0.01])
+@pytest.mark.parametrize("calibration", ["points", "curve"])
+def test_measured_normalized_tolerance_applies_only_to_physical_requests(
+    registry, native, tolerance, calibration,
+):
+    value = adapter()
+    control = value["controls"][0]
+    control["normalized_tolerance"] = tolerance
+    if calibration == "curve":
+        control.pop("points")
+        control["curve"] = {"kind": "linear", "minimum": -60, "maximum": 0}
+    registry({"schema_version": 1, "adapters": [value]})
+
+    adapters.set_controls(3, "Test Synth", REVISION, [{"control": "gain_db", "value": -45}])
+    physical = native[1][-1][1][3][0]
+    assert physical == {
+        "parameter": 0, "expected_name": "Gain", "value": 0.25,
+        "normalized_tolerance": tolerance,
+        "expected_numeric": {"value": -45, "unit": "dB", "tolerance": 0.1},
+    }
+
+    adapters.set_controls(3, "Test Synth", REVISION, [{"control": "gain_db", "normalized": 0.25}])
+    assert native[1][-1][1][3][0] == {
+        "parameter": 0, "expected_name": "Gain", "value": 0.25,
+    }
+    assert adapters.catalog_adapters()["adapters"][0]["controls"][0][
+        "normalized_tolerance"
+    ] == tolerance
+    assert adapters.inspect_controls(3)["controls"][0]["normalized_tolerance"] == tolerance
+
+
+def test_absent_normalized_tolerance_preserves_strict_default(registry, native):
+    adapters.set_controls(3, "Test Synth", REVISION, [
+        {"control": "gain_db", "value": -45}, {"control": "mode", "value": "Off"},
+    ])
+    assert all("normalized_tolerance" not in change for change in native[1][-1][1][3])
+
+
+@pytest.mark.parametrize("normalized,display,expected", [
+    (0.254, "-44.95 dB", True),
+    (0.254, "-40 dB", False),
+    (0.26, "-45 dB", False),
+])
+def test_measured_tolerance_still_requires_both_readback_checks(normalized, display, expected):
+    value = adapter()
+    value["controls"][0]["normalized_tolerance"] = 0.005
+    change = adapters.compile_changes(value, [{"control": "gain_db", "value": -45}])[0]
+    after = {"parameters": [{"value": normalized, "display": display}]}
+    check = adapters.plugin_state._change_results(after, [change])[0]
+    assert check["matches"] is expected
+    assert check["expected_numeric"] == {"value": -45, "unit": "dB", "tolerance": 0.1}
+
+
+@pytest.mark.parametrize("index", [1, 2, 3])
+def test_normalized_tolerance_requires_calibrated_numeric_control(registry, index):
+    value = adapter()
+    value["controls"][index]["normalized_tolerance"] = 0.001
+    registry({"schema_version": 1, "adapters": [value]})
+    with pytest.raises(ValueError, match="only supported on calibrated numeric"):
+        adapters.catalog_adapters()
+
+
+@pytest.mark.parametrize("tolerance", [
+    True, False, None, "0.001", math.nan, math.inf, -math.inf, -0.001, 0.010001, 10**500,
+])
+def test_invalid_measured_normalized_tolerance_rejected(registry, tolerance):
+    value = adapter()
+    value["controls"][0]["normalized_tolerance"] = tolerance
+    registry({"schema_version": 1, "adapters": [value]})
+    with pytest.raises(ValueError):
+        adapters.catalog_adapters()
+
+
 def test_semantic_unit_can_differ_from_literal_display_unit(registry, native):
     data = {"schema_version": 1, "adapters": [adapter()]}
     data["adapters"][0]["controls"][0].update(unit="ms", display_unit="")

@@ -150,7 +150,8 @@ def _window_state(slot):
 
 def _drop_point_exposed(window):
     # FL routes the drop by screen position. A window over the slot (for example a
-    # maximized Playlist in front of the Mixer) receives it and returns DROPEFFECT_NONE.
+    # Playlist or another application) can make FL return DROPEFFECT_NONE. The
+    # desktop-wide check is intentional, even though delivery targets FL's HWND.
     return native_windows.point_belongs_to(window["point"], window["mixer"]["handle"])
 
 
@@ -354,7 +355,10 @@ def _inspect(conn, track, slot, deadline=None):
         reasons.append("Target effect slot is occupied")
     exposed = _drop_point_exposed(window)
     if not exposed:
-        reasons.append("Another window covers the target effect slot; bring the Mixer to the front")
+        reasons.append(
+            "Another window covers the target effect slot; expose the Mixer slot by moving "
+            "overlapping FL panels or other applications away"
+        )
     identity = dict(
         window=window,
         drop_point_exposed=exposed,

@@ -456,3 +456,11 @@ def test_drop_point_must_resolve_to_the_mixer(monkeypatch):
     window["mixer"]["handle"] = "300"
     assert not loader._drop_point_exposed(window)
     assert seen == [([1487, 240], "200"), ([1487, 240], "300")]
+
+
+def test_occlusion_reason_includes_other_applications(rig):
+    rig.exposed = False
+    result = inspect(rig)
+    assert not result["ready"]
+    assert any("other applications" in reason for reason in result["reasons"])
+    assert not rig.drops

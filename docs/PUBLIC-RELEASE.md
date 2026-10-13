@@ -2,7 +2,7 @@
 
 Canonical repository: **[ALX-CODE/SyncFL-MCP](https://github.com/ALX-CODE/SyncFL-MCP)**. Public name: **SyncFL**. Maintainers: **[nobibasedd](https://github.com/nobibasedd)** and **[ALX-CODE](https://github.com/ALX-CODE)**.
 
-This repository starts from a reviewed source-only snapshot with fresh Git history. Earlier private development commits, song projects and reference media are not included. Keep production material outside this repository. **Never merge private development history or copy its `.git` directory into SyncFL.** Inherited copyright and license notices remain with the source.
+This repository starts from a reviewed source-only snapshot with fresh Git history. Earlier private development commits, song projects and reference media are not included. Keep production material outside this repository. **Never merge private development history or copy its `.git` directory into SyncFL.** Required dependency notices remain with the redistributed runtimes.
 
 ## Create a source-only snapshot
 
@@ -40,3 +40,17 @@ Topics: `mcp`, `fl-studio`, `midi`, `music-production`, `daw`, `python`, `audio`
 Review issue settings, private vulnerability reporting and collaborator roles before launch. README badges and package metadata use the canonical SyncFL URL. A source tag should identify the exact tested snapshot; keep experimental capabilities labeled as such.
 
 The source-only snapshot includes public guides and generated tool schemas. Private session logs, external artist MIDI, song projects, demo video and original Git history are deliberately absent. Native runtime binaries remain with pinned manifests and their redistribution notices.
+
+## First GitHub release plan
+
+Prepare **v0.2.0 as a preview release** from the exact tested commit. Keep repository visibility unchanged; a release draft does not authorize making a private repository public.
+
+1. Finish stock-plugin verification. Include only mappings that pass their full independent acceptance checks; keep rejected mappings explicitly normalized and publish their counts and limitations.
+2. Pass the complete Python suite, documentation/export checks, Windows native checks and GitHub CI for the release commit. Verify live bindings and change/restore receipts separately.
+3. Export a clean source ZIP containing `Install.cmd`, guides, controller files and verified runtimes. Inspect `PUBLIC-MANIFEST.json`; include the archive SHA-256 in `SHA256SUMS.txt`. Exclude `.git`, lab snapshots, personal paths and recordings.
+4. Draft release notes with measured tool/control counts, installation instructions, supported platforms and known limitations. Avoid implying that every exposed control has physical-unit calibration.
+5. Have the maintainers review the concrete draft and archive before publishing or changing visibility. Publish the tested source commit, never a private development branch.
+
+After review, a draft can be created with the GitHub CLI's `release create` command using `--draft`, `--prerelease`, `--target` set to the tested commit, and `--notes-file` set to the reviewed notes. Attach the source ZIP and `SHA256SUMS.txt`.
+
+Keep generated release artifacts outside the checkout. The source exporter requires new destinations and does not create a GitHub release itself.

@@ -2,7 +2,8 @@
 
 Observed host spellings include ``sec`` for seconds, ``msec`` for milliseconds and
 compact frequencies such as ``2k5 Hz`` (2500 Hz). Compact notation requires an
-explicit Hz suffix. ``semitones`` and ``bpm`` are separate units with no conversion.
+explicit Hz suffix. ``semitones``, ``cents``, ``oct``, ``bpm`` and ``degrees`` are
+separate units with no conversion.
 """
 
 import math
@@ -11,7 +12,8 @@ from decimal import Decimal, DecimalException
 
 _NUMBER = r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
 _DISPLAY = re.compile(
-    rf"(?P<number>{_NUMBER})\s*(?P<unit>dBTP|dB|%|msec|ms|sec|s|k\s*Hz|Hz|semitones|bpm)?",
+    rf"(?P<number>{_NUMBER})\s*"
+    r"(?P<unit>dBTP|dB|%|msec|ms|sec|s|k\s*Hz|Hz|semitones|cents|oct|bpm|degrees)?",
     re.IGNORECASE,
 )
 _COMPACT_HZ = re.compile(
@@ -20,7 +22,22 @@ _COMPACT_HZ = re.compile(
 _RATIO = re.compile(rf"(?P<number>{_NUMBER})\s*:\s*1(?:\.0*)?")
 _UNITS = {
     unit.casefold(): unit
-    for unit in ("", "dB", "dBTP", "%", "ms", "s", "Hz", "kHz", "ratio", "semitones", "bpm")
+    for unit in (
+        "",
+        "dB",
+        "dBTP",
+        "%",
+        "ms",
+        "s",
+        "Hz",
+        "kHz",
+        "ratio",
+        "semitones",
+        "cents",
+        "oct",
+        "bpm",
+        "degrees",
+    )
 }
 _UNITS["sec"] = "s"
 _UNITS["msec"] = "ms"
@@ -40,7 +57,7 @@ def canonical_display_unit(unit):
     if canonical is None:
         raise ValueError(
             "Unsupported display unit; use dB, dBTP, %, ms/msec, s/sec, Hz, kHz, ratio, "
-            "semitones, bpm or ''"
+            "semitones, cents, oct, bpm, degrees or ''"
         )
     return canonical
 
@@ -52,7 +69,8 @@ def parse_display_number(display, unit):
     denominator is never guessed. Unitless, percent, dB and dBTP stay distinct.
     Time and frequency may be explicitly converted within their own dimensions;
     sec is an alias for s, msec for ms, and 2k5 Hz is the explicit frequency spelling
-    2.5 kHz. Semitones and bpm never convert to or from another unit.
+    2.5 kHz. Semitones, cents, oct, bpm and degrees never convert to or from
+    another unit.
     """
     target = canonical_display_unit(unit)
     if not isinstance(display, str) or not display.strip():

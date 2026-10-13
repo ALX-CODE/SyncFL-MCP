@@ -2,6 +2,56 @@
 
 Different checks answer different questions. A passing unit test is useful, but it does not prove a particular plugin sounds correct or that another machine's FL UI matches the calibrated layout.
 
+## Windows installation: October 12, 2026
+
+The canonical PowerShell installer and its compatibility wrapper were exercised
+with isolated command stubs for all three supported clients, custom paths with
+spaces, deployment failures and dependency selection. A real exported source
+snapshot was then installed into a fresh Python 3.13 environment using the local
+dependency cache. The real installer deployed all six FL integration files into
+a separate test user-data folder, passed the offline doctor, preserved an
+unrelated Claude configuration entry and created a verified configuration backup.
+A repeat install changed no controller files or client settings. The fresh
+environment contained no pytest, Ruff or FL API stubs.
+
+This test used the existing uv installation and cached dependencies. The pinned
+official bootstrap script was downloaded and its SHA-256 checked separately;
+the download-and-execute bootstrap path was not run on a fresh Windows machine.
+No live MIDI commands, FL reloads or desktop input were part of this installation
+test. Windows MIDI Services and the Visual C++ runtime were already installed.
+
+## Stock effects and instruments: October 12, 2026
+
+The integrated checkout passed **2,735 Python tests with 2 skips** on Python
+3.13.13, including the optional CLI and Windows installer suites. Targeted Ruff,
+generated-tool documentation, all 44 public guides and the source-export privacy
+scan passed. The export contains 338 allowlisted files; lab records and projects
+remain outside the repository.
+
+All 36 requested stock plugins loaded in a stopped, Master-muted disposable session: 26 effects and 10 instruments. The native API exposed 2,911 named controls. 156 numeric and 117 menu mappings survived 3,644 independent holdout checks; failed or unsupported mappings remain normalized only.
+
+Calibration used measured host displays. Retained numeric mappings passed all eight off-grid values and retained menus passed every declared choice. Rejected candidates could stop at their first failed check. Only one control per plugin changed at a time. Checks exercised the production compiler and readback verifier. At least 400 ms elapsed before two equal later callbacks. Whole exposed parameter values and display strings, including unnamed parameters, were compared for collateral changes and final restoration. No synthetic keyboard or mouse input was sent.
+
+Mode requirements are attached to retained mappings. MIDI inputs, sequencer/editor data and unobservable mode dependencies were excluded from blind sweeps. Soundgoodizer is detection only; Fruity Delay, Fruity Reeverb and FL Slayer are normalized only because their displays were empty. This evidence qualifies host mapping for the observed builds, not licensing, audible DSP behavior or arbitrary presets.
+
+Sakura and Sawer retain named normalized controls without physical qualification. A host exit interrupted the initial sweep; the crash log identified Sawer in an audio-processing access violation, without establishing a triggering parameter. The measurements were retained outside FL, and recovery restored the complete exposed Sakura and Sawer baselines. No interrupted sweep is counted as qualified.
+
+Sytrus has 597 named normalized controls but no qualified physical mappings in this release. Manual settings changes invalidated its baseline. Its 2,327 interrupted checks are excluded from all qualification totals and retained externally. Exact restoration and complete qualification are not claimed.
+
+Morphine and Toxic Biohazard required separate write-reachable test baselines: the native setter cannot reproduce every finer value stored in the original preset. The original snapshots and recovery project remain preserved; restoration evidence for these two profiles refers specifically to the test baselines.
+
+See the [stock coverage table](STOCK-PLUGIN-GUIDE.md) and [artifact hashes and counts](plugin-calibration-evidence.json).
+
+A fresh stdio MCP process exposed all 143 tools and bound all 36 stock profiles
+against the live host. Production apply/restore checks passed for Fruity Chorus,
+Fruity Compressor, Maximus, 3x Osc and FL Slayer. The strict normalized verifier
+rejected an FL Slayer String request of 0.417 when the host returned 0.5; an exact
+endpoint request and restoration then passed. This does not establish a complete
+menu or physical-unit mapping for that legacy control. Final read-only checks
+matched the complete exposed baselines of the other 35 plugins. Sytrus identity
+was checked separately, with no restoration claim. Receipts remain outside the
+public source tree.
+
 ## Rust tempo analysis: October 12, 2026
 
 The original Rust core passed **21 tests**, formatting and strict Clippy checks.

@@ -12,6 +12,7 @@ from . import background_loading as bridge
 from . import native_windows
 from .background_piano import _file, _save_and_read
 from .midi_connection import get_connection
+from .project_bundle import _inspect, _parse
 from .project_native import _window_context
 from .protocol import transaction_lock
 
@@ -21,6 +22,163 @@ def _matches(info, state):
             == [(c["index"], c["name"]) for c in state["context"]["channels"]]
             and info["ppq"] == state["values"]["ppq"]
             and abs(info["tempo"] - state["values"]["tempo_bpm"]) <= .002)
+
+
+def _load(conn, main, before, source, data, info, executable, receipt, report):
+    """Deliver an already prepared FLP once and independently observe its load."""
+    bridge._call(conn, "native.call", dict(
+        function="ui.showWindow", args=[2], allow_write=True))
+    targets = [row for row in native_windows.windows(main["handle"], pid=main["pid"])
+               if row["class"] == "TEventEditForm"
+               and row["title"].startswith("Playlist") and row["enabled"]]
+    if len(targets) != 1:
+        raise RuntimeError("Cannot identify the native Playlist drop target")
+    target = targets[0]
+    x, y, width, height = target["bounds"]
+    point = [x + width * 3 // 4, y + height // 2]
+    if not native_windows.point_belongs_to(point, target["handle"]):
+        native_windows.expose_fl_window(main)
+    if not native_windows.point_belongs_to(point, target["handle"]):
+        raise RuntimeError("Playlist target remains covered; no project load dispatched")
+    fresh = bridge._project(conn, None)
+    if (fresh["revision"] != before["revision"] or fresh["dirty"]
+            or fresh["is_playing"] or fresh["is_recording"]
+            or fresh["context"] != before["context"]
+            or _window_context() != main or source.read_bytes() != data):
+        raise RuntimeError("Project or source changed before native load")
+    window = dict(main=main, mixer=target, point=point,
+                  process=bridge._process_identity(main["pid"]))
+    report.update(status="dispatching", dispatched=True)
+    bridge._persist(receipt, report)
+    report["cli"] = bridge._dispatch(executable, dict(window=window), source)
+    report["status"] = "awaiting_readback"
+    bridge._persist(receipt, report)
+    deadline = time.monotonic() + 30
+    consecutive = 0
+    while time.monotonic() < deadline:
+        try:
+            after = bridge._project(conn, deadline)
+            now = _window_context()
+            matched = (now["pid"] == main["pid"]
+                       and now["title"].split(" - FL Studio", 1)[0].casefold()
+                       == source.name.casefold()
+                       and after["context"]["session"] == before["context"]["session"]
+                       and after["context"]["project_generation"]
+                       > before["context"]["project_generation"]
+                       and _matches(info, after))
+            consecutive = consecutive + 1 if matched else 0
+            if consecutive >= 2:
+                if source.read_bytes() != data:
+                    raise RuntimeError("Source changed during project loading")
+                report.update(success=True, status="verified", after=after,
+                              verification="generation_title_channels_tempo_ppq_source_hash",
+                              absolute_path_verified=False)
+                return
+        except bridge.ReadUnavailable:
+            pass
+        time.sleep(.15)
+    raise RuntimeError("Native project load is unverified; inspect receipt, do not retry")
+
+
+def _clean_blank(conn, main, state, expected_revision):
+    if state["revision"] != expected_revision:
+        raise ValueError("Project revision changed; inspect again")
+    context = state["context"]
+    if (main["title"] != context["program_title"] or context.get("project_title")
+            or state["dirty"] != 0 or state["is_playing"] or state["is_recording"]
+            or context["channels"] != [dict(index=0, name="Sampler", type=0)]):
+        raise ValueError("Creating a project requires the clean, unnamed Empty template; "
+                         "existing or modified projects are preserved")
+    count = bridge._call(conn, "native.call", dict(function="patterns.patternCount", args=[]))
+    if count.get("value") != 0:
+        raise ValueError("The unnamed project contains patterns; it is not an empty project")
+    ping = bridge._call(conn, "bridge.ping", {})
+    if (ping.get("project_native", {}).get("controller_pid") != main["pid"]
+            or not ping.get("safe_to_edit")):
+        raise RuntimeError("The controller must belong to the idle, safe FL process")
+
+
+def create_blank_project(path, expected_revision, receipt_file=None, apply=False,
+                         connection=None):
+    """Bootstrap FL's clean Empty template into a named, native-saved FL26 project."""
+    if type(apply) is not bool:
+        raise ValueError("apply must be boolean")
+    destination = Path(path)
+    if (not destination.is_absolute() or destination.suffix.lower() != ".flp"
+            or destination.exists()):
+        raise ValueError("Use a NEW absolute .flp path; existing projects are never overwritten")
+    receipt = Path(receipt_file) if receipt_file else None
+    if apply and (receipt is None or not receipt.is_absolute() or receipt.exists()
+                  or receipt.suffix.lower() != ".json"):
+        raise ValueError("Apply requires a NEW absolute .json receipt_file")
+    conn = connection or get_connection()
+    with transaction_lock(conn._hardware_dir / "mcp-gui.lock", 5):
+        main, before = _window_context(), bridge._project(conn, None)
+        _clean_blank(conn, main, before, expected_revision)
+        image = Path(bridge._process_identity(main["pid"])["image"])
+        template = image.parent / "Data" / "Templates" / "Empty" / "Empty.flp"
+        if template.is_symlink() or not 22 <= template.stat().st_size <= 512 * 1024 * 1024:
+            raise ValueError("FL's installed Empty template is unavailable or invalid")
+        data = template.read_bytes()
+        info = _inspect(data)
+        _, events, _ = _parse(data)
+        if (info["channels"] != [dict(id=0, name="Sampler")]
+                or info["patterns"] or info["sample_references"]
+                or any(e.payload for e in events if e.id in (223, 224, 233))
+                or not _matches(info, before)):
+            raise ValueError("The installed Empty template does not match this clean blank project")
+        executable = bridge.verify_runtime()
+        report = dict(success=not apply, status="preflighted", desktop_input=False,
+                      experimental=True, project_path=str(destination), template=str(template),
+                      template_sha256=hashlib.sha256(data).hexdigest(), before=before,
+                      dispatched=False, operation="create_blank_project")
+        if not apply:
+            return report
+        receipt.parent.mkdir(parents=True, exist_ok=True)
+        with receipt.open("x", encoding="utf-8") as stream:
+            json.dump(report, stream, allow_nan=False)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            with destination.open("xb") as stream:
+                stream.write(data)
+                stream.flush()
+                os.fsync(stream.fileno())
+            # Recheck after filesystem work, before replacing even a clean blank.
+            _clean_blank(conn, _window_context(), bridge._project(conn, None), expected_revision)
+            _load(conn, main, before, destination, data, info, executable, receipt, report)
+            loaded = bridge._project(conn, None)
+            loaded_window = _window_context()
+            if (loaded["context"] != report["after"]["context"] or loaded["dirty"] != 0
+                    or loaded["is_playing"] or loaded["is_recording"]
+                    or loaded_window["pid"] != main["pid"]
+                    or loaded_window["title"].split(" - FL Studio", 1)[0].casefold()
+                    != destination.name.casefold()):
+                raise RuntimeError(
+                    "New project changed before initialization; no pattern edit sent")
+            report.update(success=False, status="initializing_pattern")
+            bridge._persist(receipt, report)
+            bridge._call(conn, "native.call", dict(
+                function="patterns.setPatternName", args=[1, "Pattern 1"], allow_write=True))
+            current = bridge._project(conn, None)
+            saved, saved_info = _save_and_read(conn, dict(
+                context=current["context"], window=_window_context(), path=str(destination)), data)
+            if (not saved_info["version"].startswith("26.") or not _matches(saved_info, current)
+                    or any(p["notes"] for p in saved_info["patterns"]) or saved_info["clips"]):
+                raise RuntimeError("The new FL26 blank project was not independently verified")
+            final = bridge._project(conn, None)
+            if (final["context"] != current["context"] or final["dirty"] != 0
+                    or final["is_playing"] or final["is_recording"]
+                    or _window_context() != loaded_window or destination.read_bytes() != saved):
+                raise RuntimeError("New project changed during final save verification")
+            report.update(success=True, status="verified", after=final,
+                          sha256=hashlib.sha256(saved).hexdigest(), version=saved_info["version"],
+                          verification="native_load_then_native_save_and_empty_flp_readback")
+        except Exception as exc:
+            report.update(success=False, status="unverified", error=str(exc))
+        bridge._persist(receipt, report)
+        return report
 
 
 def open_backend_project(source, expected_sha256, expected_revision, recovery_path,
@@ -81,61 +239,7 @@ def open_backend_project(source, expected_sha256, expected_revision, recovery_pa
             report.update(status="recovery_verified",
                           recovery_sha256=hashlib.sha256(saved).hexdigest())
             bridge._persist(receipt, report)
-            # The Playlist is addressed explicitly; FLP delivery replaces the project.
-            bridge._call(conn, "native.call", dict(
-                function="ui.showWindow", args=[2], allow_write=True))
-            targets = [row for row in native_windows.windows(main["handle"], pid=main["pid"])
-                       if row["class"] == "TEventEditForm"
-                       and row["title"].startswith("Playlist") and row["enabled"]]
-            if len(targets) != 1:
-                raise RuntimeError("Cannot identify the native Playlist drop target")
-            target = targets[0]
-            x, y, width, height = target["bounds"]
-            point = [x + width * 3 // 4, y + height // 2]
-            if not native_windows.point_belongs_to(point, target["handle"]):
-                native_windows.expose_fl_window(main)
-            if not native_windows.point_belongs_to(point, target["handle"]):
-                raise RuntimeError("Playlist target remains covered; no project load dispatched")
-            fresh = bridge._project(conn, None)
-            if (fresh["revision"] != current["revision"] or fresh["dirty"]
-                    or fresh["is_playing"] or fresh["is_recording"]
-                    or fresh["context"] != current["context"]
-                    or _window_context() != main or source.read_bytes() != data):
-                raise RuntimeError("Project or source changed before native load")
-            window = dict(main=main, mixer=target, point=point,
-                          process=bridge._process_identity(main["pid"]))
-            report.update(status="dispatching", dispatched=True)
-            bridge._persist(receipt, report)
-            report["cli"] = bridge._dispatch(executable, dict(window=window), source)
-            report["status"] = "awaiting_readback"
-            bridge._persist(receipt, report)
-            deadline = time.monotonic() + 30
-            consecutive = 0
-            while time.monotonic() < deadline:
-                try:
-                    after = bridge._project(conn, deadline)
-                    now = _window_context()
-                    matched = (now["pid"] == main["pid"]
-                               and now["title"].split(" - FL Studio", 1)[0].casefold()
-                               == source.name.casefold()
-                               and after["context"]["session"] == before["context"]["session"]
-                               and after["context"]["project_generation"]
-                               > before["context"]["project_generation"]
-                               and _matches(info, after))
-                    consecutive = consecutive + 1 if matched else 0
-                    if consecutive >= 2:
-                        if source.read_bytes() != data:
-                            raise RuntimeError("Source changed during project loading")
-                        report.update(success=True, status="verified", after=after,
-                                      verification="generation_title_channels_tempo_ppq_source_hash",
-                                      absolute_path_verified=False)
-                        break
-                except bridge.ReadUnavailable:
-                    pass
-                time.sleep(.15)
-            if not report["success"]:
-                raise RuntimeError(
-                    "Native project load is unverified; inspect receipt, do not retry")
+            _load(conn, main, current, source, data, info, executable, receipt, report)
         except Exception as exc:
             report.update(success=False, status="unverified", error=str(exc))
         bridge._persist(receipt, report)

@@ -5,6 +5,25 @@ from fl_studio_mcp.utils.connection import get_connection
 
 def register_advanced_tools(mcp):
     @mcp.tool()
+    def fl_project_create(
+        path: str, expected_revision: str, receipt_file: str | None = None, apply: bool = False,
+    ) -> dict:
+        """Initialize a named FLP from the current clean, unnamed Empty project.
+
+        Use this BEFORE adding sounds, notes or mixer changes when starting a beat
+        from a blank project. Do not ask the user to save the blank project manually.
+        Read fl_production_inspect(scope='project') for expected_revision. Preflight
+        by default; apply=True needs a new absolute .flp path and .json receipt_file.
+        Copies the installed Empty template, loads it through the native backend,
+        initializes Pattern 1, then native-saves and verifies the resulting FL26 file.
+        Rejects named, dirty or nonempty projects and never overwrites a file.
+        No keyboard, mouse, Save As dialog or interactive mode. Experimental native load.
+        """
+        from fl_studio_mcp.utils.backend_project import create_blank_project
+
+        return create_blank_project(path, expected_revision, receipt_file, apply)
+
+    @mcp.tool()
     async def fl_project_open(
         source: str, expected_sha256: str, expected_revision: str, recovery_path: str,
         receipt_file: str | None = None, apply: bool = False,
@@ -14,6 +33,7 @@ def register_advanced_tools(mcp):
 
         Preflight by default. Use source SHA256 and fl_production_inspect project revision.
         Supply current_project_path for the already named/saved active project.
+        For a clean unnamed blank session, use fl_project_create before composing.
         Apply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save
         the current project before copying it to recovery; never discard dirty edits.
         Verify generation, title, channels, source hash, tempo and PPQ. Absolute loaded
@@ -74,7 +94,7 @@ def register_advanced_tools(mcp):
     async def fl_project_save_as(path: str, overwrite: bool = False) -> dict:
         """Unavailable in backend-only SyncFL. Saving the active project under a new name has no
         backend implementation. Use fl_project_save_native for an already named
-        project.
+        project, or fl_project_create to initialize a clean unnamed Empty project.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 

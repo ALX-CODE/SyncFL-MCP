@@ -76,7 +76,7 @@ def test_cold_stdio_key_analysis_completes_without_fl_or_midi(tmp_path):
             assert result["confidence_basis"] == (
                 "relative_softmax_over_all_24_keys_not_calibrated_probability"
             )
-            assert (await client.call_tool("fl_build_info", {})).data["workflow_revision"] == 15
+            assert (await client.call_tool("fl_build_info", {})).data["workflow_revision"] == 16
 
     asyncio.run(asyncio.wait_for(run(), 45))
     assert source.read_bytes() == before

@@ -12,7 +12,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 [![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
 
-[Get started](docs/GETTING-STARTED.md) · [Capabilities](docs/CAPABILITIES.md) · [All 143 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 143 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
 
 [Download a release](https://github.com/ALX-CODE/SyncFL-MCP/releases) · [Questions and demos](https://github.com/ALX-CODE/SyncFL-MCP/discussions) · [Report a bug](https://github.com/ALX-CODE/SyncFL-MCP/issues/new/choose)
 
@@ -44,30 +44,45 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 
 The [capability matrix](docs/CAPABILITIES.md) explains input requirements and limits. The [generated reference](docs/reference/TOOLS.md) documents every registered tool and its parameters.
 
-## Get connected
+## SETUP | INSTALL
 
-Download the repository ZIP (or clone `main`), extract it to a permanent folder, and **double-click `Install.cmd`**. Choose Codex, Claude Desktop, Claude Code, or manual client setup. Open FL once before installing so its user-data folder exists.
+**Windows · Codex · Claude Desktop · Claude Code**
 
-With [Git for Windows](https://gitforwindows.org/) installed, this PowerShell
-command clones SyncFL into a new folder and starts interactive setup with the CLI:
-
-```powershell
-git clone https://github.com/ALX-CODE/SyncFL-MCP.git "$env:USERPROFILE\SyncFL-MCP"; if ($LASTEXITCODE -eq 0) { powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\SyncFL-MCP\install.ps1" -Interactive -Cli }
-```
-
-For an existing clone, run its installer directly:
+**1. Install.** Open FL Studio once so its user-data folder exists. With
+[Git for Windows](https://gitforwindows.org/) installed, paste this into **PowerShell**:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Client codex
+git clone https://github.com/ALX-CODE/SyncFL-MCP.git "$env:USERPROFILE\SyncFL-MCP"; if ($?) { & "$env:USERPROFILE\SyncFL-MCP\Install.cmd" -Cli }
 ```
 
-The installer prepares Python 3.13, runtime dependencies and the FL controller, then configures the selected client with backups. If uv is missing, it downloads a pinned, checksum-verified official installer into your user account. Development tools are excluded.
+Choose your assistant when prompted. Setup installs Python 3.13, dependencies,
+the FL controller and the optional `syncfl` CLI, then configures your chosen
+assistant with backups. Keep the new `SyncFL-MCP` folder in your user folder.
 
-Start your assistant/SyncFL before opening FL. In **Options → MIDI settings**, enable **ALX FL Bridge (FL Studio)** and select **FL Studio MCP Controller**. Ask the assistant to run `fl_build_info`, `fl_connection_status` and `fl_session_inspect` before editing.
+**No Git?** [Download the ZIP](https://github.com/ALX-CODE/SyncFL-MCP/archive/refs/heads/main.zip),
+extract it to a permanent folder, and double-click **`Install.cmd`**.
+**Already cloned?** Run `.\Install.cmd -Cli` from that folder.
 
-The default bridge requires compatible **Windows MIDI Services loopback support** and Microsoft's x64 VC++ runtime. It needs no loopMIDI process, custom resident broker, driver installation or elevation. Existing MIDI ports remain an explicit alternative. Start the server before FL after a reboot so endpoints exist when FL scans them.
+**2. Connect FL Studio.** Restart your assistant so it starts SyncFL, then open
+FL Studio. In **Options → MIDI settings**, enable **ALX FL Bridge (FL Studio)**,
+select **FL Studio MCP Controller**, and assign an unused MIDI port number.
 
-**[Full setup →](docs/GETTING-STARTED.md)** includes client configuration, custom FL folders and verification. **[Troubleshooting →](docs/TROUBLESHOOTING.md)** covers missing endpoints, stale controllers and refused operations.
+**3. Check the connection.** Ask your assistant:
+
+> Run `fl_build_info`, `fl_connection_status` and `fl_session_inspect`. Report any failed checks before making changes.
+
+The native bridge needs compatible **Windows MIDI Services loopback support** and
+Microsoft's **x64 VC++ runtime**. No loopMIDI app is needed. See
+**[full setup and requirements](docs/GETTING-STARTED.md)** or
+**[troubleshooting](docs/TROUBLESHOOTING.md)** if a check fails.
+
+### Let your AI assistant set it up
+
+Paste this 40-word prompt into a coding assistant with access to your computer:
+
+```text
+Set up SyncFL-MCP from https://github.com/ALX-CODE/SyncFL-MCP on this Windows PC. Read its setup guide, check prerequisites, install it for my MCP client, preserve existing configuration, and verify connectivity. Ask which client I use and explain any required manual FL Studio steps.
+```
 
 **Contributing? Run `Develop.cmd`.** It clones or reuses your local SyncFL Git
 checkout and installs development tools plus the `syncfl` CLI. Offline developer

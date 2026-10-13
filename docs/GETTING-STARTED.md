@@ -18,6 +18,11 @@ SyncFL is the public product name; SyncFL-MCP is the repository name. The Python
 
 Packaging declares Python 3.10+, but the recommended setup uses 3.13 and configuration helpers need 3.11+. Select 3.14 with `-PythonVersion 3.14`; Windows MIDI output uses a bundled native DLL and no longer needs RtMidi compilation. The pinned optional dependency set lacks a Python 3.15 wheel for `cbor2`, so 3.15 is not yet a recommended binary-only install. macOS IAC and Linux/Wine routes are retained but lack equivalent live qualification; Windows-only helpers are unavailable there.
 
+The security-patched cryptography dependency no longer supports Intel macOS or
+32-bit Windows. Those platforms are unsupported by this dependency set; do not
+downgrade cryptography to make setup resolve. See the
+[upstream compatibility change](https://cryptography.io/en/latest/changelog/#v49-0-0).
+
 ## 1. Prepare the checkout
 
 Use this repository's current `main` branch or extract a clean source release into a permanent folder. Client configuration points to this checkout; moving it later requires updating that configuration.

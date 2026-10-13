@@ -88,6 +88,7 @@ def unique_control(main, class_name, title=None):
 
 
 def point_belongs_to(point, parent):
+    """Accept the target or its children, excluding popups it merely owns."""
     user, _ = api()
     prior = user.SetThreadDpiAwarenessContext(w.HANDLE(-4))
     try:
@@ -95,7 +96,8 @@ def point_belongs_to(point, parent):
         while hwnd:
             if int(hwnd) == int(parent):
                 return True
-            hwnd = user.GetParent(hwnd)
+            # GetParent follows popup ownership, which can hide an occluding window.
+            hwnd = user.GetAncestor(hwnd, 1)  # GA_PARENT: actual parent only.
         return False
     finally:
         if prior:

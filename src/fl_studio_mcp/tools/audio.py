@@ -59,19 +59,8 @@ def register_audio_tools(mcp):
         expected_sample_rate: int | None = None,
         expected_min_seconds: float | None = None,
     ) -> dict:
-        """Start a native WAV/master/stem render in a NEW directory; preview by default.
-
-        Saves current edits to directory/project.flp, becoming the active project.
-        Needs the project revision from fl_production_inspect. Options: mode
-        full_song|pattern; tail leave|cut|wrap; bit_depth FLOAT|PCM_24|PCM_16;
-        channels stereo|mono|left|right; resampling '16'|'24'|'32'|'64'|'128'|'256'|'512';
-        booleans hq_plugins, disable_max_polyphony, dithering, playlist_markers,
-        loop_markers, note_markers, tempo_metadata, split_mixer_tracks, trim_pdc,
-        insert_effects, master_effects. Dither only for PCM_16. Sample rate uses FL
-        audio settings; expected_sample_rate and expected_min_seconds verify output.
-        FL26 96 DPI layout only. Accepted jobs return success=true, verified=false;
-        poll fl_render_status until status=verified and verified=true for output proof.
-        Native split preserves sidechains; stems bypass Master FX, Master includes them.
+        """Unavailable in backend-only SyncFL. Starting a render has no backend implementation.
+        fl_render_status can observe an existing render.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
@@ -101,9 +90,8 @@ def register_audio_tools(mcp):
 
     @mcp.tool()
     async def fl_render_cancel(directory: str) -> dict:
-        """Cancel the exact job only after independently observing its owned Abort control.
-
-        Preserves the project and partial outputs, reporting them as incomplete.
+        """Unavailable in backend-only SyncFL. Cancelling a render has no backend
+        implementation. fl_render_status can observe an existing render.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 

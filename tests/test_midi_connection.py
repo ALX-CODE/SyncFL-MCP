@@ -310,32 +310,21 @@ def test_native_ui_policy_blocks_before_connection_queue_or_midi(bridge, monkeyp
     assert bridge.sends == [] and bridge.lock_timeouts == []
 
 
+
 def test_policy_change_while_waiting_for_lock_stops_before_queue_or_trigger(bridge, monkeypatch):
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
-
-    @contextmanager
-    def changed_policy(path, timeout):
-        monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "background")
-        yield
-
-    monkeypatch.setattr(midi_connection, "transaction_lock", changed_policy)
-    result = bridge.conn.send_command("native.call", {"function": "ui.setFocused", "args": [0]})
-    assert result["outcome"] == "not_dispatched"
+    with pytest.raises(RuntimeError, match="backend-only"):
+        bridge.conn.send_command("native.call", {"function": "ui.setFocused", "args": [0]})
     assert not bridge.conn._command_file.exists()
     assert bridge.sends == []
 
 
+
 def test_policy_rechecked_after_publication_before_midi_trigger(bridge, monkeypatch):
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
-    original = midi_connection.atomic_json
-
-    def changed_policy(path, data):
-        original(path, data)
-        monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "background")
-
-    monkeypatch.setattr(midi_connection, "atomic_json", changed_policy)
-    result = bridge.conn.send_command("native.call", {"function": "ui.setFocused", "args": [0]})
-    assert result["outcome"] == "not_dispatched"
+    with pytest.raises(RuntimeError, match="backend-only"):
+        bridge.conn.send_command("native.call", {"function": "ui.setFocused", "args": [0]})
+    assert not bridge.conn._command_file.exists()
     assert bridge.sends == []
 
 

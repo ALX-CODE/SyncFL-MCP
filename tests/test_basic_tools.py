@@ -273,7 +273,8 @@ def test_mac_trigger_does_not_report_a_failed_shortcut_as_success(monkeypatch):
     monkeypatch.setattr(
         fl_trigger.subprocess, "run", lambda *args, **kw: SimpleNamespace(returncode=1)
     )
-    assert fl_trigger.FLStudioTrigger().trigger() is False
+    with pytest.raises(RuntimeError, match="backend-only"):
+        fl_trigger.FLStudioTrigger().trigger()
 
 
 def test_windows_trigger_releases_modifiers_if_key_tap_fails(monkeypatch):
@@ -302,7 +303,8 @@ def test_windows_trigger_releases_modifiers_if_key_tap_fails(monkeypatch):
     monkeypatch.setattr(fl_trigger.FLStudioTrigger, "_focus_fl_studio_windows", lambda self: True)
     keyboard = SimpleNamespace(Controller=Keyboard, Key=SimpleNamespace(ctrl="ctrl", alt="alt"))
     monkeypatch.setitem(sys.modules, "pynput.keyboard", keyboard)
-    assert fl_trigger.FLStudioTrigger().trigger() is False
+    with pytest.raises(RuntimeError, match="backend-only"):
+        fl_trigger.FLStudioTrigger().trigger()
     assert held == []
 
 
@@ -314,6 +316,6 @@ def test_invalid_trigger_delay_never_injects_input(monkeypatch, delay):
     trigger = fl_trigger.FLStudioTrigger()
     calls = []
     trigger._trigger_func = lambda: calls.append(True)
-    with pytest.raises(ValueError):
+    with pytest.raises(RuntimeError, match="backend-only"):
         trigger.trigger(delay)
     assert not calls

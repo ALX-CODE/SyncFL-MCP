@@ -19,7 +19,7 @@ def test_fresh_and_idempotent(tmp_path):
     server = tomllib.loads(text)["mcp_servers"]["fl_studio"]
     assert server["command"] == str(registration._python(tmp_path))
     assert server["env"]["FL_MCP_MIDI_PORT"] == "dedicated"
-    assert server["env"]["FL_MCP_INTERACTION_POLICY"] == "background"
+    assert "FL_MCP_INTERACTION_POLICY" not in server["env"]
     again, result = registration.render_registration(text, tmp_path)
     assert again == text
     assert not result["changed"]
@@ -58,8 +58,7 @@ trust_level = "trusted"
     assert set(new["mcp_servers"]) == {"other", "fl_studio"}
     assert new["mcp_servers"]["fl_studio"]["env"] == {
         "CUSTOM": "retained", "FL_MCP_MIDI_PORT": "new port",
-        "FL_MCP_INTERACTION_POLICY": "background",
-    }
+            }
     assert new["mcp_servers"]["fl_studio"]["tool_timeout_sec"] == 240
     assert result["removed_duplicates"] == 1
     assert "do-not-print" not in str(result)
@@ -156,7 +155,7 @@ FL_MCP_MIDI_PORT = "Existing port"
     servers = tomllib.loads(text)["mcp_servers"]
     assert list(servers) == ["fl_studio"]
     assert servers["fl_studio"]["env"] == {
-        "CUSTOM": "kept", "FL_MCP_INTERACTION_POLICY": "interactive",
+        "CUSTOM": "kept",
         "FL_USER_DATA_FOLDER": "D:/Music/Image-Line", "FL_MCP_MIDI_PORT": "Existing port",
         "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe",
     }
@@ -175,7 +174,7 @@ CUSTOM = "kept"
         "FL_MCP_INTERACTION_POLICY": "background", "FL_MCP_MIDI_PORT": "New port",
     })
     assert tomllib.loads(text)["mcp_servers"]["syncfl"]["env"] == {
-        "FL_MCP_INTERACTION_POLICY": "background", "FL_MCP_MIDI_PORT": "New port",
+        "FL_MCP_MIDI_PORT": "New port",
         "CUSTOM": "kept",
     }
 
@@ -195,10 +194,9 @@ def test_interpreter_path_matches_platform(tmp_path, monkeypatch, platform, rela
     (["--tool-mode", "discovery"], {"FL_MCP_TOOL_MODE": "discovery"}),
     (["--tool-mode", "full"], {"FL_MCP_TOOL_MODE": "full"}),
     (["--fl-user-data", "D:/Music/Image-Line", "--midi-port", "Custom port",
-      "--windows-server", "D:/Tools/WindowsMCP.exe", "--interaction-policy", "background"],
+      "--windows-server", "D:/Tools/WindowsMCP.exe"],
      {"FL_USER_DATA_FOLDER": "D:/Music/Image-Line", "FL_MCP_MIDI_PORT": "Custom port",
-      "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe",
-      "FL_MCP_INTERACTION_POLICY": "background"}),
+      "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe"}),
 ])
 def test_cli_only_forwards_explicit_environment_overrides(monkeypatch, arguments, expected):
     captured = []
@@ -208,3 +206,13 @@ def test_cli_only_forwards_explicit_environment_overrides(monkeypatch, arguments
     })
     assert registration.main() == 0
     assert captured[0][2] == expected
+
+
+@pytest.mark.parametrize("mode", ["background", "interactive"])
+def test_removed_mode_option_is_rejected(monkeypatch, mode):
+    monkeypatch.setattr(registration.sys, "argv", [
+        "register_codex.py", "--check", "--interaction-policy", mode,
+    ])
+    with pytest.raises(SystemExit) as exc:
+        registration.main()
+    assert exc.value.code == 2

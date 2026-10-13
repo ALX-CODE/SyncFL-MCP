@@ -35,12 +35,13 @@ def register_studio_file_tools(mcp):
         name: str | None = None,
         mixer_track: int | None = None,
     ) -> dict:
-        """Add an audio file as a new Channel Rack sampler, optionally name/route it.
+        """Add a WAV as a new Channel Rack sampler through the native backend.
 
         path must be an exact absolute sample path from fl_find_assets or the user.
         mixer_track is a zero-based insert. OLE delivery and native readback verify
         the new sampler channel, its name/type and routing; independent sample
-        source-path readback is unavailable. Requires running FL on Windows; do not retry
+        source-path readback is unavailable. Experimental OLE bridge, no desktop input.
+        Requires running FL on Windows; do not retry
         an uncertain result because the channel may already have been created.
         """
         from fl_studio_mcp.utils.studio_loading import run_file_workflow
@@ -60,6 +61,7 @@ def register_studio_file_tools(mcp):
         Name resolution prefers the active user's Generator favorites, rejects
         ambiguity, then searches installed entries. Optional channel_name and
         zero-based mixer_track name/route the new channel. Windows FL required.
+        Experimental native OLE bridge; no keyboard, mouse or mode switch.
         """
         from fl_studio_mcp.utils.studio_loading import run_file_workflow
 
@@ -81,6 +83,7 @@ def register_studio_file_tools(mcp):
         exact Plugin database effect name or an absolute effect .fst path. Names
         prefer active-user favorites and reject ambiguity. Occupied slots are
         guarded; this does not grant permission to replace another effect.
+        Experimental native OLE bridge with native track selection and readback.
         """
         from fl_studio_mcp.utils.studio_loading import run_file_workflow
 
@@ -104,6 +107,7 @@ def register_studio_file_tools(mcp):
         Supports plugin .fst format 0x30; full mixer-track format 0x40 is rejected.
         Use Serum tools for native .SerumPreset formats.
         Inspect current identities before loading; uncertain writes are not retried.
+        Experimental native OLE bridge; desktop input is never used.
         """
         from fl_studio_mcp.utils.studio_loading import run_file_workflow
 
@@ -117,11 +121,8 @@ def register_studio_file_tools(mcp):
         channel: int | None = None,
         expected_name: str | None = None,
     ) -> dict:
-        """Prepare ComposeWithLLM for note editing and check that its bridge responds.
-
-        Optionally target a global zero-based channel and guard its current name.
-        Opens the piano roll, selects the exact installed ComposeWithLLM menu item
-        and verifies a correlated read. This prepares the bridge without adding notes.
+        """Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable.
+        Use fl_background_piano_inspect and fl_background_piano_select.
         """
         from fl_studio_mcp.utils.piano_ready import prepare_piano
 

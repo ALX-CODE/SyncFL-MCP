@@ -13,14 +13,9 @@ def register_workflow_tools(mcp):
         directory: str,
         apply: bool = False,
     ) -> dict:
-        """Create linked Channel Rack volume/pan automation and verify the saved link and curve.
-
-        Global channel index/name and project revision are required. Target must be
-        visible after switching the Channel Rack to All when necessary. parameter
-        is volume or pan. Preview by default; apply uses a NEW directory containing
-        before.flp recovery, created.flp and a receipt. Refuses an existing target
-        controller link. FL chooses initial clip range/placement; exact curve edits
-        use fl_automation_file_edit followed by fl_project_open. FL26/96 DPI only.
+        """Unavailable in backend-only SyncFL. Creating a new automation link has no backend
+        implementation. Use automation inspection and saved-FLP editing for existing
+        automation.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
@@ -86,13 +81,12 @@ def register_workflow_tools(mcp):
 
         return dict(
             version=__version__,
-            workflow_revision=14,
+            workflow_revision=15,
             **LOADED_BUILD,
             interaction_policy=policy_metadata(),
             guarded_production="BPM, channel controls, scoped steps; optional native shuffle",
             native_mixer_controls="built-in EQ, effects enable, polarity and stereo swap",
-            playlist=("first native WAV import; full pattern placement; existing "
-                      "pattern/audio/automation clone/move/delete"),
+            playlist="saved-FLP full pattern placement; existing pattern/audio/automation edits",
             automation="native target/link inspection; saved link retargeting and curve edits",
             project_open="revision/hash guarded open with a new verified recovery FLP",
             render="persistent native WAV master/stem jobs with decoded audio verification",
@@ -109,19 +103,19 @@ def register_workflow_tools(mcp):
             background_piano="FL26 score import and verified pattern/sound/mixer selection",
             native_save=("typed active named-project save; host readback, "
                          "absolute disk path unknown"),
-            ui="FL-scoped UIA/OCR/screenshots, guarded input delivery, then postconditions",
+            ui="FL-scoped UIA/OCR/screenshots for observation only; no desktop input",
             mix_analysis="FFmpeg integrated loudness, true peaks and reference level comparisons",
-            recording="guarded filename/arm setup; bounded recording and decoded take evidence",
+            recording="native arm setup; bounded recording and decoded take evidence",
             limitations=[
-                "Backend first in every mode; interactive is secondary and discouraged",
+                "Backend only; desktop input and mode switching are unavailable",
                 "Basic FL26 scores use the backend; advanced expression and SDK notes "
                 "remain unqualified",
                 "Opaque plugin-internal external assets require inspection",
-                "GUI plugin helpers require calibrated window geometry",
-                "Render and automation creation require the tested FL26 / 96 DPI layout",
+                "Native WAV/FST/FLP loading wrappers are experimental and not yet live-qualified",
+                "Render start/cancel, new automation links and Save As are unavailable",
                 "Render sample rate uses FL audio settings; loudness tools need optional FFmpeg",
-                "Recording input/latency, comping and stretching need inspected UI",
-                "First WAV import requires an empty default-named visible Playlist row at 96 DPI",
+                "Recording filename/input changes, comping and stretching are unavailable",
+                "New Playlist audio-channel creation has no backend implementation",
                 "Tool lease covers updated MCP clients, not legacy clients or direct CLI calls",
                 "New tool registration requires MCP host reconnect",
             ],

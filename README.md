@@ -28,7 +28,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 Ask for a musical change, inspect the actual project, preview an exact operation, and check what FL accepted. Guarded workflows use fresh identities, revisions, receipts and later readback so an assistant can explain what changed and what remains uncertain.
 
-**Windows is the primary tested platform. Background mode is the default.** Supported native controls work without synthetic keyboard/mouse input. Some piano-roll, loading and rendering workflows still require explicit interactive mode. This is a local integration, not a headless FL engine or a substitute for listening.
+**Windows is the primary tested platform. SyncFL is backend-only.** Native APIs and the experimental OLE bridge operate without synthetic keyboard/mouse input. Unsupported operations report a missing backend route; there is no interactive mode.
 
 ## What you can do
 
@@ -122,30 +122,19 @@ Mappings bind to the **exact exposed parameter layout**. Changed layouts are ref
 
 [Plugin units, conditions and limitations →](docs/PLUGIN-CONTROL-GUIDE.md)
 
-## Background and interactive operation
+## Backend-only operation
 
-`FL_MCP_INTERACTION_POLICY=background` is the default. Keyboard/mouse delivery, activation and focus-dependent calls are blocked before dispatch. There is no automatic fallback to interactive mode.
+SyncFL uses native controller APIs, offline files and the experimental native OLE bridge.
+Desktop input and focus-dependent automation are unavailable. The legacy
+`FL_MCP_INTERACTION_POLICY` setting is ignored; it cannot enable UI input.
 
-Both modes expose the same tools and always use a qualified backend route first.
-**Interactive control is secondary and discouraged**, even when `interactive` is
-configured. Use it only when no qualified backend route fits and the user permits
-UI input. A visible FL window is not a reason to choose UI, and enabling
-interactive mode does not select a separate engine or disable backend APIs.
-Discovery puts backend workflow tools first and labels interactive tools as
-secondary; workflow responses separate preferred tools from secondary tools.
-Never change modes automatically or retry an uncertain backend mutation through UI.
+WAV samples, FST instruments/presets/effects and saved FL26 projects use native loading.
+The bridge may expose the addressed FL panel without activating the OS foreground window.
+Inspect exact identities and receipts; never replay an uncertain load.
 
-| Route | Current behavior |
-|---|---|
-| Native transport, supported channel/mixer/routing/plugin controls | Background, with operation-specific validation |
-| File inspection, MIDI transforms, audio analysis and saved-FLP editing | Offline; no live desktop input |
-| Save the current named project | Background host-state verification; no general disk-path/byte guarantee |
-| Background piano score and pattern/sound selection | Experimental FL26 FSC import; exact saved-note verification, automatic panel exposure and explicit generator/routing/effect context |
-| Piano-script activation, general loading, Open/Save As, GUI export | Explicit interactive mode and the documented Windows layout |
-| Selected-track background effect loading | Experimental; empty slot on selected track, with automatic native panel/window exposure before rechecking the target |
-| Native FL SDK note bridge | Research prototype; note writes disabled |
-
-Background score import needs a saved, stopped FL26 project and its exact path. The new route does not use the Piano Roll script menu or ComposeWithLLM. Advanced note expression, general import and rendering remain unfinished. The [workflow](docs/WORKFLOWS.md#background-piano-and-fast-patternsound-switching) explains the score contract.
+Project loading requires the current named project path and a new recovery copy. Unnamed
+projects, GUI Save As/export and other unmigrated dialog workflows remain unavailable.
+Native host readback is distinct from audio, licensing and exact filesystem-path proof.
 
 ## Built to be inspectable
 

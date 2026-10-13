@@ -6,12 +6,7 @@ The JSON examples below are **tool name + arguments**, not requests to execute n
 
 Call `fl_build_info`, `fl_connection_status`, `fl_session_inspect`, then `fl_workflow_catalog`. Confirm the loaded controller matches disk, the intended project is open, and playback/recording state is appropriate. Tool availability alone is not readiness.
 
-Always choose a qualified backend route first, including when interactive mode
-is configured. Interactive control is a secondary, discouraged fallback only
-when no qualified backend route fits and the user permits UI input. Use the
-catalog's `preferred_tools` before its `secondary_tools`. A visible window does
-not require UI control. Never switch modes automatically or replay an uncertain
-backend write through UI.
+SyncFL is backend-only. Use the supported native routes below; unsupported operations report a missing backend route without a mode-switch prompt.
 
 Use `fl_project_snapshot` for an overview. Read the target's detailed inspector before changing it. Index `0` means the first global channel, but mixer track `0` is Master; never reuse yesterday's index from memory.
 
@@ -120,7 +115,7 @@ This example uses Hz only if that exact control is available and qualified in th
 }
 ```
 
-This returns an unapplied proposal. It preserves supported expression and reports hashes. For basic persistent FL26 notes, use the background workflow below. The script-based workflow and `fl_write_pattern_bank` still require explicit interactive mode. A transient `fl_trigger_note` does not write a piano-roll note.
+This returns an unapplied proposal. It preserves supported expression and reports hashes. For basic persistent FL26 notes, use the background workflow below. Legacy script activation is unavailable. A transient `fl_trigger_note` does not write a piano-roll note.
 
 ### Background piano and fast pattern/sound switching
 
@@ -158,7 +153,7 @@ input is used. An uncertain callback is never automatically replayed.
 
 Inspect with `fl_project_file_inspect` and `fl_playlist_file_inspect`. Use the source SHA and clip hashes with `fl_playlist_file_edit`. The editor writes a new FLP and preserves unrelated events. Current support includes full pattern clip placement and supported clone/move/delete operations, not a general stretch/trim engine.
 
-The output is not automatically applied to the live project. To open it, use the separate guarded interactive `fl_project_open` flow with a new recovery path and receipt. Preserve the source FLP.
+The output is not automatically applied to the live project. To open it, use the guarded native `fl_project_open` flow (supply `current_project_path`) with a new recovery path and receipt. Preserve the source FLP.
 
 ## Measure, render and compare
 
@@ -168,13 +163,13 @@ The output is not automatically applied to the live project. To open it, use the
 
 `fl_audio_bpm` runs the bundled Rust analyzer on a WAV and returns BPM candidates, pulse periodicity and half/double-time relationships. It needs neither a live FL connection nor NumPy. Set `min_bpm` and `max_bpm` when you know the musical range; inspect alternatives before changing project tempo. See [tempo analysis](TEMPO-ANALYSIS.md).
 
-Rendering starts through `fl_render_start` in interactive mode, with a fresh revision and new job directory. Poll `fl_render_status` until verified. A delivered Start command is not a completed render. Status verifies decoded files, format/duration, project identity and non-silent content. Recording has a separate start/status/stop flow and depends on your configured audio inputs.
+GUI render start/cancel have no backend route yet. `fl_render_status` can inspect an existing job; this does not start a render.
 
 ## Save at a checkpoint
 
 For a background save of the current named project, inspect `fl_project_native_inspect` and use `fl_project_save_native` with the exact title/revision and new receipt. Its successful result establishes host clean state, not a general disk-path assertion.
 
-Use the interactive `fl_project_save` / `fl_project_save_as` workflows when exact paths and file evidence matter. Save once after a verified batch rather than after every knob.
+Use `fl_project_save_native` for the current named project. GUI Save As is unavailable. Native FLP loading preserves a saved recovery copy before dispatch.
 
 ## When something fails
 

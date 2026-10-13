@@ -1,4 +1,4 @@
-"""Desktop input is opt-in; these tests never launch a Windows helper."""
+"""Backend-only execution cannot enable desktop input or launch an input helper."""
 
 import asyncio
 import json
@@ -17,14 +17,14 @@ def background_default(monkeypatch):
     monkeypatch.delenv(policy.ENVIRONMENT_VARIABLE, raising=False)
 
 
-def test_default_is_background_and_interactive_requires_explicit_opt_in(monkeypatch):
+
+def test_legacy_environment_values_cannot_enable_desktop_input(monkeypatch):
     assert policy.interaction_mode() == "background"
-    assert policy.policy_metadata()["desktop_input_allowed"] is False
-    with pytest.raises(RuntimeError, match="FL_MCP_INTERACTION_POLICY=interactive"):
-        policy.require_desktop_input("save project")
-    monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
-    policy.require_desktop_input("save project")
-    assert policy.policy_metadata()["desktop_input_allowed"] is True
+    for value in ("background", "interactive", "bogus", ""):
+        monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, value)
+        assert not policy.policy_metadata()["desktop_input_allowed"]
+        with pytest.raises(RuntimeError, match="backend-only"):
+            policy.require_desktop_input("save project")
 
 
 def test_native_policy_metadata_describes_selective_ui_gating():
@@ -43,24 +43,23 @@ def test_native_policy_metadata_describes_selective_ui_gating():
     )
 
 
-def test_interactive_adds_only_ui_permission_to_the_shared_backend(monkeypatch):
-    background = policy.policy_metadata()
+
+def test_legacy_interactive_value_does_not_change_backend_metadata(monkeypatch):
+    expected = policy.policy_metadata()
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
-    interactive = policy.policy_metadata()
-    assert interactive["preferred_execution"] == "native_backend"
-    assert interactive["backend_apis_available"] and interactive["shared_backend_in_all_modes"]
-    assert interactive["interactive_secondary"] and interactive["interactive_discouraged"]
-    assert "user permits UI input" in interactive["ui_usage"]
-    assert not interactive["automatic_interactive_fallback"]
-    differences = {key for key in background if background[key] != interactive[key]}
-    assert differences == {"mode", "desktop_input_allowed"}
+    assert policy.policy_metadata() == expected
+    assert expected["backend_only"]
+    assert expected["available_modes"] == ["background"]
+    assert "never request a mode switch" in expected["ui_usage"]
 
 
 @pytest.mark.parametrize("mode", ["", "INTERACTIVE", "interactive ", "allow", "false"])
+
 def test_invalid_policy_fails_closed(monkeypatch, mode):
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, mode)
-    with pytest.raises(ValueError, match="must be 'background' or 'interactive'"):
-        policy.check_windows_call("ui_snapshot", {"windowHandle": "1"})
+    policy.check_windows_call("ui_snapshot", {"windowHandle": "1"})
+    with pytest.raises(RuntimeError, match="backend-only"):
+        policy.check_windows_call("keyboard_control", {"action": "press", "key": "F6"})
 
 
 @pytest.mark.parametrize(
@@ -103,9 +102,11 @@ def test_background_rejects_input_batches_and_unknown_parameters(name, params):
         policy.check_windows_call(name, params)
 
 
+
 def test_read_only_session_never_allows_input_even_in_interactive_mode(monkeypatch):
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
-    policy.check_windows_call("keyboard_control", {"action": "press", "key": "F6"})
+    with pytest.raises(RuntimeError, match="backend-only"):
+        policy.check_windows_call("keyboard_control", {"action": "press", "key": "F6"})
     with pytest.raises(RuntimeError, match="read-only session"):
         policy.check_windows_call("keyboard_control", {"action": "press"}, read_only=True)
 
@@ -132,13 +133,17 @@ def test_workflow_rejected_before_starting_helper(monkeypatch):
 
 
 @pytest.mark.parametrize("read_only", [True, False])
-def test_invalid_policy_rejected_before_starting_helper(monkeypatch, read_only):
+
+def test_legacy_policy_values_leave_observation_available_and_input_blocked(monkeypatch, read_only):
     fl, client = _windows_fl(monkeypatch, read_only=read_only)
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "bogus")
-    with pytest.raises(ValueError, match="must be"):
+    if read_only:
         asyncio.run(fl.__aenter__())
-    client.__aenter__.assert_not_awaited()
-    client.call_tool.assert_not_awaited()
+        client.__aenter__.assert_awaited_once()
+    else:
+        with pytest.raises(RuntimeError, match="backend-only"):
+            asyncio.run(fl.__aenter__())
+        client.__aenter__.assert_not_awaited()
 
 
 def test_read_only_context_allows_metadata_and_snapshot_but_never_input(monkeypatch):
@@ -156,18 +161,14 @@ def test_read_only_context_allows_metadata_and_snapshot_but_never_input(monkeypa
     client.__aexit__.assert_awaited_once()
 
 
+
 def test_policy_change_is_checked_again_before_each_dispatch(monkeypatch):
-    monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
     fl, client = _windows_fl(monkeypatch)
-
-    async def exercise():
-        async with fl:
-            monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "background")
-            with pytest.raises(RuntimeError, match="unsupported in background mode"):
-                await fl.click(5, 6)
-
-    asyncio.run(exercise())
-    assert client.call_tool.await_count == 1
+    for value in ("interactive", "background"):
+        monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, value)
+        with pytest.raises(RuntimeError, match="backend-only"):
+            asyncio.run(fl.click(5, 6))
+    client.call_tool.assert_not_awaited()
 
 
 @pytest.mark.parametrize("operation,expected_read_only", [("render_status", True),
@@ -210,10 +211,12 @@ def test_legacy_trigger_blocks_platform_input_before_call(monkeypatch, system):
     assert calls == []
 
 
-def test_legacy_trigger_only_runs_with_interactive_opt_in(monkeypatch):
+
+def test_legacy_trigger_stays_blocked_with_interactive_environment(monkeypatch):
     trigger = fl_trigger.FLStudioTrigger()
     calls = []
     trigger._trigger_func = lambda: calls.append("input") or True
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
-    assert trigger.trigger() is True
-    assert calls == ["input"]
+    with pytest.raises(RuntimeError, match="backend-only"):
+        trigger.trigger()
+    assert calls == []

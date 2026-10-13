@@ -71,7 +71,7 @@
   },
   {
     "name": "fl_audio_clip_add",
-    "description": "Import one WAV as a new Playlist Audio Clip; preview by default.\n\nRequires the WAV hash from fl_audio_inspect, current project revision from\nfl_production_inspect, stopped transport, and an absolute NEW work directory.\nposition_ticks is nonnegative; Playlist track is one-based 1..500. The\nvisible FL26.1/96 DPI Playlist must contain a default-named, unmuted row\nempty across saved arrangements. Native import creates a new audio source;\nthe server saves, places it exactly in a new FLP, opens and saves that copy\nto prove placement/source identity. Active project becomes verified.flp.\nKeeps before.flp and durable receipts. A timeout/needs_inspection result\nmust be inspected before retrying; one file drop is dispatched at most.\nDoes not trim/stretch audio or measure audible playback. success/verified\nboth true with status=verified establish saved placement after native reload.\nsuccess_scope is audio_clip_placement. Exact permitted native bookkeeping\nnormalizations are reported; existing plugin payload changes fail closed.",
+    "description": "Unavailable in backend-only SyncFL. Creating a new Playlist audio channel has no\nbackend implementation. Saved-FLP edits can reuse existing audio channels.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -351,7 +351,7 @@
   },
   {
     "name": "fl_automation_create_channel",
-    "description": "Create linked Channel Rack volume/pan automation and verify the saved link and curve.\n\nGlobal channel index/name and project revision are required. Target must be\nvisible after switching the Channel Rack to All when necessary. parameter\nis volume or pan. Preview by default; apply uses a NEW directory containing\nbefore.flp recovery, created.flp and a receipt. Refuses an existing target\ncontroller link. FL chooses initial clip range/placement; exact curve edits\nuse fl_automation_file_edit followed by fl_project_open. FL26/96 DPI only.",
+    "description": "Unavailable in backend-only SyncFL. Creating a new automation link has no backend\nimplementation. Use automation inspection and saved-FLP editing for existing\nautomation.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -1117,7 +1117,7 @@
   },
   {
     "name": "fl_effect_add",
-    "description": "Add an effect to an empty mixer slot, then verify the actual plugin.\n\ntrack is zero-based; slot 0..9 corresponds to FL slots 1..10. Supply an\nexact Plugin database effect name or an absolute effect .fst path. Names\nprefer active-user favorites and reject ambiguity. Occupied slots are\nguarded; this does not grant permission to replace another effect.",
+    "description": "Add an effect to an empty mixer slot, then verify the actual plugin.\n\ntrack is zero-based; slot 0..9 corresponds to FL slots 1..10. Supply an\nexact Plugin database effect name or an absolute effect .fst path. Names\nprefer active-user favorites and reject ambiguity. Occupied slots are\nguarded; this does not grant permission to replace another effect.\nExperimental native OLE bridge with native track selection and readback.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -1170,7 +1170,7 @@
   },
   {
     "name": "fl_ensure_mixer_tracks",
-    "description": "Append missing mixer inserts in one Add multiple operation; preserve existing indices.",
+    "description": "Unavailable in backend-only SyncFL. Appending mixer inserts has no backend\nimplementation. Use native mixer tools with existing track indices.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -1481,7 +1481,7 @@
   },
   {
     "name": "fl_get_piano_roll_state",
-    "description": "Read a correlated score; Windows opens the selected channel's roll automatically.\n\nfresh=False explicitly reads cached state without opening FL or executing a script.",
+    "description": "Unavailable in backend-only SyncFL. Legacy script-based piano inspection is\nunavailable. Use fl_background_piano_inspect.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -1864,7 +1864,7 @@
   },
   {
     "name": "fl_instrument_add",
-    "description": "Add a generator as a new Channel Rack instrument and verify its identity.\n\nSupply an exact Plugin database name or an absolute generator .fst path.\nName resolution prefers the active user's Generator favorites, rejects\nambiguity, then searches installed entries. Optional channel_name and\nzero-based mixer_track name/route the new channel. Windows FL required.",
+    "description": "Add a generator as a new Channel Rack instrument and verify its identity.\n\nSupply an exact Plugin database name or an absolute generator .fst path.\nName resolution prefers the active user's Generator favorites, rejects\nambiguity, then searches installed entries. Optional channel_name and\nzero-based mixer_track name/route the new channel. Windows FL required.\nExperimental native OLE bridge; no keyboard, mouse or mode switch.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -2554,7 +2554,7 @@
   },
   {
     "name": "fl_piano_roll_prepare",
-    "description": "Prepare ComposeWithLLM for note editing and check that its bridge responds.\n\nOptionally target a global zero-based channel and guard its current name.\nOpens the piano roll, selects the exact installed ComposeWithLLM menu item\nand verifies a correlated read. This prepares the bridge without adding notes.",
+    "description": "Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable.\nUse fl_background_piano_inspect and fl_background_piano_select.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -2811,7 +2811,7 @@
   },
   {
     "name": "fl_plugin_chain",
-    "description": "Load {track,slot,name,wet?} entries in one serialized Windows session.\n\nNames resolve exact Plugin database files. Target slots must be empty.\nA receipt file records each verified slot for explicit inspection and resumption.",
+    "description": "Load {track,slot,name,wet?} entries through the serialized native backend.\n\nNames resolve exact Plugin database files. Target slots must be empty.\nA receipt file records each verified slot for explicit inspection and resumption.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3046,7 +3046,7 @@
   },
   {
     "name": "fl_plugin_remove",
-    "description": "Remove only the identity-checked effect from a mixer slot, then verify absence.",
+    "description": "Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend\nimplementation. Native controls can inspect and adjust an existing plugin.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3173,7 +3173,7 @@
   },
   {
     "name": "fl_preset_load",
-    "description": "Load an exact FL .fst preset into a new channel or a guarded existing target.\n\ntarget selects new_channel, channel (with global channel index), or mixer\n(with track and slot). Existing targets require a fresh expected_name.\nAll indices are zero-based; mixer slots are 0..9. This replaces the\ntarget's sound/state, retaining an existing channel's name and mixer route.\nSupports plugin .fst format 0x30; full mixer-track format 0x40 is rejected.\nUse Serum tools for native .SerumPreset formats.\nInspect current identities before loading; uncertain writes are not retried.",
+    "description": "Load an exact FL .fst preset into a new channel or a guarded existing target.\n\ntarget selects new_channel, channel (with global channel index), or mixer\n(with track and slot). Existing targets require a fresh expected_name.\nAll indices are zero-based; mixer slots are 0..9. This replaces the\ntarget's sound/state, retaining an existing channel's name and mixer route.\nSupports plugin .fst format 0x30; full mixer-track format 0x40 is rejected.\nUse Serum tools for native .SerumPreset formats.\nInspect current identities before loading; uncertain writes are not retried.\nExperimental native OLE bridge; desktop input is never used.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3382,7 +3382,7 @@
   },
   {
     "name": "fl_project_info",
-    "description": "Discover the exact active FLP path by inspecting and cancelling Save As.\n\nReports the title, saved status and observed suggested path for unnamed projects.\nDoes not save or accept the dialog. Resolve existing modal dialogs before use.",
+    "description": "Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is\nunavailable. Use fl_project_native_inspect for native project state; the\nabsolute path remains caller-declared.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {},
@@ -3418,7 +3418,7 @@
   },
   {
     "name": "fl_project_open",
-    "description": "Open/reopen an exact saved FLP, checkpointing current edits to a NEW FLP first.\n\nPreflight by default. Use source SHA256 and fl_production_inspect project revision.\nApply needs a new absolute JSON receipt_file and recovery_path (.flp). Always\nsaves a recovery copy, including unnamed/dirty projects; never discards edits.\nVerifies new project generation, exact path, source hash, tempo and PPQ.\nStops on dialogs or uncertain completion; inspect the receipt before recovery.",
+    "description": "Load an FL26 project through the native backend, preserving a recovery FLP.\n\nPreflight by default. Use source SHA256 and fl_production_inspect project revision.\nSupply current_project_path for the already named/saved active project.\nApply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save\nthe current project before copying it to recovery; never discard dirty edits.\nVerify generation, title, channels, source hash, tempo and PPQ. Absolute loaded\npath is caller-declared, not independently exposed by FL. No input or mode switch.\nUnnamed projects are unsupported; stop on dialogs or uncertain completion.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3448,6 +3448,17 @@
         "apply": {
           "default": false,
           "type": "boolean"
+        },
+        "current_project_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         }
       },
       "required": [
@@ -3513,7 +3524,7 @@
   },
   {
     "name": "fl_project_save",
-    "description": "Save the current FLP once with verified exact path and file persistence.\n\nThe path is discovered automatically; expected_path adds an optional identity guard.\nUnnamed projects require fl_project_save_as. Returns file hash and stable timestamp.",
+    "description": "Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable.\nUse fl_project_save_native to save the current named project.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3543,7 +3554,7 @@
   },
   {
     "name": "fl_project_save_as",
-    "description": "Save the active project to an absolute .flp path and verify it became active.\n\nCreates parent folders. Existing destinations require overwrite=True and receive\na backup before saving. Returns the saved path, hash, timestamp and backup path.",
+    "description": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no\nbackend implementation. Use fl_project_save_native for an already named\nproject.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3810,7 +3821,7 @@
   },
   {
     "name": "fl_recording_configure_file",
-    "description": "Configure a NEW exact WAV filename through FL's owned recording dialog.\n\nUses the per-track revision from fl_recording_inspect. Default preflight\nsends no GUI input; apply requires a NEW absolute JSON receipt. Playback\nand the record latch must be stopped. Supports the qualified 1089x677\nWide mixer at 96 DPI with inserts 1..16 visible; unknown layouts fail closed.\nFile selection implicitly arms this track. Success requires two native\npath/arm readbacks; it does not start recording or verify input/latency.",
+    "description": "Unavailable in backend-only SyncFL. Setting a recording filename has no backend\nimplementation. Use native recording inspection and arm controls for existing\ntargets.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -4036,7 +4047,7 @@
   },
   {
     "name": "fl_render_cancel",
-    "description": "Cancel the exact job only after independently observing its owned Abort control.\n\nPreserves the project and partial outputs, reporting them as incomplete.",
+    "description": "Unavailable in backend-only SyncFL. Cancelling a render has no backend\nimplementation. fl_render_status can observe an existing render.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -4061,7 +4072,7 @@
   },
   {
     "name": "fl_render_start",
-    "description": "Start a native WAV/master/stem render in a NEW directory; preview by default.\n\nSaves current edits to directory/project.flp, becoming the active project.\nNeeds the project revision from fl_production_inspect. Options: mode\nfull_song|pattern; tail leave|cut|wrap; bit_depth FLOAT|PCM_24|PCM_16;\nchannels stereo|mono|left|right; resampling '16'|'24'|'32'|'64'|'128'|'256'|'512';\nbooleans hq_plugins, disable_max_polyphony, dithering, playlist_markers,\nloop_markers, note_markers, tempo_metadata, split_mixer_tracks, trim_pdc,\ninsert_effects, master_effects. Dither only for PCM_16. Sample rate uses FL\naudio settings; expected_sample_rate and expected_min_seconds verify output.\nFL26 96 DPI layout only. Accepted jobs return success=true, verified=false;\npoll fl_render_status until status=verified and verified=true for output proof.\nNative split preserves sidechains; stems bypass Master FX, Master includes them.",
+    "description": "Unavailable in backend-only SyncFL. Starting a render has no backend implementation.\nfl_render_status can observe an existing render.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -4256,7 +4267,7 @@
   },
   {
     "name": "fl_sample_add",
-    "description": "Add an audio file as a new Channel Rack sampler, optionally name/route it.\n\npath must be an exact absolute sample path from fl_find_assets or the user.\nmixer_track is a zero-based insert. OLE delivery and native readback verify\nthe new sampler channel, its name/type and routing; independent sample\nsource-path readback is unavailable. Requires running FL on Windows; do not retry\nan uncertain result because the channel may already have been created.",
+    "description": "Add a WAV as a new Channel Rack sampler through the native backend.\n\npath must be an exact absolute sample path from fl_find_assets or the user.\nmixer_track is a zero-based insert. OLE delivery and native readback verify\nthe new sampler channel, its name/type and routing; independent sample\nsource-path readback is unavailable. Experimental OLE bridge, no desktop input.\nRequires running FL on Windows; do not retry\nan uncertain result because the channel may already have been created.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -4417,7 +4428,7 @@
   },
   {
     "name": "fl_send_notes",
-    "description": "Write notes to the selected channel with validation, revisions and readback.\n\nOn Windows the target roll and ComposeWithLLM are opened automatically.\nmidi is 0..127 (60 displays C5). Use time/duration in quarter notes, or\nexact time_ticks/length_ticks. Supports velocity, pan, release, color,\nslide, porta, pitchofs, fcut, fres, muted, selected, group and repeats.\nmode is add or replace. auto_trigger=False prepares one request after\nfresh inspection; run fl_trigger_script within 60 seconds to execute.",
+    "description": "Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use\nfl_background_piano_write for persistent notes.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -4671,7 +4682,7 @@
   },
   {
     "name": "fl_serum_load_preset",
-    "description": "Load Serum 2.1.2 preset through a guarded 1200x771 Windows editor and verify controls.\n\nReplaces the chosen channel's current preset. Save valuable current edits first.\nRequires stopped transport. Unknown geometry fails; FX/routing lack native readback.",
+    "description": "Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no\nbackend implementation. Use offline Serum preset tools, or fl_preset_load for\nan existing FL .fst preset.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -5614,7 +5625,7 @@
   },
   {
     "name": "fl_ui_action",
-    "description": "Preflight or dispatch ONE guarded FL GUI action for a gap in semantic tools.\n\nPrefer native FL tools. Select exactly one enabled actionable UI element; for\nowner-drawn controls inspect with screenshot and use physical pixels relative\nto the target window's top-left. Actions: key, type, click, drag, scroll.\nKey/type without selector require the target to own keyboard focus. All\napplies need stopped transport, fresh observation and a NEW absolute .json\nreceipt_file. No global shortcuts or arbitrary helper calls are exposed.\n\nA dispatch always remains unverified, even when the helper succeeds. Supply\nan independent parameter/project/audio verification_plan, then carry it out.\nsuccess=true with success_scope=input_delivery confirms delivered input only;\nverified and musical_state_verified stay false until independent checks.\nInspect after errors; never replay. UIA and screenshots cannot prove music.",
+    "description": "Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend\noperations; fl_ui_inspect provides observation only.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -6061,7 +6072,7 @@
   },
   {
     "name": "fl_write_pattern_bank",
-    "description": "Append named patterns with exact note readback and a durable receipt.\n\nStop playback and supply the fresh channel index/name. Windows opens the\ntarget piano roll and selects ComposeWithLLM automatically for each request.\nItems contain name and notes. Existing patterns and instrument preset are preserved.",
+    "description": "Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is\nunavailable. Use native background piano tools or saved-FLP editing.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {

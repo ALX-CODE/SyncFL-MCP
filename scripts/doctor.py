@@ -122,7 +122,7 @@ def audit(live=False):
                            "error_type": type(exc).__name__})
     report["windows_gui_helpers"] = (
         "available" if report["paths"]["windows_server"]
-        else "optional dependency missing; set FL_MCP_WINDOWS_SERVER for GUI operations"
+        else "optional observation helper missing; set FL_MCP_WINDOWS_SERVER for UI snapshots"
     )
     if live:
         from fl_studio_mcp.utils.midi_connection import MIDIConnection

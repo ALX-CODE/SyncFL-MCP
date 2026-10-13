@@ -13,7 +13,7 @@ SyncFL is the public product name; SyncFL-MCP is the repository name. The Python
 | Windows MIDI Services with loopback support, x64 VC++ runtime | Default native bridge; runtime probe must pass |
 | An MCP client supporting local stdio | Assistant connection |
 | Your own plugins and licenses | Third-party controls; no commercial plugin is bundled |
-| Compatible Windows MCP executable | Interactive workflows and native-save window identity inspection |
+| Compatible Windows MCP executable | Optional read-only window inspection |
 | FFmpeg | Integrated loudness, true-peak and reference-level analysis |
 
 Packaging declares Python 3.10+, but the recommended setup uses 3.13 and configuration helpers need 3.11+. Select 3.14 with `-PythonVersion 3.14`; Windows MIDI output uses a bundled native DLL and no longer needs RtMidi compilation. The pinned optional dependency set lacks a Python 3.15 wheel for `cbor2`, so 3.15 is not yet a recommended binary-only install. macOS IAC and Linux/Wine routes are retained but lack equivalent live qualification; Windows-only helpers are unavailable there.
@@ -93,7 +93,6 @@ After reboot or a MIDI-service restart, start the server before opening FL so en
 | Working directory | Absolute repository path |
 | `FL_MCP_MIDI_PORT` | `ALX FL Bridge (Send)` |
 | `FL_USER_DATA_FOLDER` | Your actual Image-Line root |
-| `FL_MCP_INTERACTION_POLICY` | `background` |
 
 [Configuration](CONFIGURATION.md) contains JSON and Codex TOML examples. Keep credentials and personal configuration outside the repository.
 

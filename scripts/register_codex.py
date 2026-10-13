@@ -94,9 +94,9 @@ def render_registration(text, root, overrides=None):
     environment = settings.setdefault("env", {})
     if not isinstance(environment, dict):
         raise ValueError("SyncFL environment must be a table")
-    environment.setdefault("FL_MCP_INTERACTION_POLICY", "background")
     if overrides:
         environment.update(overrides)
+    environment.pop("FL_MCP_INTERACTION_POLICY", None)
     expected = copy.deepcopy(parsed)
     expected_servers = expected.setdefault("mcp_servers", {})
     for old in matches:
@@ -173,14 +173,12 @@ def main():
     parser.add_argument("--fl-user-data", help="Image-Line root, not its Settings folder")
     parser.add_argument("--midi-port", help="Exact dedicated MIDI output port name")
     parser.add_argument("--windows-server", help="Optional Windows MCP executable")
-    parser.add_argument("--interaction-policy", choices=("background", "interactive"))
     parser.add_argument("--tool-mode", choices=("discovery", "full"))
     args = parser.parse_args()
     overrides = {key: value for key, value in {
         "FL_USER_DATA_FOLDER": args.fl_user_data,
         "FL_MCP_MIDI_PORT": args.midi_port,
         "FL_MCP_WINDOWS_SERVER": args.windows_server,
-        "FL_MCP_INTERACTION_POLICY": args.interaction_policy,
         "FL_MCP_TOOL_MODE": args.tool_mode,
     }.items() if value is not None}
     try:

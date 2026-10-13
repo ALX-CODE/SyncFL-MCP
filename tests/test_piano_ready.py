@@ -12,6 +12,7 @@ import pytest
 
 from fl_studio_mcp.utils import piano_bridge
 from fl_studio_mcp.utils import piano_ready as ready
+from fl_studio_mcp.utils.interaction_policy import require_desktop_input
 
 
 @pytest.mark.parametrize("caption", [
@@ -275,6 +276,8 @@ def test_menu_item_obscured_after_ocr_never_dispatches(selector):
 
 @pytest.fixture
 def prepare(monkeypatch):
+    # Isolate retired script mechanics; the public boundary test restores the guard.
+    monkeypatch.setattr(ready, "require_desktop_input", lambda *args: None)
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
     queue = []
     bridge = SimpleNamespace(
@@ -300,6 +303,7 @@ def prepare(monkeypatch):
 
 
 def test_background_prepare_does_not_select_channel_or_touch_request_queue(prepare, monkeypatch):
+    monkeypatch.setattr(ready, "require_desktop_input", require_desktop_input)
     monkeypatch.delenv("FL_MCP_INTERACTION_POLICY", raising=False)
     with pytest.raises(RuntimeError, match="unsupported in background"):
         ready.prepare_piano(3, "MCP Test Synth")

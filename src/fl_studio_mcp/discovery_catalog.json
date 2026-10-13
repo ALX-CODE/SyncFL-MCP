@@ -178,7 +178,7 @@
     },
     "fl_piano_roll_prepare": {
       "domain": "piano",
-      "purpose": "Prepare and verify the legacy ComposeWithLLM bridge when that interactive route is required."
+      "purpose": "Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable. Use fl_background_piano_inspect and fl_background_piano_select."
     },
     "fl_get_piano_roll_info": {
       "domain": "piano",
@@ -186,11 +186,11 @@
     },
     "fl_get_piano_roll_state": {
       "domain": "piano",
-      "purpose": "Read the actual score through the legacy bridge. A fresh read can open the roll; cached reads are explicitly less current."
+      "purpose": "Unavailable in backend-only SyncFL. Legacy script-based piano inspection is unavailable. Use fl_background_piano_inspect."
     },
     "fl_send_notes": {
       "domain": "piano",
-      "purpose": "Add or replace persistent notes with the legacy verified transaction. This route supports richer expression fields and can prepare a request for later triggering."
+      "purpose": "Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use fl_background_piano_write for persistent notes."
     },
     "fl_send_chord": {
       "domain": "piano",
@@ -214,7 +214,7 @@
     },
     "fl_write_pattern_bank": {
       "domain": "piano",
-      "purpose": "Append several named patterns on one instrument using the interactive bridge; preserves existing patterns and the preset."
+      "purpose": "Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is unavailable. Use native background piano tools or saved-FLP editing."
     },
     "fl_midi_reference_search": {
       "domain": "piano",
@@ -274,7 +274,7 @@
     },
     "fl_ensure_mixer_tracks": {
       "domain": "mixer",
-      "purpose": "Append missing mixer inserts while preserving existing indices. It uses the documented interactive route."
+      "purpose": "Unavailable in backend-only SyncFL. Appending mixer inserts has no backend implementation. Use native mixer tools with existing track indices."
     },
     "fl_mixer_controls_inspect": {
       "domain": "mixer",
@@ -374,11 +374,11 @@
     },
     "fl_effect_add": {
       "domain": "plugins",
-      "purpose": "Load an exact effect file/name into an empty slot through the interactive route and verify the loaded plugin."
+      "purpose": "Load an exact effect file/name into an empty slot through the native backend and verify the loaded plugin."
     },
     "fl_plugin_add": {
       "domain": "plugins",
-      "purpose": "Compatibility-style name-based effect loader sharing the guarded effect-loading path. Prefer fl_effect_add when resolving an explicit file."
+      "purpose": "Load an exact effect into an empty slot through the experimental native backend and verify its identity."
     },
     "fl_plugin_chain": {
       "domain": "plugins",
@@ -386,7 +386,7 @@
     },
     "fl_plugin_remove": {
       "domain": "plugins",
-      "purpose": "Remove only the effect matching the inspected target identity. Removal changes the signal chain and can discard its state."
+      "purpose": "Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend implementation. Native controls can inspect and adjust an existing plugin."
     },
     "fl_background_effect_inspect": {
       "domain": "plugins",
@@ -422,7 +422,7 @@
     },
     "fl_serum_load_preset": {
       "domain": "serum",
-      "purpose": "Replace a Serum channel preset through a geometry-qualified interactive loader. Save useful current edits before replacing them."
+      "purpose": "Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no backend implementation. Use offline Serum preset tools, or fl_preset_load for an existing FL .fst preset."
     },
     "fl_serum_probe": {
       "domain": "serum",
@@ -438,19 +438,19 @@
     },
     "fl_sample_add": {
       "domain": "assets",
-      "purpose": "Create a new sampler channel from an exact audio path. Channel identity/routing verification does not independently establish the original sample path."
+      "purpose": "Load a WAV sample into a new sampler through the native backend."
     },
     "fl_instrument_add": {
       "domain": "assets",
-      "purpose": "Create a new instrument from an exact Plugin database entry or generator preset; optionally name and route it."
+      "purpose": "Load a generator FST into a new Channel Rack channel through the native backend."
     },
     "fl_preset_load": {
       "domain": "assets",
-      "purpose": "Load a general supported .fst into a new or existing target. Existing targets have their sound/state replaced, so inspect and preserve first."
+      "purpose": "Load a plugin FST using the native backend with guarded channel or mixer targets."
     },
     "fl_audio_clip_add": {
       "domain": "assets",
-      "purpose": "Import a WAV into the Playlist with source hash and exact placement checks. It creates and activates a verified project copy and needs the documented interactive layout."
+      "purpose": "Unavailable in backend-only SyncFL. Creating a new Playlist audio channel has no backend implementation. Saved-FLP edits can reuse existing audio channels."
     },
     "fl_audio_inspect": {
       "domain": "audio",
@@ -490,15 +490,15 @@
     },
     "fl_project_info": {
       "domain": "project",
-      "purpose": "Discover the active project path by opening/canceling Save As. Although observational, this is interactive UI work."
+      "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is unavailable. Use fl_project_native_inspect for native project state; the absolute path remains caller-declared."
     },
     "fl_project_save": {
       "domain": "project",
-      "purpose": "Save a named project with exact path, file hash and persistence evidence using the documented interactive route."
+      "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable. Use fl_project_save_native to save the current named project."
     },
     "fl_project_save_as": {
       "domain": "project",
-      "purpose": "Save to an explicit path; existing destinations require deliberate overwrite and get a backup."
+      "purpose": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no backend implementation. Use fl_project_save_native for an already named project."
     },
     "fl_project_open": {
       "domain": "project",
@@ -534,7 +534,7 @@
     },
     "fl_automation_create_channel": {
       "domain": "automation",
-      "purpose": "Create and verify a new Channel Rack volume/pan automation link through interactive FL. Exact curve edits are a separate saved-file operation."
+      "purpose": "Unavailable in backend-only SyncFL. Creating a new automation link has no backend implementation. Use automation inspection and saved-FLP editing for existing automation."
     },
     "fl_automation_target_inspect": {
       "domain": "automation",
@@ -558,7 +558,7 @@
     },
     "fl_recording_configure_file": {
       "domain": "jobs",
-      "purpose": "Set a new exact recording filename through the qualified mixer dialog. This also arms the track but does not start a take."
+      "purpose": "Unavailable in backend-only SyncFL. Setting a recording filename has no backend implementation. Use native recording inspection and arm controls for existing targets."
     },
     "fl_recording_start": {
       "domain": "jobs",
@@ -574,7 +574,7 @@
     },
     "fl_render_start": {
       "domain": "jobs",
-      "purpose": "Start a guarded native WAV/master/stem export into a new directory. It saves/activates a project copy and returns before final verification."
+      "purpose": "Unavailable in backend-only SyncFL. Starting a render has no backend implementation. fl_render_status can observe an existing render."
     },
     "fl_render_status": {
       "domain": "jobs",
@@ -582,7 +582,7 @@
     },
     "fl_render_cancel": {
       "domain": "jobs",
-      "purpose": "Cancel only the exact owned export job after observing its Abort control. Partial files are retained and remain incomplete."
+      "purpose": "Unavailable in backend-only SyncFL. Cancelling a render has no backend implementation. fl_render_status can observe an existing render."
     },
     "fl_batch": {
       "domain": "advanced",
@@ -598,7 +598,7 @@
     },
     "fl_ui_action": {
       "domain": "advanced",
-      "purpose": "Last-resort single guarded UI input when semantic tools cannot do the job. Delivery success is deliberately not musical-state verification."
+      "purpose": "Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend operations; fl_ui_inspect provides observation only."
     }
   }
 }

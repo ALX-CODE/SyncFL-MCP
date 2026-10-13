@@ -8,21 +8,24 @@ def register_advanced_tools(mcp):
     async def fl_project_open(
         source: str, expected_sha256: str, expected_revision: str, recovery_path: str,
         receipt_file: str | None = None, apply: bool = False,
+        current_project_path: str | None = None,
     ) -> dict:
-        """Open/reopen an exact saved FLP, checkpointing current edits to a NEW FLP first.
+        """Load an FL26 project through the native backend, preserving a recovery FLP.
 
         Preflight by default. Use source SHA256 and fl_production_inspect project revision.
-        Apply needs a new absolute JSON receipt_file and recovery_path (.flp). Always
-        saves a recovery copy, including unnamed/dirty projects; never discards edits.
-        Verifies new project generation, exact path, source hash, tempo and PPQ.
-        Stops on dialogs or uncertain completion; inspect the receipt before recovery.
+        Supply current_project_path for the already named/saved active project.
+        Apply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save
+        the current project before copying it to recovery; never discard dirty edits.
+        Verify generation, title, channels, source hash, tempo and PPQ. Absolute loaded
+        path is caller-declared, not independently exposed by FL. No input or mode switch.
+        Unnamed projects are unsupported; stop on dialogs or uncertain completion.
         """
-        from fl_studio_mcp.utils.windows_workflows import run_workflow
+        from fl_studio_mcp.utils.backend_project import open_backend_project
 
-        return await run_workflow(
-            "open_project", source=source, expected_sha256=expected_sha256,
+        return open_backend_project(
+            source=source, expected_sha256=expected_sha256,
             expected_revision=expected_revision, recovery_path=recovery_path,
-            receipt_file=receipt_file, apply=apply,
+            receipt_file=receipt_file, apply=apply, current_project_path=current_project_path,
         )
 
     @mcp.tool()
@@ -50,10 +53,9 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_project_info() -> dict:
-        """Discover the exact active FLP path by inspecting and cancelling Save As.
-
-        Reports the title, saved status and observed suggested path for unnamed projects.
-        Does not save or accept the dialog. Resolve existing modal dialogs before use.
+        """Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is
+        unavailable. Use fl_project_native_inspect for native project state; the
+        absolute path remains caller-declared.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
@@ -61,10 +63,8 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_project_save(expected_path: str | None = None) -> dict:
-        """Save the current FLP once with verified exact path and file persistence.
-
-        The path is discovered automatically; expected_path adds an optional identity guard.
-        Unnamed projects require fl_project_save_as. Returns file hash and stable timestamp.
+        """Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable.
+        Use fl_project_save_native to save the current named project.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
@@ -72,10 +72,9 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_project_save_as(path: str, overwrite: bool = False) -> dict:
-        """Save the active project to an absolute .flp path and verify it became active.
-
-        Creates parent folders. Existing destinations require overwrite=True and receive
-        a backup before saving. Returns the saved path, hash, timestamp and backup path.
+        """Unavailable in backend-only SyncFL. Saving the active project under a new name has no
+        backend implementation. Use fl_project_save_native for an already named
+        project.
         """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
@@ -83,7 +82,7 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_plugin_chain(items: list[dict], receipt_file: str | None = None) -> dict:
-        """Load {track,slot,name,wet?} entries in one serialized Windows session.
+        """Load {track,slot,name,wet?} entries through the serialized native backend.
 
         Names resolve exact Plugin database files. Target slots must be empty.
         A receipt file records each verified slot for explicit inspection and resumption.
@@ -107,7 +106,9 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_plugin_remove(track: int, slot: int, expected_plugin: str) -> dict:
-        """Remove only the identity-checked effect from a mixer slot, then verify absence."""
+        """Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend
+        implementation. Native controls can inspect and adjust an existing plugin.
+        """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
         return await run_workflow(
@@ -116,7 +117,9 @@ def register_advanced_tools(mcp):
 
     @mcp.tool()
     async def fl_ensure_mixer_tracks(last_insert: int) -> dict:
-        """Append missing mixer inserts in one Add multiple operation; preserve existing indices."""
+        """Unavailable in backend-only SyncFL. Appending mixer inserts has no backend
+        implementation. Use native mixer tools with existing track indices.
+        """
         from fl_studio_mcp.utils.windows_workflows import run_workflow
 
         return await run_workflow("ensure_tracks", last_insert=last_insert)

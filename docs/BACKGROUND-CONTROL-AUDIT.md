@@ -1,5 +1,7 @@
 # Background control audit
 
+**Current policy:** SyncFL is backend-only. The older mode comparisons below are historical audit evidence, not configuration instructions. WAV/FST loading and guarded FLP loading now route through the native bridge. Their new wrappers have unit coverage; they still need dedicated live qualification. Unmigrated desktop workflows are unavailable.
+
 Source audit: 2026-10-12. This describes implemented routes, not a claim that every
 advertised FL API or third-party plugin has been qualified live. Source review
 was followed by explicitly scoped mutation tests in a disposable lab project.

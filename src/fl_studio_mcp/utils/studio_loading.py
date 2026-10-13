@@ -434,9 +434,13 @@ class StudioLoading(WindowsFL):
 
 
 async def run_file_workflow(operation, **kwargs):
+    from fl_studio_mcp.utils.backend_studio_loading import BackendStudioLoading
     from fl_studio_mcp.utils.midi_connection import get_connection
 
     async with _workflow_lock:
         with transaction_lock(get_connection()._hardware_dir / "mcp-gui.lock", 5):
-            async with StudioLoading() as fl:
-                return await getattr(fl, operation)(**kwargs)
+            async with BackendStudioLoading() as fl:
+                result = await getattr(fl, operation)(**kwargs)
+                result.update(desktop_input=False, experimental=True)
+                fl.outcome = result
+                return result

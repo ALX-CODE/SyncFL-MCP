@@ -14,14 +14,9 @@ def register_recording_job_tools(mcp):
         track: int, expected_name: str, expected_revision: str, recording_file: str,
         apply: StrictBool = False, receipt_file: str | None = None,
     ) -> dict:
-        """Configure a NEW exact WAV filename through FL's owned recording dialog.
-
-        Uses the per-track revision from fl_recording_inspect. Default preflight
-        sends no GUI input; apply requires a NEW absolute JSON receipt. Playback
-        and the record latch must be stopped. Supports the qualified 1089x677
-        Wide mixer at 96 DPI with inserts 1..16 visible; unknown layouts fail closed.
-        File selection implicitly arms this track. Success requires two native
-        path/arm readbacks; it does not start recording or verify input/latency.
+        """Unavailable in backend-only SyncFL. Setting a recording filename has no backend
+        implementation. Use native recording inspection and arm controls for existing
+        targets.
         """
         return await configure_recording_file(
             track, expected_name, expected_revision, recording_file, apply, receipt_file)

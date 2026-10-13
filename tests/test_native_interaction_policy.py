@@ -26,7 +26,8 @@ def test_native_ui_and_editor_operations_require_opt_in(function, monkeypatch):
     with pytest.raises(RuntimeError, match="unsupported in background"):
         check_native_command("native.call", {"function": function, "allow_write": True})
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
-    check_native_command("native.call", {"function": function, "allow_write": True})
+    with pytest.raises(RuntimeError, match="backend-only"):
+        check_native_command("native.call", {"function": function, "allow_write": True})
 
 
 @pytest.mark.parametrize("function", [
@@ -111,7 +112,8 @@ def test_ambiguous_or_focus_routed_transport_forms_are_blocked(function, argumen
     with pytest.raises(RuntimeError, match="flags=GT_Global"):
         check_native_command("native.call", params)
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
-    check_native_command("native.call", params)
+    with pytest.raises(RuntimeError, match="backend-only"):
+        check_native_command("native.call", params)
 
 
 @pytest.mark.parametrize("function", sorted(GLOBAL_ONLY_TRANSPORT_FUNCTIONS))
@@ -179,7 +181,9 @@ def test_depth_total_step_and_cycle_limits_are_bounded():
         check_native_command(cycle["action"], cycle["params"])
 
 
-def test_invalid_mode_cannot_allow_safe_or_unsafe_native_commands(monkeypatch):
+
+def test_legacy_mode_value_leaves_native_reads_available_and_focus_calls_blocked(monkeypatch):
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "typo")
-    with pytest.raises(ValueError, match="must be"):
-        check_native_command("bridge.ping", {})
+    check_native_command("bridge.ping", {})
+    with pytest.raises(RuntimeError, match="backend-only"):
+        check_native_command("native.call", {"function": "ui.setFocused", "args": [1]})

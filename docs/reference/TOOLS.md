@@ -15,9 +15,8 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - **Offline:** the runtime catalog classifies this tool as independent of the live DAW.
 - **Read policy:** the runtime explicitly permits observation; other tools are treated as
   potential writes. These labels are scheduling hints, not permission grants.
-- **Input mode:** background is the default. Availability depends on the requested
-  operation and its internal calls. A tool absent from the explicit desktop list
-  is not automatically guaranteed to be background-safe.
+- **Backend only:** desktop input is unavailable. Legacy contracts with no backend
+  route remain documented for compatibility but are not recommended by discovery.
 - Parameter names, units and target indices are exact. Omitted optional parameters
   use the defaults below. Nested structures are described by the tool and JSON schema.
 - Previews, receipts and revisions are tool-specific. Read the full description before
@@ -212,21 +211,8 @@ Never changes project tempo, stretches audio or writes the input file.
 
 Live / operation-dependent · Potential write policy
 
-Import one WAV as a new Playlist Audio Clip; preview by default.
-
-Requires the WAV hash from fl_audio_inspect, current project revision from
-fl_production_inspect, stopped transport, and an absolute NEW work directory.
-position_ticks is nonnegative; Playlist track is one-based 1..500. The
-visible FL26.1/96 DPI Playlist must contain a default-named, unmuted row
-empty across saved arrangements. Native import creates a new audio source;
-the server saves, places it exactly in a new FLP, opens and saves that copy
-to prove placement/source identity. Active project becomes verified.flp.
-Keeps before.flp and durable receipts. A timeout/needs_inspection result
-must be inspected before retrying; one file drop is dispatched at most.
-Does not trim/stretch audio or measure audible playback. success/verified
-both true with status=verified establish saved placement after native reload.
-success_scope is audio_clip_placement. Exact permitted native bookkeeping
-normalizations are reported; existing plugin payload changes fail closed.
+Unavailable in backend-only SyncFL. Creating a new Playlist audio channel has no
+backend implementation. Saved-FLP edits can reuse existing audio channels.
 
 [Implementation](../../src/fl_studio_mcp/tools/playlist_import.py#L6)
 
@@ -253,7 +239,7 @@ limited by the explicit -24..0 dBTP ceiling. It never applies gain or
 claims perceptual similarity. Files are not time-aligned; duration and
 channel-count mismatches are reported. Remeasure audio after processing.
 
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L146)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L134)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -278,7 +264,7 @@ is rejected. Preview by default; select <=48 million interleaved samples.
 Source stays unchanged; loop/cue metadata is not copied. Use fl_sample_add
 to load the result into FL. Requires the audio dependency extra.
 
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L172)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L160)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -305,7 +291,7 @@ Streams songs up to two hours/eight channels. Includes one-second level
 timeline; no LUFS/true-peak claim. All channels contribute to levels, so
 anti-phase stereo is not incorrectly classified as silence.
 
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L113)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L101)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -349,7 +335,7 @@ accompany EBU R128 input measurements. Silence, below-gate material and
 <400 ms files have unavailable LUFS; LRA is unavailable below 3 seconds.
 dual_mono=true models mono playback through two speakers. Does not use FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L125)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L113)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -362,14 +348,9 @@ dual_mono=true models mono playback through two speakers. Does not use FL.
 
 Live / operation-dependent · Potential write policy
 
-Create linked Channel Rack volume/pan automation and verify the saved link and curve.
-
-Global channel index/name and project revision are required. Target must be
-visible after switching the Channel Rack to All when necessary. parameter
-is volume or pan. Preview by default; apply uses a NEW directory containing
-before.flp recovery, created.flp and a receipt. Refuses an existing target
-controller link. FL chooses initial clip range/placement; exact curve edits
-use fl_automation_file_edit followed by fl_project_open. FL26/96 DPI only.
+Unavailable in backend-only SyncFL. Creating a new automation link has no backend
+implementation. Use automation inspection and saved-FLP editing for existing
+automation.
 
 [Implementation](../../src/fl_studio_mcp/tools/workflow.py#L8)
 
@@ -393,7 +374,7 @@ edits: [{channel,expected_name,operation:'upsert'|'replace',points:
 incoming segment. Values are normalized, never dB. Output must not exist.
 Inspect/review the result, then explicitly open that FLP to use it in FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L142)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L136)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -412,7 +393,7 @@ Read saved FLP automation names, local ticks, normalized values and SHA256.
 Saved-file state only. Call fl_project_save first to include unsaved edits.
 Local ticks start at each clip's start, not the song's start.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L131)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L125)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -609,7 +590,7 @@ Each step is {action, params}. Slots/channels/mixer tracks are zero-based.
 Stops on first failure and reports applied count; no automatic rollback.
 Use fl_capabilities for actions and fl_native_call for documented API calls.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L130)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L133)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -622,7 +603,7 @@ Offline · Read policy
 
 Identify the loaded server version and production workflow capabilities.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L82)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L77)
 
 No input parameters.
 
@@ -632,7 +613,7 @@ Live / operation-dependent · Read policy
 
 Discover available native signatures and typed bulk commands in the live controller.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L125)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L128)
 
 No input parameters.
 
@@ -661,7 +642,7 @@ Live / operation-dependent · Potential write policy
 
 Clear notes from the inspected roll; preserve markers and record recovery data.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L77)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L68)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -673,7 +654,7 @@ Live / operation-dependent · Potential write policy
 
 Acknowledge completed work. Refuse to discard unresolved requests/recovery data.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L100)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L90)
 
 No input parameters.
 
@@ -683,7 +664,7 @@ Live / operation-dependent · Potential write policy
 
 Open a fresh dedicated MIDI session and verify the live controller handshake.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L100)
+[Implementation](../../src/fl_studio_mcp/server.py#L98)
 
 No input parameters.
 
@@ -693,7 +674,7 @@ Live / operation-dependent · Read policy
 
 Report endpoint availability separately from a verified live controller response.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L120)
+[Implementation](../../src/fl_studio_mcp/server.py#L118)
 
 No input parameters.
 
@@ -703,7 +684,7 @@ Live / operation-dependent · Potential write policy
 
 Delete all matches by midi and time/time_ticks, preserving other notes.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L72)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L63)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -720,8 +701,9 @@ track is zero-based; slot 0..9 corresponds to FL slots 1..10. Supply an
 exact Plugin database effect name or an absolute effect .fst path. Names
 prefer active-user favorites and reject ambiguity. Occupied slots are
 guarded; this does not grant permission to replace another effect.
+Experimental native OLE bridge with native track selection and readback.
 
-[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L72)
+[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L74)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -734,9 +716,10 @@ guarded; this does not grant permission to replace another effect.
 
 Live / operation-dependent · Potential write policy
 
-Append missing mixer inserts in one Add multiple operation; preserve existing indices.
+Unavailable in backend-only SyncFL. Appending mixer inserts has no backend
+implementation. Use native mixer tools with existing track indices.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L118)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L119)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -853,7 +836,7 @@ Live / operation-dependent · Potential write policy
 
 Report protocol, paths and pending work without triggering FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L119)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L109)
 
 No input parameters.
 
@@ -861,11 +844,10 @@ No input parameters.
 
 Live / operation-dependent · Potential write policy
 
-Read a correlated score; Windows opens the selected channel's roll automatically.
+Unavailable in backend-only SyncFL. Legacy script-based piano inspection is
+unavailable. Use fl_background_piano_inspect.
 
-fresh=False explicitly reads cached state without opening FL or executing a script.
-
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L82)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L73)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1028,8 +1010,9 @@ Supply an exact Plugin database name or an absolute generator .fst path.
 Name resolution prefers the active user's Generator favorites, rejects
 ambiguity, then searches installed entries. Optional channel_name and
 zero-based mixer_track name/route the new channel. Windows FL required.
+Experimental native OLE bridge; no keyboard, mouse or mode switch.
 
-[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L51)
+[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L52)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1130,7 +1113,7 @@ Profile controls: track, slot, parameter, plugin, name; either value (0..1)
 or target with unit and optional tolerance. Optional display verifies a
 known enum label. Stopped transport required. Receipt includes restore_profile.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L188)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L191)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1210,7 +1193,7 @@ Items: track,expected_name, optional volume (normalized) OR volume_db,
 pan (-1..1), stereo (-1..1). Requires a new receipt_file for apply.
 Automation can override faders during playback; edit its curve separately.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L161)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L155)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1253,7 +1236,7 @@ Invoke one advertised FL native API function with positional args, no Python eva
 Advanced surface: caller must inspect the advertised signature and target indices.
 Mutations require allow_write; typed batch operations provide stronger validation.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L142)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L145)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1318,13 +1301,10 @@ using the existing guarded note workflow. This never queues or applies notes.
 
 Live / operation-dependent · Potential write policy
 
-Prepare ComposeWithLLM for note editing and check that its bridge responds.
+Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable.
+Use fl_background_piano_inspect and fl_background_piano_select.
 
-Optionally target a global zero-based channel and guard its current name.
-Opens the piano roll, selects the exact installed ComposeWithLLM menu item
-and verifies a correlated read. This prepares the bridge without adding notes.
-
-[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L116)
+[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L120)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1365,7 +1345,7 @@ audio/automation channels or new pattern data. Repeat templates as needed.
 Opaque events/clip bytes are preserved. Output is not
 automatically opened; original and unsaved live state remain unchanged.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L50)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L45)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1384,7 +1364,7 @@ Inspect exact saved FL26 Playlist clip identities, ticks, tracks and patterns.
 Save first to include current edits. Returns source/clip hashes needed by
 fl_playlist_file_edit. Each event_index scopes one saved Playlist event.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L39)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L34)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1418,7 +1398,7 @@ Load an exact Plugin database effect name into an empty mixer slot.
 Uses the same guarded file loading as fl_effect_add. Indices are zero-based.
 result_row must remain 0; use fl_effect_add(path=...) to resolve duplicate names.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L96)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L95)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1461,12 +1441,12 @@ guarantee: inspect literal displays and render/audition to verify sound.
 
 Live / operation-dependent · Potential write policy
 
-Load {track,slot,name,wet?} entries in one serialized Windows session.
+Load {track,slot,name,wet?} entries through the serialized native backend.
 
 Names resolve exact Plugin database files. Target slots must be empty.
 A receipt file records each verified slot for explicit inspection and resumption.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L85)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L84)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1564,7 +1544,7 @@ Live / operation-dependent · Read policy
 
 Search exposed parameters, omitting blank VST padding. Slot 0 is FL Slot 1.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L158)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L161)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1578,9 +1558,10 @@ Search exposed parameters, omitting blank VST padding. Slot 0 is FL Slot 1.
 
 Live / operation-dependent · Potential write policy
 
-Remove only the identity-checked effect from a mixer slot, then verify absence.
+Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend
+implementation. Native controls can inspect and adjust an existing plugin.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L109)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L108)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1598,7 +1579,7 @@ Probes the control briefly. Not for enumerations or non-monotonic displays.
 Requires exact plugin, parameter name and unit. Reports restoration on failure.
 Do not concurrently edit this control with another client.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L29)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L32)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1619,7 +1600,7 @@ Set normalized parameters with plugin identity guard and before/after readback.
 
 Each change: {parameter: zero-based index, value: 0..1, expected_name: optional}.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L169)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L172)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1641,8 +1622,9 @@ target's sound/state, retaining an existing channel's name and mixer route.
 Supports plugin .fst format 0x30; full mixer-track format 0x40 is rejected.
 Use Serum tools for native .SerumPreset formats.
 Inspect current identities before loading; uncertain writes are not retried.
+Experimental native OLE bridge; desktop input is never used.
 
-[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L90)
+[Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L93)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1695,7 +1677,7 @@ Offline · Read policy
 
 Inspect a saved FLP's patterns, notes, playlist and external sample references.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L177)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L171)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1705,12 +1687,11 @@ Inspect a saved FLP's patterns, notes, playlist and external sample references.
 
 Live / operation-dependent · Potential write policy
 
-Discover the exact active FLP path by inspecting and cancelling Save As.
+Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is
+unavailable. Use fl_project_native_inspect for native project state; the
+absolute path remains caller-declared.
 
-Reports the title, saved status and observed suggested path for unnamed projects.
-Does not save or accept the dialog. Resolve existing modal dialogs before use.
-
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L52)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L55)
 
 No input parameters.
 
@@ -1731,13 +1712,15 @@ No input parameters.
 
 Live / operation-dependent · Potential write policy
 
-Open/reopen an exact saved FLP, checkpointing current edits to a NEW FLP first.
+Load an FL26 project through the native backend, preserving a recovery FLP.
 
 Preflight by default. Use source SHA256 and fl_production_inspect project revision.
-Apply needs a new absolute JSON receipt_file and recovery_path (.flp). Always
-saves a recovery copy, including unnamed/dirty projects; never discards edits.
-Verifies new project generation, exact path, source hash, tempo and PPQ.
-Stops on dialogs or uncertain completion; inspect the receipt before recovery.
+Supply current_project_path for the already named/saved active project.
+Apply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save
+the current project before copying it to recovery; never discard dirty edits.
+Verify generation, title, channels, source hash, tempo and PPQ. Absolute loaded
+path is caller-declared, not independently exposed by FL. No input or mode switch.
+Unnamed projects are unsupported; stop on dialogs or uncertain completion.
 
 [Implementation](../../src/fl_studio_mcp/tools/advanced.py#L8)
 
@@ -1749,6 +1732,7 @@ Stops on dialogs or uncertain completion; inspect the receipt before recovery.
 | `recovery_path` | string | Yes | — |
 | `receipt_file` | string or null | No | null |
 | `apply` | boolean | No | false |
+| `current_project_path` | string or null | No | null |
 
 ## fl_project_package
 
@@ -1760,7 +1744,7 @@ Does not save or mutate FL. Save once first for current edits. Copies only
 referenced assets; retains original FLP plus a portable copy. Plugin
 binaries/licenses are not included. Review missing/internal asset report.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L184)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L178)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1772,12 +1756,10 @@ binaries/licenses are not included. Review missing/internal asset report.
 
 Live / operation-dependent · Potential write policy
 
-Save the current FLP once with verified exact path and file persistence.
+Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable.
+Use fl_project_save_native to save the current named project.
 
-The path is discovered automatically; expected_path adds an optional identity guard.
-Unnamed projects require fl_project_save_as. Returns file hash and stable timestamp.
-
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L63)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L65)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1787,10 +1769,9 @@ Unnamed projects require fl_project_save_as. Returns file hash and stable timest
 
 Live / operation-dependent · Potential write policy
 
-Save the active project to an absolute .flp path and verify it became active.
-
-Creates parent folders. Existing destinations require overwrite=True and receive
-a backup before saving. Returns the saved path, hash, timestamp and backup path.
+Unavailable in backend-only SyncFL. Saving the active project under a new name has no
+backend implementation. Use fl_project_save_native for an already named
+project.
 
 [Implementation](../../src/fl_studio_mcp/tools/advanced.py#L74)
 
@@ -1847,7 +1828,7 @@ Live / operation-dependent · Read policy
 
 Read every channel, all mixer inserts, effect slots, routes and transport state.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L153)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L156)
 
 No input parameters.
 
@@ -1857,7 +1838,7 @@ Live / operation-dependent · Read policy
 
 Inspect a timed-out command's receipt (last 128 requests, until controller reload).
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L183)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L186)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1905,14 +1886,9 @@ actions may interleave. Arming does not prove a valid input or recorded take.
 
 Live / operation-dependent · Potential write policy
 
-Configure a NEW exact WAV filename through FL's owned recording dialog.
-
-Uses the per-track revision from fl_recording_inspect. Default preflight
-sends no GUI input; apply requires a NEW absolute JSON receipt. Playback
-and the record latch must be stopped. Supports the qualified 1089x677
-Wide mixer at 96 DPI with inserts 1..16 visible; unknown layouts fail closed.
-File selection implicitly arms this track. Success requires two native
-path/arm readbacks; it does not start recording or verify input/latency.
+Unavailable in backend-only SyncFL. Setting a recording filename has no backend
+implementation. Use native recording inspection and arm controls for existing
+targets.
 
 [Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L13)
 
@@ -1967,7 +1943,7 @@ Poll fl_recording_status or request an early stop with fl_recording_stop.
 Verified output requires stopped transport, a decoded stable WAV and requested
 format/non-silence checks. Playlist placement/latency remain unverified.
 
-[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L30)
+[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L25)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1996,7 +1972,7 @@ recorded_take_verified=true includes decoded audio/hash evidence. Stale worker
 heartbeat or needs_inspection means transport may still be active; inspect
 FL explicitly. Never replay a possibly delivered record/start/stop command.
 
-[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L60)
+[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L55)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2012,7 +1988,7 @@ A saved request is not proof recording stopped. Poll fl_recording_status for
 transport_stopped_verified and decoded take evidence. Repeated requests are
 idempotent; a dead worker requires explicit host inspection/recovery.
 
-[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L71)
+[Implementation](../../src/fl_studio_mcp/tools/recording_jobs.py#L66)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2022,11 +1998,10 @@ idempotent; a dead worker requires explicit host inspection/recovery.
 
 Live / operation-dependent · Potential write policy
 
-Cancel the exact job only after independently observing its owned Abort control.
+Unavailable in backend-only SyncFL. Cancelling a render has no backend
+implementation. fl_render_status can observe an existing render.
 
-Preserves the project and partial outputs, reporting them as incomplete.
-
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L103)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L92)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2036,19 +2011,8 @@ Preserves the project and partial outputs, reporting them as incomplete.
 
 Live / operation-dependent · Potential write policy
 
-Start a native WAV/master/stem render in a NEW directory; preview by default.
-
-Saves current edits to directory/project.flp, becoming the active project.
-Needs the project revision from fl_production_inspect. Options: mode
-full_song|pattern; tail leave|cut|wrap; bit_depth FLOAT|PCM_24|PCM_16;
-channels stereo|mono|left|right; resampling '16'|'24'|'32'|'64'|'128'|'256'|'512';
-booleans hq_plugins, disable_max_polyphony, dithering, playlist_markers,
-loop_markers, note_markers, tempo_metadata, split_mixer_tracks, trim_pdc,
-insert_effects, master_effects. Dither only for PCM_16. Sample rate uses FL
-audio settings; expected_sample_rate and expected_min_seconds verify output.
-FL26 96 DPI layout only. Accepted jobs return success=true, verified=false;
-poll fl_render_status until status=verified and verified=true for output proof.
-Native split preserves sidechains; stems bypass Master FX, Master includes them.
+Unavailable in backend-only SyncFL. Starting a render has no backend implementation.
+fl_render_status can observe an existing render.
 
 [Implementation](../../src/fl_studio_mcp/tools/audio.py#L54)
 
@@ -2073,7 +2037,7 @@ Running/verifying observations return success=true, verified=false. Only
 status=verified has verified=true. Failed/cancelled jobs return success=false.
 Job receipts persist across MCP reconnects. Never retries Start.
 
-[Implementation](../../src/fl_studio_mcp/tools/audio.py#L89)
+[Implementation](../../src/fl_studio_mcp/tools/audio.py#L78)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2137,12 +2101,13 @@ The shared GUI lock coordinates cooperating clients; it cannot lock FL's UI.
 
 Live / operation-dependent · Potential write policy
 
-Add an audio file as a new Channel Rack sampler, optionally name/route it.
+Add a WAV as a new Channel Rack sampler through the native backend.
 
 path must be an exact absolute sample path from fl_find_assets or the user.
 mixer_track is a zero-based insert. OLE delivery and native readback verify
 the new sampler channel, its name/type and routing; independent sample
-source-path readback is unavailable. Requires running FL on Windows; do not retry
+source-path readback is unavailable. Experimental OLE bridge, no desktop input.
+Requires running FL on Windows; do not retry
 an uncertain result because the channel may already have been created.
 
 [Implementation](../../src/fl_studio_mcp/tools/studio_files.py#L33)
@@ -2184,7 +2149,7 @@ Live / operation-dependent · Potential write policy
 
 Write a chord through the same verified note transaction.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L50)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L41)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2198,16 +2163,10 @@ Write a chord through the same verified note transaction.
 
 Live / operation-dependent · Potential write policy
 
-Write notes to the selected channel with validation, revisions and readback.
+Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use
+fl_background_piano_write for persistent notes.
 
-On Windows the target roll and ComposeWithLLM are opened automatically.
-midi is 0..127 (60 displays C5). Use time/duration in quarter notes, or
-exact time_ticks/length_ticks. Supports velocity, pan, release, color,
-slide, porta, pitchofs, fcut, fres, muted, selected, group and repeats.
-mode is add or replace. auto_trigger=False prepares one request after
-fresh inspection; run fl_trigger_script within 60 seconds to execute.
-
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L33)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L30)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2224,7 +2183,7 @@ Measure WAV/audio levels, activity, reliable pitch and harmonics, optionally com
 No FL edits. Pitch may be unavailable for chords, noise and fast sweeps.
 Measurements are not a musical quality or perceptual similarity score.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L84)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L83)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2241,7 +2200,7 @@ Example changes: {"env1.decay_ms":300,"osc_a.fine_cents":-32,"voice.mono":true}.
 Requires stopped playback. Validate every key before writing; dry_run defaults true.
 Routing/polarity/FX topology come from a preset, not this live parameter adapter.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L35)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L34)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2259,7 +2218,7 @@ Recipes: kick, kick_long, 808, lead, pad. Discover settings with fl_serum_recipe
 Preserve modulation/FX topology from our verified templates. Never overwrites.
 File validation does not mean the preset has been loaded or auditioned.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L47)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L46)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2277,7 +2236,7 @@ Edit mapped physical controls in a saved Serum preset, preserving other DSP fiel
 Creates a new file, never overwrites. Useful when FL's live cache is stale.
 Same settings as recipe builder; pitch keys require verified Env2-to-A pitch route.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L61)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L60)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2295,7 +2254,7 @@ Read 43 named Serum controls in compact groups; validate live parameter identiti
 Uses the global channel index. Returns supported keys, units, ranges and displays.
 No edits. Unknown FX slots and modulation destinations are not guessed.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L24)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L23)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2309,7 +2268,7 @@ Read native Serum 2.1.2 preset envelopes, modulation, oscillator and FX settings
 
 Verifies the container/checksum/version. Absent fields mean defaults, not zero.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L74)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L73)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2319,10 +2278,9 @@ Verifies the container/checksum/version. Absent fields mean defaults, not zero.
 
 Live / operation-dependent · Potential write policy
 
-Load Serum 2.1.2 preset through a guarded 1200x771 Windows editor and verify controls.
-
-Replaces the chosen channel's current preset. Save valuable current edits first.
-Requires stopped transport. Unknown geometry fails; FX/routing lack native readback.
+Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no
+backend implementation. Use offline Serum preset tools, or fl_preset_load for
+an existing FL .fst preset.
 
 [Implementation](../../src/fl_studio_mcp/tools/serum.py#L6)
 
@@ -2340,7 +2298,7 @@ Record one temporary Serum note via WASAPI, send note-off, and measure the WAV.
 Requires stopped transport and confirmed Serum channel. Never writes piano notes
 or overwrites audio. Includes other system audio: keep other apps quiet.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L95)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L94)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2357,7 +2315,7 @@ Offline · Read policy
 
 Discover kick/808/lead/pad recipes, editable physical settings and audition notes.
 
-[Implementation](../../src/fl_studio_mcp/tools/serum.py#L17)
+[Implementation](../../src/fl_studio_mcp/tools/serum.py#L16)
 
 No input parameters.
 
@@ -2661,7 +2619,7 @@ Live / operation-dependent · Potential write policy
 
 Execute a prepared request, or refresh an empty queue; verify the matching response.
 
-[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L113)
+[Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L103)
 
 No input parameters.
 
@@ -2669,20 +2627,8 @@ No input parameters.
 
 Live / operation-dependent · Potential write policy
 
-Preflight or dispatch ONE guarded FL GUI action for a gap in semantic tools.
-
-Prefer native FL tools. Select exactly one enabled actionable UI element; for
-owner-drawn controls inspect with screenshot and use physical pixels relative
-to the target window's top-left. Actions: key, type, click, drag, scroll.
-Key/type without selector require the target to own keyboard focus. All
-applies need stopped transport, fresh observation and a NEW absolute .json
-receipt_file. No global shortcuts or arbitrary helper calls are exposed.
-
-A dispatch always remains unverified, even when the helper succeeds. Supply
-an independent parameter/project/audio verification_plan, then carry it out.
-success=true with success_scope=input_delivery confirms delivered input only;
-verified and musical_state_verified stay false until independent checks.
-Inspect after errors; never replay. UIA and screenshots cannot prove music.
+Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend
+operations; fl_ui_inspect provides observation only.
 
 [Implementation](../../src/fl_studio_mcp/tools/studio_ui.py#L38)
 
@@ -2736,11 +2682,8 @@ No input parameters.
 
 Live / operation-dependent · Potential write policy
 
-Append named patterns with exact note readback and a durable receipt.
-
-Stop playback and supply the fresh channel index/name. Windows opens the
-target piano roll and selects ComposeWithLLM automatically for each request.
-Items contain name and notes. Existing patterns and instrument preset are preserved.
+Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is
+unavailable. Use native background piano tools or saved-FLP editing.
 
 [Implementation](../../src/fl_studio_mcp/tools/piano_roll.py#L19)
 

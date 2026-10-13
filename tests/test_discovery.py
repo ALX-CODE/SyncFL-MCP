@@ -31,7 +31,11 @@ def test_catalog_covers_every_registered_tool_and_workflow():
             assert set(names.split()) <= set(CATALOG["tools"])
         for name in CATALOG["tools"]:
             result = discover(tools, name, None, 5)
-            assert result["matches"][0]["name"] == name
+            if name not in SECONDARY_TOOLS:
+                assert result["matches"][0]["name"] == name
+            assert not {x["name"] for x in result["matches"]} & SECONDARY_TOOLS
+            assert all(not set(item["companions"]) & SECONDARY_TOOLS
+                       for item in result["matches"])
         assert all(item["domain"] in CATALOG["domains"] for item in CATALOG["tools"].values())
 
     asyncio.run(run())
@@ -46,18 +50,18 @@ def test_catalog_covers_every_registered_tool_and_workflow():
      {"fl_plugin_controls_inspect", "fl_plugin_controls_set"}),
     ("plugin named calibrated physical controls",
      {"fl_plugin_controls_inspect", "fl_plugin_controls_set"}),
-    ("write melody notes piano roll", {"fl_background_piano_write", "fl_send_notes"}),
+    ("write melody notes piano roll", {"fl_background_piano_write", "fl_background_piano_inspect"}),
     ("sidechain kick bass routing", {"fl_routing_inspect", "fl_routing_scene"}),
-    ("export song wav stems", {"fl_render_start", "fl_render_status"}),
+    ("export song wav stems", {"fl_render_status"}),
     ("find the key and BPM of this sample", {"fl_audio_key", "fl_audio_bpm"}),
-    ("save project safely", {"fl_project_save", "fl_project_save_native"}),
+    ("save project safely", {"fl_project_native_inspect", "fl_project_save_native"}),
     ("record microphone vocal take", {"fl_recording_start", "fl_recording_inspect"}),
     ("undo uncertain timed out plugin change", {"fl_receipt"}),
     ("fl_background_piano_write", {"fl_background_piano_write"}),
     ("make the lead vocal quieter", {"fl_mixer_scene"}),
     ("raise compressor threshold", {"fl_plugin_controls_set"}),
     ("route kick into bass for ducking", {"fl_routing_inspect", "fl_routing_scene"}),
-    ("bounce the mixdown", {"fl_render_start", "fl_render_status"}),
+    ("bounce the mixdown", {"fl_render_status"}),
     ("capture input from mic", {"fl_recording_start", "fl_recording_status"}),
     ("synth wavetable unison", {"fl_serum_inspect", "fl_serum_apply"}),
     ("transpose a MIDI reference melody", {"fl_notes_transform"}),
@@ -81,7 +85,7 @@ def test_task_retrieval_retains_inspection_and_completion_tools(query, expected)
     ("load sounds plugins synths in backend mode",
      {"fl_find_assets", "fl_background_effect_load", "fl_instrument_add", "fl_sample_add"},
      {"fl_set_loop_mode", "fl_serum_apply"}),
-    ("load Serum preset", {"fl_find_assets", "fl_serum_inspect_preset", "fl_serum_load_preset"},
+    ("load Serum preset", {"fl_find_assets", "fl_serum_inspect_preset", "fl_preset_load"},
      {"fl_serum_apply", "fl_serum_probe"}),
     ("add VST instrument", {"fl_find_assets", "fl_instrument_add"}, {"fl_serum_apply"}),
     ("load a synth", {"fl_find_assets", "fl_instrument_add"}, {"fl_serum_apply"}),
@@ -105,8 +109,8 @@ def test_loading_intent_reaches_loaders_in_both_modes(monkeypatch, mode, query, 
         assert not excluded & names
         for item in result["matches"]:
             if item["name"] in {"fl_instrument_add", "fl_sample_add", "fl_serum_load_preset"}:
-                assert item["policy"]["explicit_desktop_input"] is True
-                assert item["policy"]["execution_preference"] == "secondary_discouraged"
+                assert item["policy"]["explicit_desktop_input"] is False
+                assert item["policy"]["execution_preference"] == "preferred"
 
     asyncio.run(run())
 
@@ -120,7 +124,7 @@ def test_compact_entry_describes_hidden_capabilities_before_any_discovery_call()
                          "presets", "backend", "notes", "mix", "record", "render"):
                 assert word in description
                 assert word in DISCOVERY_INSTRUCTIONS.lower()
-            assert "currently require interactive mode" in DISCOVERY_INSTRUCTIONS
+            assert "SyncFL is backend-only" in DISCOVERY_INSTRUCTIONS
             index = (await client.call_tool("fl_workflows", {})).data
             assert all(workflow["tasks"] for workflow in index["workflows"])
 
@@ -151,7 +155,7 @@ def test_backend_workflow_tools_precede_discouraged_interactive_tools(monkeypatc
         routed = [item for item in result["matches"] if item["reason"].startswith("workflow:")]
         secondary = [item["name"] in SECONDARY_TOOLS for item in routed]
         assert secondary == sorted(secondary)
-        assert any(secondary) and not all(secondary)
+        assert not any(secondary)
         for item in routed:
             expected = "secondary_discouraged" if item["name"] in SECONDARY_TOOLS else "preferred"
             assert item["policy"]["execution_preference"] == expected
@@ -159,13 +163,12 @@ def test_backend_workflow_tools_precede_discouraged_interactive_tools(monkeypatc
     asyncio.run(run())
 
 
+
 def test_exact_interactive_request_still_resolves_but_is_labeled_secondary():
     async def run():
-        result = discover(await mcp.list_tools(), "fl_project_save", None, 1)
-        match = result["matches"][0]
-        assert match["name"] == "fl_project_save"
-        assert match["policy"]["execution_preference"] == "secondary_discouraged"
-
+        result = discover(await mcp.list_tools(), "fl_project_save", None, 5)
+        assert "fl_project_save" not in {item["name"] for item in result["matches"]}
+        assert all(item["policy"]["backend_available"] for item in result["matches"])
     asyncio.run(run())
 
 
@@ -173,8 +176,8 @@ def test_exact_interactive_request_still_resolves_but_is_labeled_secondary():
 def test_loading_aliases_keep_their_underlying_desktop_input_requirement(name):
     async def run():
         match = discover(await mcp.list_tools(), name, None, 1)["matches"][0]
-        assert match["policy"]["explicit_desktop_input"] is True
-        assert match["policy"]["execution_preference"] == "secondary_discouraged"
+        assert match["policy"]["explicit_desktop_input"] is False
+        assert match["policy"]["execution_preference"] == "preferred"
 
     asyncio.run(run())
 
@@ -187,9 +190,10 @@ def test_workflow_separates_preferred_backend_from_secondary_interactive_routes(
             })).data
             assert "fl_project_save_native" in result["preferred_tools"]
             assert not set(result["preferred_tools"]) & SECONDARY_TOOLS
-            assert "fl_project_save" in result["secondary_tools"]
-            assert set(result["secondary_tools"]) <= SECONDARY_TOOLS
-            assert "discouraged" in result["interactive_guidance"]
+            assert "secondary_tools" not in result
+            assert not set(result["workflow"]["tools"]) & SECONDARY_TOOLS
+            assert result["backend_only"] is True
+            assert "fl_project_save" in result["unavailable_tools"]
 
     asyncio.run(run())
 

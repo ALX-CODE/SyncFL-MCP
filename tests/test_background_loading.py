@@ -67,6 +67,11 @@ def rig(tmp_path, monkeypatch):
             return dict(
                 success=True, tracks=[copy.deepcopy(state.tracks[i]) for i in params["tracks"]]
             )
+        if action == "native.call":
+            assert params == dict(function="ui.showWindow", args=[0], allow_write=True)
+            if getattr(state, "expose_on_show", False):
+                state.exposed = True
+            return dict(success=True, value=None)
         assert action == "bridge.batch"
         assert all(
             step["action"] != "native.call" or "allow_write" not in step["params"]
@@ -98,6 +103,7 @@ def rig(tmp_path, monkeypatch):
     monkeypatch.setattr(loader, "_drop_point_exposed", lambda window: state.exposed)
     monkeypatch.setattr(loader, "verify_runtime", lambda: tmp_path / "helper.exe")
     monkeypatch.setattr(loader, "_input_snapshot", lambda: dict(available=True, cursor=[2, 3]))
+    monkeypatch.setattr(loader.native_windows, "expose_fl_window", lambda _: None)
     monkeypatch.setattr(loader.time, "sleep", lambda _: None)
 
     def dispatch(executable, before, path):
@@ -155,6 +161,16 @@ def test_inspection_and_preview_do_not_dispatch_or_select(rig):
     result = apply(rig, before, False)
     assert result["status"] == "preflighted" and result["success"]
     assert not rig.drops and not rig.receipt.exists()
+
+
+def test_covered_mixer_is_exposed_natively_before_one_dispatch(rig):
+    rig.exposed = False
+    rig.expose_on_show = True
+    before = inspect(rig)
+    assert not before["ready"]
+    result = apply(rig, before)
+    assert result["success"] and len(rig.drops) == 1
+    assert sum(action == "native.call" for action, _, _ in rig.calls) == 1
 
 
 def test_observed_integer_safe_to_edit_and_bounded_all_track_scan(rig):

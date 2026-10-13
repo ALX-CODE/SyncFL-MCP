@@ -192,6 +192,8 @@ def test_interpreter_path_matches_platform(tmp_path, monkeypatch, platform, rela
 
 @pytest.mark.parametrize("arguments,expected", [
     ([], {}),
+    (["--tool-mode", "discovery"], {"FL_MCP_TOOL_MODE": "discovery"}),
+    (["--tool-mode", "full"], {"FL_MCP_TOOL_MODE": "full"}),
     (["--fl-user-data", "D:/Music/Image-Line", "--midi-port", "Custom port",
       "--windows-server", "D:/Tools/WindowsMCP.exe", "--interaction-policy", "background"],
      {"FL_USER_DATA_FOLDER": "D:/Music/Image-Line", "FL_MCP_MIDI_PORT": "Custom port",

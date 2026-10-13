@@ -28,7 +28,7 @@ fl_automation_target_inspect fl_automation_links_inspect
 fl_mix_diagnose fl_mixer_meter_watch fl_midi_reference_search
 fl_notes_transform fl_plugin_adapter_catalog fl_plugin_controls_inspect
 fl_background_effect_inspect fl_project_native_inspect
-fl_mixer_controls_inspect
+fl_mixer_controls_inspect fl_background_piano_inspect
 """.split()
 )
 
@@ -54,21 +54,35 @@ fl_notes_transform fl_plugin_adapter_catalog
 DESKTOP_INPUT_TOOLS = frozenset(
     """
 fl_piano_roll_prepare fl_write_pattern_bank fl_get_piano_roll_state
-fl_sample_add fl_instrument_add fl_effect_add fl_preset_load fl_serum_load_preset
+fl_sample_add fl_instrument_add fl_effect_add fl_plugin_add fl_plugin_chain
+fl_preset_load fl_serum_load_preset
 fl_audio_clip_add fl_project_open fl_project_save fl_project_save_as fl_project_info
 fl_automation_create_channel fl_recording_configure_file fl_render_start fl_render_cancel
 fl_ui_action fl_plugin_remove fl_ensure_mixer_tracks
 """.split()
 )
 
+# Legacy score delivery can prepare a file without input, but its live trigger
+# depends on the interactive script route. Keep it secondary in discovery too.
+SECONDARY_TOOLS = DESKTOP_INPUT_TOOLS | {"fl_send_notes"}
+
+
+def backend_first(names):
+    """Preserve relevance order within primary and secondary execution routes."""
+    names = list(dict.fromkeys(names))
+    return ([name for name in names if name not in SECONDARY_TOOLS]
+            + [name for name in names if name in SECONDARY_TOOLS])
+
 
 def _workflow(identifier, coverage, backend, tools, verification, limitations=()):
-    names = tools.split()
+    names = backend_first(tools.split())
     return dict(
         id=identifier,
         coverage=coverage,
         backend=backend,
         tools=names,
+        preferred_tools=[name for name in names if name not in SECONDARY_TOOLS],
+        secondary_tools=[name for name in names if name in SECONDARY_TOOLS],
         input_requirements=dict(
             desktop_input_tools=sorted(set(names) & DESKTOP_INPUT_TOOLS),
             explicit_interactive_mode_required=bool(set(names) & DESKTOP_INPUT_TOOLS),
@@ -79,6 +93,14 @@ def _workflow(identifier, coverage, backend, tools, verification, limitations=()
 
 
 WORKFLOWS = [
+    _workflow(
+        "background_piano", "experimental", "native_ole_score",
+        "fl_background_piano_inspect fl_background_piano_select fl_background_piano_write",
+        "Exact saved score and independent native save; other channel/pattern notes preserved",
+        ["Saved FL26 project, explicit active .flp path and stopped transport required",
+         "Basic score replacement; no ComposeWithLLM, menus, keyboard or mouse",
+         "Private OLE interface; no automatic retry after an uncertain dispatch"],
+    ),
     _workflow(
         "tempo_analysis", "integrated", "rust_audio_file",
         "fl_audio_bpm",
@@ -111,10 +133,12 @@ WORKFLOWS = [
         "composition",
         "integrated",
         "native_and_internal_windows",
+        "fl_background_piano_inspect fl_background_piano_write fl_background_piano_select "
         "fl_piano_roll_prepare fl_write_pattern_bank fl_get_piano_roll_state fl_step_sequence_edit",
         "Committed note/step readback and revisions",
         [
-            "Piano preparation and persistent note transactions require interactive mode",
+            "Legacy piano preparation and script transactions are secondary interactive routes; "
+            "prefer background_piano for supported persistent FL26 notes",
             "Pattern bank is one channel at a time; generic MIDI omits FL articulation",
         ],
     ),
@@ -299,7 +323,7 @@ def workflow_catalog():
     return dict(
         success=True,
         schema_version=1,
-        workflow_revision=12,
+        workflow_revision=14,
         workflows=WORKFLOWS,
         read_tools={name: {} for name in sorted(READ_TOOLS)},
         policy=dict(
@@ -392,7 +416,7 @@ def inspect_session(connection=None):
             status="ready_for_preflight" if not report["blockers"] else "observation_only",
             project_revision=project.get("revision"),
             saved_path_verified=False,
-            next_tools=["fl_workflow_catalog", "fl_ui_inspect"],
+            next_tools=["fl_workflow_catalog", "fl_production_inspect"],
         )
     except Exception as exc:
         report["blockers"].append(dict(code="inspection_failed", detail=str(exc)))

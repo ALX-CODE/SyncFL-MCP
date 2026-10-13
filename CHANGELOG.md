@@ -2,6 +2,10 @@
 
 ## Unreleased — public presentation
 
+- Added three experimental background piano tools for FL26: inspect pattern/sound/effect context, switch existing targets, and replace a score through native FSC import with saved-file verification and recovery copies. No Piano Roll script menu is required. Workflow revision 13 exposes 146 tools.
+- Fixed read-only controller batches incorrectly calling `afterRoutingChanged`, which dirtied the project during inspection. Pattern selection now handles FL's dirty flag with a verified native save. Background loaders expose addressed FL panels/windows through APIs before rechecking occlusion.
+- Both interaction modes share native/backend APIs as the preferred route. Interactive mode adds guarded UI permission when needed; it does not choose a different engine or replay uncertain backend writes.
+
 - Added a contributor bootstrap (`Develop.cmd` / `scripts/setup_dev.ps1`) that
   clones or reuses the canonical Git checkout without resetting local work.
   Developer mode installs test tools and an editable `syncfl` CLI; offline setup

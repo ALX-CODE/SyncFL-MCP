@@ -69,6 +69,35 @@ def compose_point(ocr):
     return round(x + width / 2), round(y + height / 2)
 
 
+def compose_menu_target(main_handle, point):
+    visible = windows()
+    main = [item for item in visible if item["handle"] == main_handle]
+    if len(main) != 1:
+        raise RuntimeError("FL project window changed before script selection")
+    matches = []
+    for item in visible:
+        x, y, width, height = item["bounds"]
+        if (item["class"] == "TQuickPopupMenuWindow"
+                and item["parent"] == main_handle and item["pid"] == main[0]["pid"]
+                and item["enabled"] and x <= point[0] < x + width
+                and y <= point[1] < y + height):
+            matches.append(item)
+    if len(matches) != 1:
+        raise RuntimeError("Cannot identify FL's piano-roll Tools popup")
+    return matches[0]
+
+
+async def reveal_control(fl, control, point, label):
+    if point_belongs_to(point, control["handle"]):
+        return
+    await fl.win("window_management", action="activate", handle=control["handle"])
+    deadline = time.monotonic() + 1
+    while not point_belongs_to(point, control["handle"]):
+        if time.monotonic() >= deadline:
+            raise RuntimeError(label + " is obscured")
+        await asyncio.sleep(0.05)
+
+
 async def _dispatch():
     scripts = get_fl_settings_dir() / "Piano roll scripts"
     for name in ("ComposeWithLLM.pyscript", "mcp_note_protocol.py"):
@@ -125,8 +154,7 @@ async def _dispatch():
             )
             check_caption(caption, identity[1])
         point = (round(x + 35 * scale), round(y + 12 * scale))
-        if not point_belongs_to(point, roll["handle"]):
-            raise RuntimeError("Piano-roll Tools button is obscured")
+        await reveal_control(fl, roll, point, "Piano-roll Tools button")
         await fl.click(point[0] - x, point[1] - y, handle=roll["handle"])
         if not call("ui.isInPopupMenu"):
             raise RuntimeError("Piano-roll Tools menu did not open")
@@ -154,8 +182,12 @@ async def _dispatch():
             current = json.loads((scripts / "mcp_request.json").read_text(encoding="utf-8"))
             if current != envelope:
                 raise RuntimeError("Piano request changed before script selection")
-            if not point_belongs_to(point, fl.handle):
-                raise RuntimeError("ComposeWithLLM menu item is obscured")
+            # FL menus are owned top-level windows, not children of the main
+            # window. Verify the exact popup instead of rejecting its ownership.
+            popup = compose_menu_target(fl.handle, point)
+            await reveal_control(fl, popup, point, "ComposeWithLLM menu item")
+            if selected_identity() != identity or not call("ui.isInPopupMenu"):
+                raise RuntimeError("Piano target or menu changed while raising the popup")
             # One dispatch only. The bridge correlates and verifies the response.
             await fl.click(point[0] - x, point[1] - y, handle=roll["handle"])
             return True

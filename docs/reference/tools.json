@@ -697,6 +697,125 @@
     }
   },
   {
+    "name": "fl_background_piano_inspect",
+    "description": "Inspect a saved FL26 score and its live native target without menus.\n\nSupply the exact active .flp path and zero-based channel. Requires a saved,\nstopped project. Returns the pattern/name, generator or sample source,\nsaved generator-state fingerprint, mixer routing, effect slots and revision.\nThis reads saved notes; the write tool verifies its exact disk path after save.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "project_path": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "project_path",
+        "channel"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_background_piano_select",
+    "description": "Select an existing pattern and sound through native APIs, then verify both.\n\nInspect the target channel first; pass its revision. Returns the selected\npattern name, generator identity, saved preset fingerprint, mixer routing\nand actual effect slots. Opens its piano roll and selects its routed\nmixer track without menu clicks, so subsequent effect operations match.\nFL marks pattern selection dirty, so a changed pattern is saved with\nbefore/after recovery copies and exact verification of all existing notes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "project_path": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "integer"
+        },
+        "pattern": {
+          "type": "integer"
+        },
+        "expected_revision": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "project_path",
+        "channel",
+        "pattern",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_background_piano_write",
+    "description": "Replace one piano-roll score through native FSC import; no ComposeWithLLM.\n\nUses the current pattern and explicit channel. Basic note fields: midi,\ntime/duration in beats or time_ticks/length_ticks, velocity, pan, release,\ncolor and slide. Saves the active project and checks exact notes plus all\nother channel/pattern notes in the supplied .flp. Keeps before/after copies.\nNative panel selection is automatic. No keyboard, mouse or interactive fallback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "project_path": {
+          "type": "string"
+        },
+        "channel": {
+          "type": "integer"
+        },
+        "notes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "expected_channel": {
+          "type": "string"
+        },
+        "receipt_file": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "project_path",
+        "channel",
+        "notes",
+        "expected_revision",
+        "expected_channel",
+        "receipt_file"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
     "name": "fl_batch",
     "description": "Preflight then execute up to 256 typed operations. Defaults to dry run.\n\nEach step is {action, params}. Slots/channels/mixer tracks are zero-based.\nStops on first failure and reports applied count; no automatic rollback.\nUse fl_capabilities for actions and fl_native_call for documented API calls.",
     "inputSchema": {

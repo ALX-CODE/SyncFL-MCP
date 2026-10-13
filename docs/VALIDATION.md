@@ -1,5 +1,34 @@
 # Validation and evidence
 
+## Background score and context qualification: October 12, 2026
+
+The FL26 live lab verified 32 score writes across eight channels and two named
+patterns, plus occupied-score replacement and idempotent import. Saved-FLP
+readback checked exact pitch, tick position/length, velocity, pan, release, note
+color and slide. Other scores, pattern names, channel identities, project timing
+and Playlist clips were preserved. FL's editor-selection bit was ignored;
+other note bits remain part of the comparison.
+
+Forty-eight completed switches covered pattern/channel selection, generator or
+sample identity, routed mixer selection and loaded effects. Fresh MCP-server
+tests exercised both background and interactive modes with identical backend
+behavior. Same-pattern sound switches measured about 0.8 seconds median; changing
+the pattern required a verified native save and took about 1.3–1.5 seconds.
+The final matrix's score writes measured about 1.6 seconds median. These timings
+describe this machine and project, not a latency guarantee.
+
+Stale pattern/effect contexts were rejected before dispatch. A live covered-Mixer
+test automatically exposed the native panel and loaded a Parametric EQ 2 into
+the exact empty slot; later reads confirmed the complete effect chain. API-only
+main-window exposure preserved the observed foreground, cursor and capture.
+The four native bridge CTests also passed, including the no-input import check.
+
+The private OLE route remains experimental. This verifies stored notes and host
+identities, not audible plugin DSP, licensing or every FL build. Preset labels
+are not guessed: the context reports saved generator-state fingerprints and
+sample references. Empty-score clearing and advanced expression are unqualified.
+The recording remained stopped throughout this repair.
+
 Different checks answer different questions. A passing unit test is useful, but it does not prove a particular plugin sounds correct or that another machine's FL UI matches the calibrated layout.
 
 ## Windows installation: October 12, 2026

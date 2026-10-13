@@ -1,4 +1,4 @@
-"""Read physical HWND geometry for FL's owner-drawn controls, absent from UIA."""
+"""Inspect physical HWND geometry and explicitly expose FL without desktop input."""
 
 from __future__ import annotations
 
@@ -25,6 +25,8 @@ def api():
         ("GetDpiForWindow", [w.HWND], w.UINT),
         ("WindowFromPoint", [w.POINT], w.HWND),
         ("GetParent", [w.HWND], w.HWND),
+        ("SetWindowPos", [w.HWND, w.HWND, c.c_int, c.c_int, c.c_int, c.c_int, w.UINT],
+         w.BOOL),
     ):
         method = getattr(user, name)
         method.argtypes, method.restype = args, result
@@ -102,3 +104,23 @@ def point_belongs_to(point, parent):
     finally:
         if prior:
             user.SetThreadDpiAwarenessContext(prior)
+
+
+def expose_fl_window(expected):
+    """Raise an identity-checked FL window without activation, moving or resizing.
+
+    This is an explicit write helper, never part of metadata inspection. The
+    caller must still verify its actual drop target after exposing the main window.
+    """
+    rows = windows()
+    matches = [row for row in rows if row["handle"] == expected["handle"]]
+    if (len(matches) != 1 or matches[0]["class"] != "TFruityLoopsMainForm"
+            or any(matches[0][key] != expected[key] for key in ("pid", "title"))
+            or not matches[0]["enabled"]
+            or any(row["pid"] == expected["pid"] and row["class"] == "#32770"
+                   for row in rows)):
+        raise RuntimeError("FL window changed or a modal operation is active")
+    user, _ = api()
+    # HWND_TOP; SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOOWNERZORDER.
+    if not user.SetWindowPos(int(expected["handle"]), 0, 0, 0, 0, 0, 0x213):
+        raise OSError("Windows could not expose the FL window")

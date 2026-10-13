@@ -149,6 +149,22 @@ def test_wrong_initial_target_stops_before_compile(setup):
     setup.launch.assert_not_called()
 
 
+def test_obscured_target_is_activated_before_helper_launch(setup):
+    setup.ownership.side_effect = [False, False, True, True, True]
+    result = run(setup)
+    assert result['delivery_confirmed']
+    assert setup.fl.win.await_args_list[0].kwargs == {
+        'action': 'activate', 'handle': '200'}
+
+
+def test_helper_activation_may_settle_before_dispatch(setup):
+    setup.ownership.side_effect = [True, False, False, True, True]
+    result = run(setup)
+    assert result['delivery_confirmed']
+    assert sum(call.args == ('mouse_control',)
+               for call in setup.fl.win.await_args_list) == 1
+
+
 def test_changed_target_during_activation_never_drags_and_reaps_only_helper(setup):
     setup.ownership.side_effect = [True, True, False]
     with pytest.raises(RuntimeError, match="destination changed"):
@@ -158,7 +174,7 @@ def test_changed_target_during_activation_never_drags_and_reaps_only_helper(setu
 
 
 def test_obscured_source_never_drags(setup):
-    setup.ownership.side_effect = [True, False]
+    setup.ownership.side_effect = lambda point, handle: handle != '100'
     with pytest.raises(RuntimeError, match="moved or obscures"):
         run(setup)
     assert setup.fl.win.await_count == 1 and setup.process.terminated == 1

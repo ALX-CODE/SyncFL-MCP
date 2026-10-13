@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 
 from fastmcp import FastMCP
@@ -15,10 +16,17 @@ SyncFL controls FL Studio through native controller operations, guarded Windows
 workflows and offline project/audio utilities. Begin with fl_connection_status
 and fl_session_inspect. Consult fl_workflow_catalog for supported routes.
 
-Background interaction is the default. Keyboard, mouse and focus operations
-require FL_MCP_INTERACTION_POLICY=interactive. Never silently fall back to them.
-Native transport, mixer, routing, channels, plugin controls and supported model
-operations can execute without occupying the user's keyboard or mouse.
+Both interaction modes use the same native/backend APIs and expose the same
+tools. Always choose the backend first in BOTH modes, including background piano
+and effect loading whenever their qualified preconditions fit. Interactive is
+secondary and discouraged: use guarded UI only when no qualified backend route
+fits and the user permits UI input. Interactive configuration alone is not a
+reason to choose UI. Never change modes automatically or treat a visible window
+as a reason to abandon a backend route. It is not a different engine.
+Background is the default. Keyboard, mouse and focus operations require
+FL_MCP_INTERACTION_POLICY=interactive. Never retry an uncertain/dispatched backend
+mutation through UI. Native transport, mixer, routing, channels, plugin controls
+and supported model operations do not occupy the user's keyboard or mouse.
 
 Use inspection before writes. Exact identities, revisions, expected names and
 hashes guard scene changes. A timeout after dispatch means unknown outcome:
@@ -38,8 +46,9 @@ original source path. Plugin removal may need a calibrated UI layout.
 
 Live note triggering does not create persistent notes. Piano transactions,
 pattern/step workflows and offline FLP editing serve persistent composition.
-Piano preparation requires interactive mode; native capabilities have separate
-support and verification limits. Playlist file edits preserve the original FLP;
+Prefer fl_background_piano_inspect/write for script-free score replacement on a
+saved FL26 project. It uses native panel selection and OLE import, then checks the
+saved FLP. Legacy piano preparation uses interactive mode. Playlist file edits preserve the FLP;
 add supports full pattern clips, with no arbitrary trimming/stretching or newly
 invented audio channels. Inspect the saved project after opening to verify length.
 
@@ -149,6 +158,7 @@ REGISTRARS = [
     ("plugin_adapters", "plugin_adapter"),
     ("project_native", "project_native"),
     ("background_loading", "background_loading"),
+    ("background_piano", "background_piano"),
     ("recording_state", "recording_state"),
     ("recording_jobs", "recording_job"),
     ("playlist_import", "playlist_import"),
@@ -166,14 +176,19 @@ mcp.add_middleware(FLToolLeaseMiddleware())
 
 def main():
     """Initialize optional local runtimes before serving MCP over stdio."""
+    from fl_studio_mcp.discovery import create_discovery_server
     from fl_studio_mcp.utils.audio_files import initialize_audio_runtime
     from fl_studio_mcp.utils.native_midi import initialize_native_midi
 
+    mode = os.environ.get("FL_MCP_TOOL_MODE", "discovery").strip().lower()
+    if mode not in {"discovery", "full"}:
+        raise ValueError("FL_MCP_TOOL_MODE must be 'discovery' or 'full'")
+    server = create_discovery_server(mcp) if mode == "discovery" else mcp
     initialize_audio_runtime()
     outcome = initialize_native_midi()
     if not outcome.get("success"):
         print("Native MIDI startup: " + str(outcome.get("error")), file=sys.stderr)
-    mcp.run()
+    server.run()
 
 
 if __name__ == "__main__":

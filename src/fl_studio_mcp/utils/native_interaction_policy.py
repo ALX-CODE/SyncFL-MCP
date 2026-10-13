@@ -42,6 +42,26 @@ GLOBAL_ONLY_TRANSPORT_FUNCTIONS = frozenset({
 GT_GLOBAL = 8
 
 
+def _explicit_panel_command(action, params):
+    """FL can expose an addressed panel without synthesizing desktop input.
+
+    Keep focus-routed UI commands gated. These two forms name an exact panel
+    or piano-roll event editor instead of operating on whichever control owns
+    keyboard focus. Backend callers must still inspect the resulting target.
+    """
+    if action != "native.call" or set(params) - {"function", "args", "allow_write"}:
+        return False
+    args = params.get("args")
+    if not isinstance(args, list):
+        return False
+    if params.get("function") == "ui.showWindow":
+        return len(args) == 1 and type(args[0]) is int and 0 <= args[0] <= 4
+    if params.get("function") == "ui.openEventEditor":
+        return (len(args) == 3 and type(args[0]) is int and 0 <= args[0] <= 0x7fffffff
+                and type(args[1]) is int and args[1] == 1 and args[2] is False)
+    return False
+
+
 def _explicit_global_transport(action, params):
     # The controller dispatches native.call as fn(*args) and ignores kwargs.
     # These functions have no direct typed aliases. Do not accept an apparently
@@ -97,6 +117,8 @@ def check_native_command(action, params=None):
                 "Focus-routed " + function + "; background requires native.call "
                 "with two positional integers and flags=GT_Global (8)"
             )
+        if _explicit_panel_command(current_action, current_params):
+            continue
         if (function in DESKTOP_NATIVE_FUNCTIONS
                 or function.startswith("ui.") and function not in BACKGROUND_UI_FUNCTIONS):
             require_desktop_input("Native " + function)

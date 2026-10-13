@@ -2,7 +2,7 @@
 
 ![SyncFL logo](docs/assets/syncfl-logo.png)
 
-**143 tools. 4,872 named plugin controls. Music production from one conversation.**
+**146 tools. 4,872 named plugin controls. Music production from one conversation.**
 
 Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
@@ -12,7 +12,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 [![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
 
-[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 143 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 146 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
 
 [Download a release](https://github.com/ALX-CODE/SyncFL-MCP/releases) · [Questions and demos](https://github.com/ALX-CODE/SyncFL-MCP/discussions) · [Report a bug](https://github.com/ALX-CODE/SyncFL-MCP/issues/new/choose)
 
@@ -20,7 +20,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 **SyncFL** (**SyncFL-MCP**) brings live session control, composition, arrangement, mixing, sound design, automation, audio analysis and project packaging into one local [Model Context Protocol](https://modelcontextprotocol.io/) server. Give a compatible AI assistant the tools to inspect your session, shape a synth, adjust a vocal chain, route a mix and work with your project files.
 
-| **143** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
+| **146** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
 |:---:|:---:|:---:|:---:|
 | Documented schemas | Across 50 profiles | Numeric units and menu values | Independent host-display holdouts |
 
@@ -35,7 +35,7 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 | Workflow | What the server provides |
 |---|---|
 | **Inspect a session** | Live transport, channels, mixer, plugins, native capabilities and workflow prerequisites |
-| **Compose and arrange** | Persistent notes through the piano bridge, pattern banks, step sequences, note transforms and saved-FLP clip editing |
+| **Compose and arrange** | Background FL26 score import and pattern/sound switching, piano bridge, pattern banks, step sequences, note transforms and saved-FLP clip editing |
 | **Mix with exact targets** | Guarded mixer scenes, built-in EQ and strip switches, sends, buses, sidechains, plugin parameter batches and bounded peak-meter observations |
 | **Control familiar plugins** | 50 profiles, 4,872 named controls and 1,148 qualified numeric/menu mappings; explicit normalized access where calibration is withheld |
 | **Design Serum sounds** | Live mapped controls, native preset inspection/editing, kick/808/lead/pad builders and measured audio probes |
@@ -43,6 +43,12 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 | **Manage projects** | Saved-FLP inspection, automation edits, source-preserving project packages, guarded open/save and recording/render jobs |
 
 The [capability matrix](docs/CAPABILITIES.md) explains input requirements and limits. The [generated reference](docs/reference/TOOLS.md) documents every registered tool and its parameters.
+
+**Six entry tools, all 146 capabilities available on demand.** The default
+[discovery interface](docs/TOOL-DISCOVERY.md) keeps full tool schemas out of the
+initial model context. It routes musical tasks to bounded summaries, returns exact
+contracts when requested, and delegates execution to the existing guarded backend.
+Set `FL_MCP_TOOL_MODE=full` for the complete initial tool list.
 
 ## SETUP | INSTALL
 
@@ -120,16 +126,26 @@ Mappings bind to the **exact exposed parameter layout**. Changed layouts are ref
 
 `FL_MCP_INTERACTION_POLICY=background` is the default. Keyboard/mouse delivery, activation and focus-dependent calls are blocked before dispatch. There is no automatic fallback to interactive mode.
 
+Both modes expose the same tools and always use a qualified backend route first.
+**Interactive control is secondary and discouraged**, even when `interactive` is
+configured. Use it only when no qualified backend route fits and the user permits
+UI input. A visible FL window is not a reason to choose UI, and enabling
+interactive mode does not select a separate engine or disable backend APIs.
+Discovery puts backend workflow tools first and labels interactive tools as
+secondary; workflow responses separate preferred tools from secondary tools.
+Never change modes automatically or retry an uncertain backend mutation through UI.
+
 | Route | Current behavior |
 |---|---|
 | Native transport, supported channel/mixer/routing/plugin controls | Background, with operation-specific validation |
 | File inspection, MIDI transforms, audio analysis and saved-FLP editing | Offline; no live desktop input |
 | Save the current named project | Background host-state verification; no general disk-path/byte guarantee |
+| Background piano score and pattern/sound selection | Experimental FL26 FSC import; exact saved-note verification, automatic panel exposure and explicit generator/routing/effect context |
 | Piano-script activation, general loading, Open/Save As, GUI export | Explicit interactive mode and the documented Windows layout |
-| Selected-track background effect loading | Experimental; an empty slot on the selected track, visibly in front (a covered slot is refused) |
+| Selected-track background effect loading | Experimental; empty slot on selected track, with automatic native panel/window exposure before rechecking the target |
 | Native FL SDK note bridge | Research prototype; note writes disabled |
 
-Some background inspection still needs a visible matching window. Full background piano editing, general import and rendering are unfinished. The [architecture](docs/ARCHITECTURE.md) explains these boundaries.
+Background score import needs a saved, stopped FL26 project and its exact path. The new route does not use the Piano Roll script menu or ComposeWithLLM. Advanced note expression, general import and rendering remain unfinished. The [workflow](docs/WORKFLOWS.md#background-piano-and-fast-patternsound-switching) explains the score contract.
 
 ## Built to be inspectable
 

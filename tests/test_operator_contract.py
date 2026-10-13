@@ -47,6 +47,15 @@ def test_failed_observation_stops_instead_of_inventing_readiness(tmp_path):
     assert conn.calls == ["bridge.ping", "production.inspect"]
 
 
+def test_unnamed_session_points_to_backend_initialization_without_saving(tmp_path):
+    conn = Connection(tmp_path)
+    conn.results["production.inspect"]["context"] = {"project_title": ""}
+    result = contract.inspect_session(conn)
+    assert result["next_tools"][0] == "fl_project_create"
+    assert "do not ask the user to save manually" in result["blank_project_start"]
+    assert conn.calls == ["bridge.ping", "production.inspect", "transport.getStatus"]
+
+
 def test_changing_transport_or_missing_state_blocks_guarded_edit_readiness(tmp_path):
     conn = Connection(tmp_path)
     conn.results["transport.getStatus"]["is_recording"] = True

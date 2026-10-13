@@ -599,6 +599,10 @@
     "fl_ui_action": {
       "domain": "advanced",
       "purpose": "Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend operations; fl_ui_inspect provides observation only."
+    },
+    "fl_project_create": {
+      "domain": "project",
+      "purpose": "Create and load a named FL26 project from the clean unnamed Empty project before adding sounds or notes. Performs the first save through the backend; never ask the user to save a blank project manually."
     }
   }
 }

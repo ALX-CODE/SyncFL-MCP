@@ -1,11 +1,12 @@
 # Capabilities and limits
 
-**146 compatibility contracts, workflow revision 15.** Discovery recommends supported backend routes and labels unavailable contracts. Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
+**147 compatibility contracts, workflow revision 16.** Discovery recommends supported backend routes and labels unavailable contracts. Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
 
 **Background** means no synthetic keyboard/mouse or activation. **Offline** operates on files without applying them to the live project. **Desktop input is unavailable**; there is no interactive mode. **Experimental** has narrower evidence; inspect failures rather than replaying them.
 
 | Area | Representative tools | Route | Main boundary |
 |---|---|---|---|
+| New blank project | `fl_project_create` | Background | Clean unnamed Empty template only; creates a new named FL26 file before composing, with native load/save and saved-file verification |
 | Connection/discovery | `fl_build_info`, `fl_connection_status`, `fl_capabilities`, `fl_session_inspect` | Background/offline | Open MIDI alone does not prove a responding controller |
 | Transport | Transport tools, `fl_get_transport_status` | Supported native actions background | Triggering notes does not persist composition |
 | Project/channel settings | `fl_production_inspect`, `fl_project_settings`, `fl_channel_configure` | Background | Fresh revisions; PPQ/meter edits not enabled |

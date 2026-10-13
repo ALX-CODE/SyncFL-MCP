@@ -81,7 +81,7 @@ def register_workflow_tools(mcp):
 
         return dict(
             version=__version__,
-            workflow_revision=15,
+            workflow_revision=16,
             **LOADED_BUILD,
             interaction_policy=policy_metadata(),
             guarded_production="BPM, channel controls, scoped steps; optional native shuffle",
@@ -89,6 +89,7 @@ def register_workflow_tools(mcp):
             playlist="saved-FLP full pattern placement; existing pattern/audio/automation edits",
             automation="native target/link inspection; saved link retargeting and curve edits",
             project_open="revision/hash guarded open with a new verified recovery FLP",
+            project_create="clean unnamed Empty project to named native-saved FL26; no manual save",
             render="persistent native WAV master/stem jobs with decoded audio verification",
             audio=("Rust BPM and major/minor key candidates; levels/silence/stereo analysis; "
                    "exact trim/reverse/fade/gain to new WAVs"),

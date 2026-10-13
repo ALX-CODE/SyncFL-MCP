@@ -3356,6 +3356,50 @@
     }
   },
   {
+    "name": "fl_project_create",
+    "description": "Initialize a named FLP from the current clean, unnamed Empty project.\n\nUse this BEFORE adding sounds, notes or mixer changes when starting a beat\nfrom a blank project. Do not ask the user to save the blank project manually.\nRead fl_production_inspect(scope='project') for expected_revision. Preflight\nby default; apply=True needs a new absolute .flp path and .json receipt_file.\nCopies the installed Empty template, loads it through the native backend,\ninitializes Pattern 1, then native-saves and verifies the resulting FL26 file.\nRejects named, dirty or nonempty projects and never overwrites a file.\nNo keyboard, mouse, Save As dialog or interactive mode. Experimental native load.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
     "name": "fl_project_file_inspect",
     "description": "Inspect a saved FLP's patterns, notes, playlist and external sample references.",
     "inputSchema": {
@@ -3418,7 +3462,7 @@
   },
   {
     "name": "fl_project_open",
-    "description": "Load an FL26 project through the native backend, preserving a recovery FLP.\n\nPreflight by default. Use source SHA256 and fl_production_inspect project revision.\nSupply current_project_path for the already named/saved active project.\nApply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save\nthe current project before copying it to recovery; never discard dirty edits.\nVerify generation, title, channels, source hash, tempo and PPQ. Absolute loaded\npath is caller-declared, not independently exposed by FL. No input or mode switch.\nUnnamed projects are unsupported; stop on dialogs or uncertain completion.",
+    "description": "Load an FL26 project through the native backend, preserving a recovery FLP.\n\nPreflight by default. Use source SHA256 and fl_production_inspect project revision.\nSupply current_project_path for the already named/saved active project.\nFor a clean unnamed blank session, use fl_project_create before composing.\nApply needs new absolute JSON receipt_file and recovery_path (.flp). Native-save\nthe current project before copying it to recovery; never discard dirty edits.\nVerify generation, title, channels, source hash, tempo and PPQ. Absolute loaded\npath is caller-declared, not independently exposed by FL. No input or mode switch.\nUnnamed projects are unsupported; stop on dialogs or uncertain completion.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -3554,7 +3598,7 @@
   },
   {
     "name": "fl_project_save_as",
-    "description": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no\nbackend implementation. Use fl_project_save_native for an already named\nproject.",
+    "description": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no\nbackend implementation. Use fl_project_save_native for an already named\nproject, or fl_project_create to initialize a clean unnamed Empty project.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {

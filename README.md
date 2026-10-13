@@ -2,7 +2,7 @@
 
 ![SyncFL logo](docs/assets/syncfl-logo.png)
 
-**146 tools. 4,872 named plugin controls. Music production from one conversation.**
+**147 tools. 4,872 named plugin controls. Music production from one conversation.**
 
 Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
@@ -12,7 +12,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 [![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
 
-[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 146 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 147 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
 
 [Download a release](https://github.com/ALX-CODE/SyncFL-MCP/releases) · [Questions and demos](https://github.com/ALX-CODE/SyncFL-MCP/discussions) · [Report a bug](https://github.com/ALX-CODE/SyncFL-MCP/issues/new/choose)
 
@@ -20,7 +20,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 **SyncFL** (**SyncFL-MCP**) brings live session control, composition, arrangement, mixing, sound design, automation, audio analysis and project packaging into one local [Model Context Protocol](https://modelcontextprotocol.io/) server. Give a compatible AI assistant the tools to inspect your session, shape a synth, adjust a vocal chain, route a mix and work with your project files.
 
-| **146** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
+| **147** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
 |:---:|:---:|:---:|:---:|
 | Documented schemas | Across 50 profiles | Numeric units and menu values | Independent host-display holdouts |
 
@@ -44,7 +44,7 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 
 The [capability matrix](docs/CAPABILITIES.md) explains input requirements and limits. The [generated reference](docs/reference/TOOLS.md) documents every registered tool and its parameters.
 
-**Six entry tools, all 146 capabilities available on demand.** The default
+**Six entry tools, all 147 capabilities available on demand.** The default
 [discovery interface](docs/TOOL-DISCOVERY.md) keeps full tool schemas out of the
 initial model context. It routes musical tasks to bounded summaries, returns exact
 contracts when requested, and delegates execution to the existing guarded backend.
@@ -93,6 +93,10 @@ Set up SyncFL-MCP from https://github.com/ALX-CODE/SyncFL-MCP on this Windows PC
 **Contributing? Run `Develop.cmd`.** It clones or reuses your local SyncFL Git
 checkout and installs development tools plus the `syncfl` CLI. Offline developer
 setup leaves FL and assistant settings alone. [Developer setup →](docs/DEVELOPER-SETUP.md)
+
+For a new beat in a clean unnamed Empty project, `fl_project_create` creates and
+loads the named FLP, initializes Pattern 1 and saves it through the backend. Run
+it before adding sounds or notes; no manual first save is needed.
 
 ## A useful first session
 

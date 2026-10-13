@@ -2,6 +2,8 @@
 
 ## Unreleased — public presentation
 
+- Added `fl_project_create` for clean unnamed Empty projects: create the named FLP from the installed template, load it through the backend, initialize Pattern 1, and native-save with file verification. Startup guidance and discovery direct assistants here before loading sounds, instead of requesting a manual first save. Existing or modified projects are preserved. Workflow revision 16 exposes 147 contracts. The new sequence has regression coverage; live end-to-end qualification remains pending.
+
 - Added three experimental background piano tools for FL26: inspect pattern/sound/effect context, switch existing targets, and replace a score through native FSC import with saved-file verification and recovery copies. No Piano Roll script menu is required. Workflow revision 13 exposes 146 tools.
 - Fixed read-only controller batches incorrectly calling `afterRoutingChanged`, which dirtied the project during inspection. Pattern selection now handles FL's dirty flag with a verified native save. Background loaders expose addressed FL panels/windows through APIs before rechecking occlusion.
 - Removed interactive execution. SyncFL is backend-only; legacy mode settings cannot enable input and client registration removes them. Discovery omits unsupported desktop workflows.

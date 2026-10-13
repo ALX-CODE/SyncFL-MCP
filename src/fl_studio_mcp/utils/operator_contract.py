@@ -92,6 +92,14 @@ def _workflow(identifier, coverage, backend, tools, verification, limitations=()
 
 WORKFLOWS = [
     _workflow(
+        "blank_project", "experimental", "native_blank_project_bootstrap",
+        "fl_project_create fl_production_inspect fl_project_native_inspect",
+        "Named FL26 file verified after native load, Pattern 1 initialization and native save",
+        ["Run before adding sounds or notes: current project must be clean, unnamed and empty",
+         "Uses the installed Empty template; never overwrites an existing path",
+         "No manual first save, keyboard, mouse or Save As dialog"],
+    ),
+    _workflow(
         "background_piano", "experimental", "native_ole_score",
         "fl_background_piano_inspect fl_background_piano_select fl_background_piano_write",
         "Exact saved score and independent native save; other channel/pattern notes preserved",
@@ -321,7 +329,7 @@ def workflow_catalog():
     return dict(
         success=True,
         schema_version=1,
-        workflow_revision=15,
+        workflow_revision=16,
         workflows=WORKFLOWS,
         read_tools={name: {} for name in sorted(READ_TOOLS)},
         policy=dict(
@@ -416,6 +424,13 @@ def inspect_session(connection=None):
             saved_path_verified=False,
             next_tools=["fl_workflow_catalog", "fl_production_inspect"],
         )
+        if project.get("context", {}).get("project_title") == "":
+            report["blank_project_start"] = (
+                "Before adding sounds or notes, use fl_project_create to initialize a named "
+                "FLP from the clean Empty project. The tool performs the first save; "
+                "do not ask the user to save manually. It preflights the actual blank state."
+            )
+            report["next_tools"].insert(0, "fl_project_create")
     except Exception as exc:
         report["blockers"].append(dict(code="inspection_failed", detail=str(exc)))
     return report

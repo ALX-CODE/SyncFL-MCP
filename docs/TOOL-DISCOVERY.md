@@ -27,10 +27,14 @@ and curated musical workflow terms next,
 and BM25 over current tool contracts last. It returns inspection/status companions
 alongside candidate writes, including alternative routes when useful. Named plugin
 controls handle supported physical units; legacy setters are not interchangeable.
-All 146 tools have an on-disk domain and usage note in `discovery_catalog.json`.
+All 147 tools have an on-disk domain and usage note in `discovery_catalog.json`.
 Tests check this index against actual registrations, so new tools cannot silently
 go missing from the audited inventory. Unrecognized language can still retrieve
 irrelevant candidates: inspect contracts and use a domain filter to narrow them.
+
+A clean unnamed blank project is initialized with `fl_project_create` before
+adding sounds or notes. Discovery and session inspection point to this route;
+the assistant should perform the first save rather than request a manual save.
 
 For loading requests, use ordinary language such as `load Serum preset`, `add VST
 instrument`, `load sounds plugins synths in backend mode`, or `switch to existing

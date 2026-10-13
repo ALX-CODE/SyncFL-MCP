@@ -70,6 +70,8 @@ def test_catalog_covers_every_registered_tool_and_workflow():
     ("measure LUFS and true peak", {"fl_audio_loudness"}),
     ("automation curve target link", {"fl_automation_target_inspect"}),
     ("native save with clean state", {"fl_project_native_inspect", "fl_project_save_native"}),
+    ("blank project first save", {"fl_project_create"}),
+    ("start a beat from an unnamed project", {"fl_project_create"}),
 ])
 def test_task_retrieval_retains_inspection_and_completion_tools(query, expected):
     async def run():

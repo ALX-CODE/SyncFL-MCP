@@ -1,5 +1,15 @@
 # Native save result contract
 
+For a new beat in the clean, unnamed **Empty** project, call `fl_project_create`
+before adding sounds, notes or mixer changes. It copies the running installation's
+Empty template to the requested new path, loads it through the backend, initializes
+Pattern 1, and native-saves the resulting FL26 project. The workflow verifies the
+saved file and returns its path and hash. No manual Save As step is needed.
+
+This initialization route rejects a named, dirty or nonempty active project,
+uses a new receipt, and never overwrites a destination. A failed or uncertain
+load is not replayed. It is separate from saving arbitrary existing unsaved work.
+
 `fl_project_save_native` saves the current named project through the typed
 controller command `project.save_current`. It does not activate a window or send
 keyboard or mouse input. The exact inspected window title, controller process,

@@ -38,6 +38,8 @@ Use fl_discover for these capabilities even when their individual APIs are hidde
 Backend APIs include instrument/pattern selection, piano writing, WAV sample and
 FST instrument/preset/effect loading, plugin/synth controls, native saves and guarded
 FLP loading. Loading routes use the experimental native bridge and return receipts.
+For a clean unnamed blank project, use fl_project_create before adding sounds or
+notes. It creates, loads and saves the named FLP itself; never ask for a manual first save.
 Start with fl_build_info and, for live work, fl_session_inspect. Use fl_discover for
 the musical task, fl_workflows for supported routes, then fl_describe for the exact
 selected contracts. Execute via fl_call using the original tool name and arguments.
@@ -57,6 +59,10 @@ audio quality. fl_call preserves complete results, including errors and uncertai
 # travel together so that a start/write does not hide its inspection/status path.
 # Unknown vocabulary still falls back to BM25 over the current exact contracts.
 ROUTES = {
+    "blank_project": (
+        "blank|empty project|new project|start beat|first save|unnamed|unsaved project",
+        "fl_project_create fl_production_inspect fl_project_native_inspect",
+    ),
     "background_piano": (
         "melody|notes|note|piano|piano roll|chord|score|arpeggio|compose",
         "fl_background_piano_inspect fl_background_piano_write fl_background_piano_select "

@@ -8,6 +8,11 @@ backend mutation through UI.
 
 The server uses local stdio. Configure an absolute Python path and repository working directory. An HTTP URL is not provided by this project.
 
+The default `discovery` tool mode advertises six entry tools. All underlying tools
+remain available through exact-name calls or `fl_discover` → `fl_describe` → `fl_call`.
+Set `FL_MCP_TOOL_MODE=full` to restore the complete initial tool list. This setting
+is independent of desktop-input permission. See [tool discovery](TOOL-DISCOVERY.md).
+
 ## Generic MCP / Claude-style JSON
 
 Replace these paths with your checkout and FL data root. Merge the entry into the client's existing configuration; preserve unrelated entries.
@@ -64,6 +69,7 @@ It honors `CODEX_HOME`, otherwise the user's `.codex/config.toml`. Use `--config
 | `FL_USER_DATA_FOLDER` | Image-Line root containing `FL Studio`; otherwise platform path discovery |
 | `FL_MCP_MIDI_PORT` | Explicit output; default Windows route uses the owned ALX endpoint |
 | `FL_MCP_INTERACTION_POLICY` | `background` by default; `interactive` explicitly enables supported desktop workflows |
+| `FL_MCP_TOOL_MODE` | `discovery` by default; `full` advertises every underlying tool schema |
 | `FL_MCP_WINDOWS_SERVER` | Absolute compatible Windows MCP executable for UI/window inspection |
 | `FL_STUDIO_MCP_FFMPEG` | Explicit FFmpeg executable; otherwise PATH resolution |
 

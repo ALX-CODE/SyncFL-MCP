@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import os
 import sys
 
 from fastmcp import FastMCP
@@ -173,14 +174,19 @@ mcp.add_middleware(FLToolLeaseMiddleware())
 
 def main():
     """Initialize optional local runtimes before serving MCP over stdio."""
+    from fl_studio_mcp.discovery import create_discovery_server
     from fl_studio_mcp.utils.audio_files import initialize_audio_runtime
     from fl_studio_mcp.utils.native_midi import initialize_native_midi
 
+    mode = os.environ.get("FL_MCP_TOOL_MODE", "discovery").strip().lower()
+    if mode not in {"discovery", "full"}:
+        raise ValueError("FL_MCP_TOOL_MODE must be 'discovery' or 'full'")
+    server = create_discovery_server(mcp) if mode == "discovery" else mcp
     initialize_audio_runtime()
     outcome = initialize_native_midi()
     if not outcome.get("success"):
         print("Native MIDI startup: " + str(outcome.get("error")), file=sys.stderr)
-    mcp.run()
+    server.run()
 
 
 if __name__ == "__main__":

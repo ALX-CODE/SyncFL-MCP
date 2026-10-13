@@ -1,6 +1,8 @@
 # MCP tool reference
 
 **146 registered tools.** Generated from the server's actual MCP definitions.
+The default [discovery interface](../TOOL-DISCOVERY.md) advertises six entry tools;
+this reference documents the complete underlying catalog (also available in `full` mode).
 Run `python scripts/generate_tool_docs.py --check` to detect drift.
 
 Start with [capabilities](../CAPABILITIES.md) for tasks and limitations,
@@ -681,7 +683,7 @@ Live / operation-dependent · Potential write policy
 
 Open a fresh dedicated MIDI session and verify the live controller handshake.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L97)
+[Implementation](../../src/fl_studio_mcp/server.py#L98)
 
 No input parameters.
 
@@ -691,7 +693,7 @@ Live / operation-dependent · Read policy
 
 Report endpoint availability separately from a verified live controller response.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L117)
+[Implementation](../../src/fl_studio_mcp/server.py#L118)
 
 No input parameters.
 

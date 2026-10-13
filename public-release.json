@@ -28,7 +28,7 @@
     "CODE_OF_CONDUCT.md", "SECURITY.md", "CHANGELOG.md", "SERUM-WORKFLOW.md",
     ".gitattributes", ".gitignore", ".editorconfig", "pyproject.toml", "uv.lock",
     "install.ps1", "install.sh", "public-release.json",
-    "docs/README.md", "docs/GETTING-STARTED.md", "docs/CONFIGURATION.md",
+    "docs/README.md", "docs/GETTING-STARTED.md", "docs/CONFIGURATION.md", "docs/TOOL-DISCOVERY.md",
     "docs/CAPABILITIES.md", "docs/WORKFLOWS.md", "docs/ARCHITECTURE.md",
     "docs/COMPARISON-2026-10-12.md", "docs/comparison-2026-10-12.json",
     "docs/TROUBLESHOOTING.md", "docs/DEVELOPMENT.md", "docs/VALIDATION.md",

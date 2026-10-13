@@ -44,6 +44,12 @@ Ask for a musical change, inspect the actual project, preview an exact operation
 
 The [capability matrix](docs/CAPABILITIES.md) explains input requirements and limits. The [generated reference](docs/reference/TOOLS.md) documents every registered tool and its parameters.
 
+**Six entry tools, all 146 capabilities available on demand.** The default
+[discovery interface](docs/TOOL-DISCOVERY.md) keeps full tool schemas out of the
+initial model context. It routes musical tasks to bounded summaries, returns exact
+contracts when requested, and delegates execution to the existing guarded backend.
+Set `FL_MCP_TOOL_MODE=full` for the complete initial tool list.
+
 ## SETUP | INSTALL
 
 **Windows · Codex · Claude Desktop · Claude Code**

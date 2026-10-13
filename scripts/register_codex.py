@@ -174,12 +174,14 @@ def main():
     parser.add_argument("--midi-port", help="Exact dedicated MIDI output port name")
     parser.add_argument("--windows-server", help="Optional Windows MCP executable")
     parser.add_argument("--interaction-policy", choices=("background", "interactive"))
+    parser.add_argument("--tool-mode", choices=("discovery", "full"))
     args = parser.parse_args()
     overrides = {key: value for key, value in {
         "FL_USER_DATA_FOLDER": args.fl_user_data,
         "FL_MCP_MIDI_PORT": args.midi_port,
         "FL_MCP_WINDOWS_SERVER": args.windows_server,
         "FL_MCP_INTERACTION_POLICY": args.interaction_policy,
+        "FL_MCP_TOOL_MODE": args.tool_mode,
     }.items() if value is not None}
     try:
         result = register(args.config, args.root, overrides, args.apply)

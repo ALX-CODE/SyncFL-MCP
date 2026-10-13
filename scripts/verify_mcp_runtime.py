@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -10,16 +11,20 @@ from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
 
 
-async def verify(live=False):
+async def verify(live=False, mode="discovery"):
     async with Client(
         StdioTransport(
-            command=sys.executable, args=["-m", "fl_studio_mcp.server"], keep_alive=False
+            command=sys.executable, args=["-m", "fl_studio_mcp.server"], keep_alive=False,
+            env={**os.environ, "FL_MCP_TOOL_MODE": mode},
         )
     ) as client:
         tools = await client.list_tools()
         names = sorted(t.name for t in tools)
 
         async def call(name, args):
+            if mode == "discovery" and name not in names:
+                args = {"name": name, "arguments": args}
+                name = "fl_call"
             response = await client.call_tool(name, args)
             if response.structured_content is not None:
                 return response.structured_content
@@ -67,12 +72,27 @@ async def verify(live=False):
             "fl_background_effect_inspect",
             "fl_background_effect_load",
         }
-        assert required <= set(names), required - set(names)
+        underlying = set(names)
+        if mode == "discovery":
+            from fl_studio_mcp.discovery import CATALOG, PINNED
+
+            assert set(names) == PINNED | {"fl_discover", "fl_describe", "fl_call", "fl_workflows"}
+            underlying = set(CATALOG["tools"])
+            ordered = sorted(underlying)
+            described = set()
+            for offset in range(0, len(ordered), 5):
+                result = await call("fl_describe", {"names": ordered[offset:offset + 5]})
+                described.update(item["contract"]["name"] for item in result["tools"])
+            assert described == underlying
+            route = await call("fl_discover", {"query": "lower backing vocals by 2 dB"})
+            assert "fl_mixer_scene" in {item["name"] for item in route["matches"]}
+        assert required <= underlying, required - underlying
         catalog = await call("fl_workflow_catalog", {})
         referenced = set(catalog["read_tools"])
         referenced.update(name for workflow in catalog["workflows"] for name in workflow["tools"])
-        assert referenced <= set(names), referenced - set(names)
-        report = dict(success=True, build=build, tool_count=len(names), tools=names)
+        assert referenced <= underlying, referenced - underlying
+        report = dict(success=True, build=build, mode=mode, tool_count=len(names),
+                      underlying_tool_count=len(underlying), tools=names)
         if live:
             health = await call("fl_connection_status", {})
             report["health"] = health
@@ -86,9 +106,10 @@ async def verify(live=False):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true")
+    parser.add_argument("--mode", choices=("discovery", "full"), default="discovery")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    result = asyncio.run(verify(args.live))
+    result = asyncio.run(verify(args.live, args.mode))
     if args.output:
         args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result, indent=2))

@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, Mock
 import pytest
 
 from fl_studio_mcp.utils import file_transfer as transfer
+from fl_studio_mcp.utils.interaction_policy import require_desktop_input
 
 
 class Process:
@@ -31,6 +32,8 @@ class Process:
 
 @pytest.fixture
 def setup(tmp_path, monkeypatch):
+    # Isolate legacy mechanics; public entry-point blocking is tested separately.
+    monkeypatch.setattr(transfer, "require_desktop_input", lambda *args: None)
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
     path = tmp_path / "Kick with spaces.wav"
     path.write_bytes(b"wave fixture")
@@ -66,8 +69,9 @@ def run(setup):
     return asyncio.run(transfer.transfer_file(setup.fl, setup.path, (1175, 195), "200"))
 
 
-@pytest.mark.parametrize("mode", [None, "background", "invalid"])
+@pytest.mark.parametrize("mode", [None, "background", "interactive", "invalid"])
 def test_noninteractive_mode_blocks_before_helper_or_desktop_observation(setup, monkeypatch, mode):
+    monkeypatch.setattr(transfer, "require_desktop_input", require_desktop_input)
     if mode is None:
         monkeypatch.delenv("FL_MCP_INTERACTION_POLICY", raising=False)
     else:

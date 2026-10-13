@@ -38,13 +38,11 @@ synth`. Loading verbs and asset names are matched separately, including plurals.
 Recognized loading requests return their relevant bundle without padding it with
 unrelated parameter setters. The workflow index includes example tasks.
 
-Backend-first does not imply that every loader works without desktop input.
-Existing instrument/pattern selection and qualified empty-slot effect loading have
-backend routes; general new instrument/sample/FST loaders and the native Serum
-preset loader currently require interactive mode. Discovery preserves those labels
-and the underlying guards. Read the selected workflow's prerequisites and exact
-contracts before executing. Reconnect the MCP client after upgrading so it loads
-the new descriptions; an existing conversation may retain its previous catalog.
+Native WAV/FST loaders and guarded FLP loading use the experimental OLE bridge.
+Discovery only recommends available backend routes; no mode switch exists.
+Direct live loading of native Serum preset files is unavailable; the generic
+loader accepts existing FL FST presets. Reconnect after upgrading so the client
+loads the new descriptions.
 
 ## Execution and recovery
 
@@ -69,8 +67,8 @@ summary. Large plugin catalogs still require the tools' own filters and paginati
 
 Set `FL_MCP_TOOL_MODE=full` in the server environment and reconnect to expose the
 complete original schema list. Use `discovery` (the default) to restore six entry
-tools. Mode selection does not change `FL_MCP_INTERACTION_POLICY` or grant desktop
-input. Existing processes and conversations keep their loaded catalogs until the
+tools. Schema visibility never grants desktop input. Existing processes and
+conversations keep their loaded catalogs until the
 client reconnects; source/config changes cannot remove old context retroactively.
 
 The Codex registration helper preserves other settings and makes a backup:

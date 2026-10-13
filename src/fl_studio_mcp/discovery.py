@@ -35,19 +35,17 @@ SyncFL exposes six entry tools and discovers the full FL Studio toolset on deman
 It can find/load sounds, samples, instruments, synths, VST plugins and presets;
 edit notes, arrange, mix, route, automate, record, render and analyze audio.
 Use fl_discover for these capabilities even when their individual APIs are hidden.
-Backend APIs include existing instrument/pattern selection, piano writing, qualified
-empty-slot effect loading, plugin/synth controls and native saves. General new
-instrument/sample/preset loaders also exist, but currently require interactive mode.
+Backend APIs include instrument/pattern selection, piano writing, WAV sample and
+FST instrument/preset/effect loading, plugin/synth controls, native saves and guarded
+FLP loading. Loading routes use the experimental native bridge and return receipts.
 Start with fl_build_info and, for live work, fl_session_inspect. Use fl_discover for
 the musical task, fl_workflows for supported routes, then fl_describe for the exact
 selected contracts. Execute via fl_call using the original tool name and arguments.
 Discovery is guidance, never authorization. The underlying guards remain authoritative.
-Always choose a qualified native/backend workflow first in both input modes.
-Interactive control is secondary and discouraged, including in interactive mode.
-Use it only when no qualified backend route fits and the user permits UI input;
-interactive configuration alone is not a reason to choose UI. Never switch modes
-automatically. Reinspect exact target identities/revisions before writes; never reuse stale
-state after a mutation. Read filtered parameter pages instead of whole catalogs.
+SyncFL is backend-only. Desktop input is unavailable. Never request an interactive
+mode or use external keyboard/mouse tools to work around an unsupported operation.
+Report the specific missing backend route. Reinspect target identities before writes;
+never reuse stale state after a mutation. Read filtered parameter pages instead of whole catalogs.
 After a timeout, partial result or unknown outcome, inspect the receipt and fresh state;
 never automatically replay or fall back to UI. Keep originals and recovery evidence.
 Normalized plugin values are not physical units; use qualified named controls for ms,
@@ -111,7 +109,7 @@ ROUTES = {
     ),
     "arrangement": (
         "arrange|arrangement|playlist|clip|clips|place audio|timeline",
-        "fl_playlist_file_inspect fl_playlist_file_edit fl_audio_clip_add",
+        "fl_playlist_file_inspect fl_playlist_file_edit fl_project_open",
     ),
     "automation": (
         "automation|automate|curve|curves|retarget|parameter link",
@@ -144,7 +142,7 @@ ROUTES = {
         "native save|background save|clean state",
         "fl_project_native_inspect fl_project_save_native",
     ),
-    "ui_fallback": ("ui|dialog|window|screenshot|click|ocr", "fl_ui_inspect fl_ui_action"),
+    "ui_fallback": ("ui|dialog|window|screenshot|click|ocr", "fl_ui_inspect"),
 }
 
 _STOP_WORDS = frozenset(
@@ -183,7 +181,7 @@ def _loading_routes(query: str) -> dict[str, list[str]]:
         return {}
     effects = {"effect", "compressor", "eq", "reverb", "delay", "limiter", "saturator"}
     if "preset" in words and not (words & effects and "empty" in words):
-        names = (["fl_serum_inspect_preset", "fl_serum_load_preset"] if "serum" in words
+        names = (["fl_serum_inspect_preset", "fl_preset_load"] if "serum" in words
                  else ["fl_preset_load"])
         return {"assets_and_plugins": ["fl_find_assets", *names]}
     routes = {}
@@ -245,13 +243,14 @@ def _summary(tool: Tool, available: set[str], reason: str) -> dict:
             "read_only_allowlisted": tool.name in READ_TOOLS,
             "offline": tool.name in OFFLINE_TOOLS,
             "explicit_desktop_input": tool.name in DESKTOP_INPUT_TOOLS,
-            "execution_preference": ("secondary_discouraged" if tool.name in SECONDARY_TOOLS
+            "backend_available": tool.name not in SECONDARY_TOOLS,
+            "execution_preference": ("unavailable" if tool.name in SECONDARY_TOOLS
                                      else "preferred"),
         },
         "companions": backend_first(
             name for workflow in related_workflows(tool.name)
             for name in ROUTES[workflow["id"]][1].split()
-            if name != tool.name and name in available
+            if name != tool.name and name in available and name not in SECONDARY_TOOLS
         ),
     }
 
@@ -260,8 +259,9 @@ def discover(tools: Sequence[Tool], query: str, domain: str | None, limit: int) 
     """Pure routing function, also used by the retrieval regression fixtures."""
     if domain is not None and domain not in CATALOG["domains"]:
         raise ValueError(f"Unknown domain {domain!r}; choose from {list(CATALOG['domains'])}")
-    candidates = {tool.name: tool for tool in tools if domain is None
-                  or CATALOG["tools"].get(tool.name, {}).get("domain") == domain}
+    candidates = {tool.name: tool for tool in tools if tool.name not in SECONDARY_TOOLS
+                  and (domain is None
+                       or CATALOG["tools"].get(tool.name, {}).get("domain") == domain)}
     available = {tool.name for tool in tools}
     ranked: dict[str, str] = {}
     # A named tool is an explicit request, even when the rest of the sentence
@@ -328,7 +328,7 @@ class DiscoveryTransform(CatalogTransform):
         ) -> dict:
             """Discover FL Studio APIs to load sounds, samples, instruments, synths, VST
             plugins and presets; write notes, mix, arrange, automate, record or render.
-            Includes native/backend routes and labels interactive input requirements.
+            Only suggests available backend routes; desktop input is unavailable.
             Search by task before concluding a hidden capability is unavailable.
             Returns bounded summaries; fetch exact schemas with fl_describe. No DAW access.
             """
@@ -359,12 +359,15 @@ class DiscoveryTransform(CatalogTransform):
             ctx: Context = None,
         ) -> ToolResult:
             """Execute a discovered FL tool once with its exact arguments and original
-            guards. May write files, modify FL, or use desktop input. Read fl_describe
+            guards. May write files or modify FL through the backend. Read fl_describe
             first. Preserve receipts/errors; never automatically retry uncertain writes.
             """
             catalog = {tool.name for tool in await self.get_tool_catalog(ctx)}
             if name not in catalog:
                 raise ValueError(f"Unknown or unavailable underlying tool: {name}")
+            if name in SECONDARY_TOOLS:
+                raise ValueError(f"{name} has no backend route. Desktop input is unavailable; "
+                                 "discover a supported backend alternative.")
             return await ctx.fastmcp.call_tool(name, arguments)
 
         async def fl_workflows(workflow: str | None = None, ctx: Context = None) -> dict:
@@ -384,12 +387,8 @@ class DiscoveryTransform(CatalogTransform):
                     name for name in selected["tools"] if name in available]},
                     "preferred_tools": [name for name in ROUTES[workflow][1].split()
                                         if name in available and name not in SECONDARY_TOOLS],
-                    "secondary_tools": [name for name in ROUTES[workflow][1].split()
-                                        if name in available and name in SECONDARY_TOOLS],
-                    "interactive_guidance": (
-                        "Secondary and discouraged; use only when no qualified backend "
-                        "route fits and the user permits UI input. Never switch modes "
-                        "or replay an uncertain backend write automatically.")}
+                    "backend_only": True,
+                    "unavailable_tools": selected["unavailable_tools"]}
             return {
                 "domains": CATALOG["domains"],
                 "workflows": [{"id": item["id"], "coverage": item["coverage"],

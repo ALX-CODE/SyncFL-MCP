@@ -1,17 +1,14 @@
 # SyncFL configuration
 
-`FL_MCP_INTERACTION_POLICY` controls permission for desktop input, not backend
-selection. Both `background` and `interactive` expose identical native APIs and
-use the backend first. Interactive additionally permits guarded UI for tasks
-without an applicable backend route. It never authorizes replaying an uncertain
-backend mutation through UI.
+SyncFL is backend-only. There is no execution-mode setting. Legacy
+`FL_MCP_INTERACTION_POLICY` values are ignored and removed when registering clients.
 
 The server uses local stdio. Configure an absolute Python path and repository working directory. An HTTP URL is not provided by this project.
 
-The default `discovery` tool mode advertises six entry tools. All underlying tools
+The default `discovery` tool mode advertises six entry tools. Supported backend tools
 remain available through exact-name calls or `fl_discover` → `fl_describe` → `fl_call`.
 Set `FL_MCP_TOOL_MODE=full` to restore the complete initial tool list. This setting
-is independent of desktop-input permission. See [tool discovery](TOOL-DISCOVERY.md).
+only changes schema visibility; it cannot enable desktop input. See [tool discovery](TOOL-DISCOVERY.md).
 
 ## Generic MCP / Claude-style JSON
 
@@ -26,8 +23,7 @@ Replace these paths with your checkout and FL data root. Merge the entry into th
       "cwd": "C:\\MusicTools\\SyncFL-MCP",
       "env": {
         "FL_USER_DATA_FOLDER": "D:\\Music\\Image-Line",
-        "FL_MCP_MIDI_PORT": "ALX FL Bridge (Send)",
-        "FL_MCP_INTERACTION_POLICY": "background"
+        "FL_MCP_MIDI_PORT": "ALX FL Bridge (Send)"
       }
     }
   }
@@ -49,7 +45,6 @@ cwd = 'C:\MusicTools\SyncFL-MCP'
 [mcp_servers.fl_studio.env]
 FL_USER_DATA_FOLDER = 'D:\Music\Image-Line'
 FL_MCP_MIDI_PORT = 'ALX FL Bridge (Send)'
-FL_MCP_INTERACTION_POLICY = 'background'
 ```
 
 The registration helper checks or applies a backed-up update:
@@ -68,7 +63,6 @@ It honors `CODEX_HOME`, otherwise the user's `.codex/config.toml`. Use `--config
 |---|---|
 | `FL_USER_DATA_FOLDER` | Image-Line root containing `FL Studio`; otherwise platform path discovery |
 | `FL_MCP_MIDI_PORT` | Explicit output; default Windows route uses the owned ALX endpoint |
-| `FL_MCP_INTERACTION_POLICY` | `background` by default; `interactive` explicitly enables supported desktop workflows |
 | `FL_MCP_TOOL_MODE` | `discovery` by default; `full` advertises every underlying tool schema |
 | `FL_MCP_WINDOWS_SERVER` | Absolute compatible Windows MCP executable for UI/window inspection |
 | `FL_STUDIO_MCP_FFMPEG` | Explicit FFmpeg executable; otherwise PATH resolution |
@@ -77,7 +71,7 @@ Reconnect after changes. A variable set in a terminal does not update an already
 
 ## Input policy and extras
 
-Interactive operations may activate FL, open dialogs or change selection. Finish unrelated typing and keep targets visible while they run. Background mode rejects input-dependent calls before dispatch; it does not queue them or retry them in another mode.
+Desktop input is unavailable. Unsupported operations do not switch modes or fall back to external mouse/keyboard tools.
 
 The `serum` extra adds native preset decoding/building. The `audio` extra adds numeric/audio libraries and Windows loopback capture. FFmpeg and Windows MCP are separate system tools. `setup_laptop.ps1` installs all Python extras used by the Windows workflow; minimal manual environments may lack optional tool dependencies.
 

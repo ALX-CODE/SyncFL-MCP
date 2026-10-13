@@ -84,9 +84,9 @@ def configure(
     environment = entry.setdefault("env", {})
     if not isinstance(environment, dict):
         raise ValueError("SyncFL environment must be an object")
-    environment.setdefault("FL_MCP_INTERACTION_POLICY", "background")
     if overrides:
         environment.update(overrides)
+    environment.pop("FL_MCP_INTERACTION_POLICY", None)
     for name in matches:
         servers.pop(name)
     servers["syncfl"] = entry
@@ -154,13 +154,11 @@ def main() -> int:
     parser.add_argument("--fl-user-data", help="Image-Line root, not its Settings folder")
     parser.add_argument("--midi-port", help="Exact dedicated MIDI output port name")
     parser.add_argument("--windows-server", help="Optional Windows MCP executable")
-    parser.add_argument("--interaction-policy", choices=("background", "interactive"))
     args = parser.parse_args()
     overrides = {key: value for key, value in {
         "FL_USER_DATA_FOLDER": args.fl_user_data,
         "FL_MCP_MIDI_PORT": args.midi_port,
         "FL_MCP_WINDOWS_SERVER": args.windows_server,
-        "FL_MCP_INTERACTION_POLICY": args.interaction_policy,
     }.items() if value is not None}
     try:
         result = configure(

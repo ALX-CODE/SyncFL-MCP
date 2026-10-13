@@ -11,7 +11,7 @@ flowchart LR
     E -->|Later readback| D
     D -->|Correlated JSON response| B
     C --> F[Offline FLP / MIDI / audio tools]
-    C -->|Explicit interactive mode| G[Windows UI workflows]
+    C -->|Observation only| G[Windows metadata and snapshots]
     G --> E
     B --> H[Receipts and job state]
 ```
@@ -40,7 +40,7 @@ The controller digest captured at load distinguishes running code from files mer
 
 ## Input policy
 
-`interaction_policy.py` and `native_interaction_policy.py` reject desktop input and focus-dependent calls in default background mode, including nested command batches. Native functions whose behavior depends on focus have narrower accepted forms. Interactive mode is an explicit server environment setting.
+`interaction_policy.py` and `native_interaction_policy.py` reject desktop input and focus-dependent calls for every caller, including nested command batches. Native functions whose behavior depends on focus have narrower accepted forms. There is no desktop-input mode or environment opt-in.
 
 Some functions combine observation with a UI action. Their names alone do not establish read-only or background behavior. The operator catalog contains explicit classifications; unknown tools are conservatively treated as potential writes.
 

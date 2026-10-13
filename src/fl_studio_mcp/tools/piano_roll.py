@@ -19,11 +19,8 @@ def register_piano_roll_tools(mcp):
     def fl_write_pattern_bank(
         items: list[dict], channel: int, expected_channel: str, receipt_file: str
     ) -> dict:
-        """Append named patterns with exact note readback and a durable receipt.
-
-        Stop playback and supply the fresh channel index/name. Windows opens the
-        target piano roll and selects ComposeWithLLM automatically for each request.
-        Items contain name and notes. Existing patterns and instrument preset are preserved.
+        """Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is
+        unavailable. Use native background piano tools or saved-FLP editing.
         """
         from fl_studio_mcp.utils.pattern_bank import write_pattern_bank
 
@@ -31,14 +28,8 @@ def register_piano_roll_tools(mcp):
 
     @mcp.tool()
     def fl_send_notes(notes: list[dict], mode: str = "add", auto_trigger: bool = True) -> dict:
-        """Write notes to the selected channel with validation, revisions and readback.
-
-        On Windows the target roll and ComposeWithLLM are opened automatically.
-        midi is 0..127 (60 displays C5). Use time/duration in quarter notes, or
-        exact time_ticks/length_ticks. Supports velocity, pan, release, color,
-        slide, porta, pitchofs, fcut, fres, muted, selected, group and repeats.
-        mode is add or replace. auto_trigger=False prepares one request after
-        fresh inspection; run fl_trigger_script within 60 seconds to execute.
+        """Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use
+        fl_background_piano_write for persistent notes.
         """
         if mode not in ("add", "replace"):
             raise ValueError("mode must be add or replace")
@@ -80,9 +71,8 @@ def register_piano_roll_tools(mcp):
 
     @mcp.tool()
     def fl_get_piano_roll_state(fresh: bool = True) -> dict:
-        """Read a correlated score; Windows opens the selected channel's roll automatically.
-
-        fresh=False explicitly reads cached state without opening FL or executing a script.
+        """Unavailable in backend-only SyncFL. Legacy script-based piano inspection is
+        unavailable. Use fl_background_piano_inspect.
         """
         if fresh:
             with piano_session() as bridge:

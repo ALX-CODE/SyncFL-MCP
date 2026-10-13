@@ -11,7 +11,7 @@ other note bits remain part of the comparison.
 
 Forty-eight completed switches covered pattern/channel selection, generator or
 sample identity, routed mixer selection and loaded effects. Fresh MCP-server
-tests exercised both background and interactive modes with identical backend
+earlier tests exercised two legacy modes with identical backend
 behavior. Same-pattern sound switches measured about 0.8 seconds median; changing
 the pattern required a verified native save and took about 1.3–1.5 seconds.
 The final matrix's score writes measured about 1.6 seconds median. These timings

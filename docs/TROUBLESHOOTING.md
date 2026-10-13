@@ -10,16 +10,16 @@ Start with `scripts/doctor.py`, then use `--live` when FL is running. Pass the s
 | MIDI device disconnects or the handle closes | SyncFL rejects known closed handles and closes a handle after a send exception. A later explicit request can reconnect. The failed request is never replayed: inspect its receipt/state before repeating a mutation. |
 | More than one matching output | Remove the ambiguous dedicated setup or explicitly configure a unique existing MIDI output. Do not guess a numeric backend suffix. |
 | Updated files but old behavior/tools | Reload the FL controller and reconnect the MCP client. Compare loaded digests in the live doctor and `fl_build_info`. |
-| “Interactive mode required” | The operation needs input. Keep background mode for native/offline work, or explicitly choose interactive mode for this workflow and stop unrelated typing. |
+| Backend route unavailable | There is no interactive mode. Discover a native alternative or report the unsupported operation. |
 | Windows helper unavailable | Set `FL_MCP_WINDOWS_SERVER` to a compatible existing executable. Native MIDI and offline tools do not require it; specific window/UI workflows do. |
-| Piano state unavailable | Windows script activation requires interactive mode, stopped transport and the exact target channel. Verify all six deployed files and the current selected script. |
+| Piano state unavailable | Use the native background piano tools with the current saved project path and fresh revision. |
 | Stale revision/name/layout | Reinspect the actual target. Do not remove the expected identity or force another plugin's adapter. |
 | Plugin physical write refused | Check unit, qualified range and mode dependency. Change selectors separately. Auto/INF and unqualified mappings may need explicit normalized access and fresh inspection. |
 | Plugin normalized/display mismatch | Treat it as a verification failure. Preserve the receipt and inspect; caches can remain stale. Do not repeatedly write until a value happens to look right. |
 | Background effect load declined | This route is experimental and selected-track/empty-slot-only. A reason saying another window covers the slot means FL's Playlist or another window is in front of the Mixer: bring the Mixer to the front (F9), inspect again, then load. Do not retry an uncertain dispatch or assume general loading works. |
 | FFmpeg not found / loudness unavailable | Install an FFmpeg build with `loudnorm`, place it on PATH or set `FL_STUDIO_MCP_FFMPEG`. Silence/short audio can legitimately have unavailable LUFS/LRA. |
 | Render command sent but no verified result | Poll `fl_render_status`. Inspect owned dialogs and output diagnostics. Start acknowledgment alone is not completion. |
-| Native save succeeded but path is unknown | That result proves host clean state. Use the interactive exact-path save workflow when disk destination evidence is required. |
+| Native save succeeded but path is unknown | Host clean state does not prove an absolute disk path. Supply the known active project path for file checks. |
 | Lock busy or pending piano request | Finish/recover the existing operation. Do not delete lock/queue files merely to force an update. |
 
 ## Useful read-only commands

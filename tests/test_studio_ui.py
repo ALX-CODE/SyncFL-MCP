@@ -16,12 +16,15 @@ from pydantic import ValidationError
 
 from fl_studio_mcp.tools import studio_ui as tool_module
 from fl_studio_mcp.utils import studio_ui as ui
+from fl_studio_mcp.utils.interaction_policy import require_desktop_input
 
 IMAGE = ImageContent(type="image", data="aW1hZ2U=", mimeType="image/png")
 
 
 @pytest.fixture
 def rig(tmp_path, monkeypatch):
+    # Isolate retired action internals; production boundary is tested below.
+    monkeypatch.setattr(ui, "require_desktop_input", lambda *args: None)
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
     main = dict(handle="1", title="Song - FL Studio", bounds=[100, 200, 800, 600],
                 pid=42, parent="0", enabled=True, dpi=96, **{"class": "TFruityLoopsMainForm"})
@@ -147,6 +150,7 @@ def test_background_inspection_and_action_preview_do_not_dispatch(rig, monkeypat
 
 
 def test_background_apply_rejected_before_observation_receipt_or_dispatch(rig, monkeypatch):
+    monkeypatch.setattr(ui, "require_desktop_input", require_desktop_input)
     before, _ = inspect(rig)
     calls = list(rig.calls)
     monkeypatch.delenv("FL_MCP_INTERACTION_POLICY", raising=False)

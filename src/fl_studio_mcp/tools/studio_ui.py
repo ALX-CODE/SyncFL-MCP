@@ -43,20 +43,8 @@ def register_studio_ui_tools(mcp):
         apply: StrictBool = False,
         receipt_file: str | None = None,
     ) -> dict:
-        """Preflight or dispatch ONE guarded FL GUI action for a gap in semantic tools.
-
-        Prefer native FL tools. Select exactly one enabled actionable UI element; for
-        owner-drawn controls inspect with screenshot and use physical pixels relative
-        to the target window's top-left. Actions: key, type, click, drag, scroll.
-        Key/type without selector require the target to own keyboard focus. All
-        applies need stopped transport, fresh observation and a NEW absolute .json
-        receipt_file. No global shortcuts or arbitrary helper calls are exposed.
-
-        A dispatch always remains unverified, even when the helper succeeds. Supply
-        an independent parameter/project/audio verification_plan, then carry it out.
-        success=true with success_scope=input_delivery confirms delivered input only;
-        verified and musical_state_verified stay false until independent checks.
-        Inspect after errors; never replay. UIA and screenshots cannot prove music.
+        """Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend
+        operations; fl_ui_inspect provides observation only.
         """
         return await action_ui(window_handle, expected_revision, action, verification_plan,
                                apply, receipt_file)

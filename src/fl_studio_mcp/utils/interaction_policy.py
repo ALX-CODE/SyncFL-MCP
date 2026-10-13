@@ -1,9 +1,8 @@
-"""Explicit desktop-input opt-in; native model operations remain available."""
+"""Backend-only execution; desktop input is never an available fallback."""
 
 from __future__ import annotations
 
-import os
-
+# Retained for reading old registrations; its value no longer grants UI access.
 ENVIRONMENT_VARIABLE = "FL_MCP_INTERACTION_POLICY"
 DEFAULT_MODE = "background"
 
@@ -20,30 +19,20 @@ _OBSERVATION_PARAMETERS = {
 
 
 def interaction_mode():
-    """Read on every boundary so an invalid or changed setting cannot fail open."""
-    mode = os.environ.get(ENVIRONMENT_VARIABLE, DEFAULT_MODE)
-    if mode not in ("background", "interactive"):
-        raise ValueError(f"{ENVIRONMENT_VARIABLE} must be 'background' or 'interactive'")
-    return mode
+    """Old environment settings cannot enable desktop input."""
+    return DEFAULT_MODE
 
 
 def require_desktop_input(operation):
-    if interaction_mode() != "interactive":
-        raise RuntimeError(
-            f"{operation} is unsupported in background mode because it requires desktop "
-            "input, focus or window activation. Use a native/background operation first. "
-            "Interactive control is a secondary, discouraged fallback only when no "
-            "qualified backend route fits and the user permits UI input. That fallback "
-            f"also requires explicit {ENVIRONMENT_VARIABLE}=interactive configuration. "
-            "No interactive fallback was attempted."
-        )
+    raise RuntimeError(
+        f"{operation} is unsupported in background mode: SyncFL is backend-only. "
+        "Desktop input and focus-dependent automation are disabled. "
+        "Use a supported native/backend operation; there is no interactive mode."
+    )
 
 
 def check_windows_call(name, params, *, read_only=False):
     """Reject input before helper dispatch, including within observation sessions."""
-    mode = interaction_mode()
-    if mode == "interactive" and not read_only:
-        return
     allowed = _OBSERVATION_PARAMETERS.get(name)
     observation = allowed is not None and not (set(params) - allowed)
     if name == "window_management":
@@ -64,19 +53,16 @@ def policy_metadata():
         GLOBAL_ONLY_TRANSPORT_FUNCTIONS,
     )
 
-    mode = interaction_mode()
     return dict(
-        mode=mode,
+        mode=DEFAULT_MODE,
         default=DEFAULT_MODE,
         environment_variable=ENVIRONMENT_VARIABLE,
-        desktop_input_allowed=mode == "interactive",
+        desktop_input_allowed=False,
         backend_apis_available=True,
         preferred_execution="native_backend",
-        shared_backend_in_all_modes=True,
-        interactive_secondary=True,
-        interactive_discouraged=True,
-        ui_usage=("Secondary, discouraged fallback only when no qualified backend route fits "
-                  "and the user permits UI input; never replay an uncertain write"),
+        backend_only=True,
+        available_modes=[DEFAULT_MODE],
+        ui_usage="Observation only. Desktop input is unavailable; never request a mode switch.",
         automatic_interactive_fallback=False,
         ui_action_preview_allowed=True,
         background_observations="Window metadata, UI snapshots, screenshots and OCR only",

@@ -66,7 +66,7 @@ def test_existing_environment_survives_update(tmp_path):
     )
     register.configure(target, apply=True)
     env = json.loads(target.read_text())["mcpServers"]["syncfl"]["env"]
-    assert env == {"FL_MCP_INTERACTION_POLICY": "interactive", "CUSTOM": "keep"}
+    assert env == {"CUSTOM": "keep"}
 
 
 def test_failed_atomic_publish_preserves_original(tmp_path, monkeypatch):
@@ -93,7 +93,7 @@ def test_preview_uses_platform_interpreter_without_startup_uv(
     assert result["entry"]["syncfl"] == {
         "command": str(tmp_path / "repo" / relative),
         "args": ["-m", "fl_studio_mcp.server"],
-        "env": {"FL_MCP_INTERACTION_POLICY": "background"},
+        "env": {},
     }
     assert not (tmp_path / "config.json").exists()
 
@@ -110,14 +110,13 @@ def test_explicit_overrides_preserve_unspecified_environment_and_settings(tmp_pa
     register.configure(target, apply=True, overrides={
         "FL_USER_DATA_FOLDER": "D:/New/Image-Line",
         "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe",
-        "FL_MCP_INTERACTION_POLICY": "background",
-    })
+            })
     entry = json.loads(target.read_text())["mcpServers"]["syncfl"]
     assert entry["timeout"] == 120
     assert entry["env"] == {
         "FL_USER_DATA_FOLDER": "D:/New/Image-Line", "FL_MCP_MIDI_PORT": "Custom port",
         "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe",
-        "FL_MCP_INTERACTION_POLICY": "background", "CUSTOM": "kept",
+        "CUSTOM": "kept",
     }
     assert not register.configure(target, apply=True)["changed"]
 
@@ -137,8 +136,7 @@ def test_legacy_and_branded_duplicates_merge_into_one_preserving_settings(tmp_pa
     assert servers["syncfl"]["timeout"] == 120
     assert servers["syncfl"]["env"] == {
         "FL_MCP_MIDI_PORT": "Existing port", "CUSTOM": "kept",
-        "FL_MCP_INTERACTION_POLICY": "background",
-    }
+            }
 
 
 def test_different_project_requires_replace_and_keeps_existing_environment(tmp_path):
@@ -167,10 +165,9 @@ def test_missing_interpreter_does_not_create_config(tmp_path):
 @pytest.mark.parametrize("arguments,expected", [
     ([], {}),
     (["--fl-user-data", "D:/Music/Image-Line", "--midi-port", "Custom port",
-      "--windows-server", "D:/Tools/WindowsMCP.exe", "--interaction-policy", "background"],
+      "--windows-server", "D:/Tools/WindowsMCP.exe"],
      {"FL_USER_DATA_FOLDER": "D:/Music/Image-Line", "FL_MCP_MIDI_PORT": "Custom port",
-      "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe",
-      "FL_MCP_INTERACTION_POLICY": "background"}),
+      "FL_MCP_WINDOWS_SERVER": "D:/Tools/WindowsMCP.exe"}),
 ])
 def test_cli_only_forwards_explicit_environment_overrides(monkeypatch, arguments, expected):
     captured = []
@@ -180,3 +177,13 @@ def test_cli_only_forwards_explicit_environment_overrides(monkeypatch, arguments
     })
     assert register.main() == 0
     assert captured[0]["overrides"] == expected
+
+
+@pytest.mark.parametrize("mode", ["background", "interactive"])
+def test_removed_mode_option_is_rejected(monkeypatch, mode):
+    monkeypatch.setattr(register.sys, "argv", [
+        "register_claude.py", "--interaction-policy", mode,
+    ])
+    with pytest.raises(SystemExit) as exc:
+        register.main()
+    assert exc.value.code == 2

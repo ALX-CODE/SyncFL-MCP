@@ -12,21 +12,16 @@ from fl_studio_mcp.utils.connection import get_connection, reset_connection
 from fl_studio_mcp.utils.tool_lease import FLToolLeaseMiddleware
 
 INSTRUCTIONS = """
-SyncFL controls FL Studio through native controller operations, guarded Windows
-workflows and offline project/audio utilities. Begin with fl_connection_status
+SyncFL controls FL Studio through native controller operations, native file
+loading and offline project/audio utilities. Begin with fl_connection_status
 and fl_session_inspect. Consult fl_workflow_catalog for supported routes.
 
-Both interaction modes use the same native/backend APIs and expose the same
-tools. Always choose the backend first in BOTH modes, including background piano
-and effect loading whenever their qualified preconditions fit. Interactive is
-secondary and discouraged: use guarded UI only when no qualified backend route
-fits and the user permits UI input. Interactive configuration alone is not a
-reason to choose UI. Never change modes automatically or treat a visible window
-as a reason to abandon a backend route. It is not a different engine.
-Background is the default. Keyboard, mouse and focus operations require
-FL_MCP_INTERACTION_POLICY=interactive. Never retry an uncertain/dispatched backend
-mutation through UI. Native transport, mixer, routing, channels, plugin controls
-and supported model operations do not occupy the user's keyboard or mouse.
+SyncFL is backend-only. Desktop input is unavailable and there is no mode switch.
+Use native controller operations and the native OLE bridge for supported loading.
+Never ask to enable interactive mode or use external mouse/keyboard tools to bypass
+an unsupported backend operation. Report the missing backend route instead.
+Native transport, mixer, routing, channels, plugin controls and supported model
+operations do not occupy the user's keyboard or mouse.
 
 Use inspection before writes. Exact identities, revisions, expected names and
 hashes guard scene changes. A timeout after dispatch means unknown outcome:
@@ -38,24 +33,27 @@ a qualified adapter and verified display mapping; normalized values alone are
 not Hz, dB or milliseconds. fl_plugin_controls_inspect/set and plugin scenes
 provide precise changes with readback. A host display does not prove DSP output.
 Instruments, samples and presets can be loaded using their exact paths/names;
-standard loading uses inspected interactive controls. Experimental background
+WAV sample and FST loading use the experimental native bridge. Experimental background
 effect loading is restricted to an empty slot on the selected, visibly matching
 mixer track. It must not switch tracks. General .fst loading accepts format 0x30,
 not a complete 0x40 mixer track. Sample readback cannot independently prove the
-original source path. Plugin removal may need a calibrated UI layout.
+original source path. Plugin removal has no backend implementation.
 
 Live note triggering does not create persistent notes. Piano transactions,
 pattern/step workflows and offline FLP editing serve persistent composition.
 Prefer fl_background_piano_inspect/write for script-free score replacement on a
 saved FL26 project. It uses native panel selection and OLE import, then checks the
-saved FLP. Legacy piano preparation uses interactive mode. Playlist file edits preserve the FLP;
+saved FLP. Legacy piano script activation is unavailable; use native piano tools.
+Playlist file edits preserve the FLP;
 add supports full pattern clips, with no arbitrary trimming/stretching or newly
 invented audio channels. Inspect the saved project after opening to verify length.
 
-Project open, Save As, normal loading and export can need interactive mode.
+Native FLP open requires a named current project and a recovery path.
+Dialog-based Save As and GUI export have no backend route.
 Native save only proves host clean-state evidence for the current named project;
 it does not prove an exact disk path or byte contents. Keep recovery copies.
-Render/record jobs use bounded start/status/stop and persistent receipts.
+Recording jobs use bounded start/status/stop and persistent receipts. Existing
+render jobs can be inspected; starting or cancelling renders is unavailable.
 
 Offline audio inspection/editing, key estimation, loudness/reference comparison, mix diagnosis,
 asset/MIDI discovery and note transforms do not require UI input. Diagnostic mix

@@ -7,7 +7,7 @@ focused control even though they do not synthesize Windows input.
 
 from __future__ import annotations
 
-from fl_studio_mcp.utils.interaction_policy import interaction_mode, require_desktop_input
+from fl_studio_mcp.utils.interaction_policy import require_desktop_input
 
 MAX_BATCH_DEPTH = 8
 MAX_BATCH_STEPS = 256
@@ -82,7 +82,6 @@ def check_native_command(action, params=None):
     Every nested step is checked, including preview batches; no queue or MIDI
     operation occurs here. Unknown non-UI commands retain controller validation.
     """
-    interaction_mode()  # Invalid settings must not silently enable native UI calls.
     pending = [(action, {} if params is None else params, 0)]
     visited_steps = 0
     while pending:

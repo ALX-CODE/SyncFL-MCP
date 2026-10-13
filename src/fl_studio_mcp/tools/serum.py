@@ -4,10 +4,9 @@
 def register_serum_tools(mcp):
     @mcp.tool()
     async def fl_serum_load_preset(channel: int, path: str) -> dict:
-        """Load Serum 2.1.2 preset through a guarded 1200x771 Windows editor and verify controls.
-
-        Replaces the chosen channel's current preset. Save valuable current edits first.
-        Requires stopped transport. Unknown geometry fails; FX/routing lack native readback.
+        """Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no
+        backend implementation. Use offline Serum preset tools, or fl_preset_load for
+        an existing FL .fst preset.
         """
         from fl_studio_mcp.utils.serum_windows import load_serum_preset
 

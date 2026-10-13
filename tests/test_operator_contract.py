@@ -101,22 +101,22 @@ def test_catalog_reports_background_default_and_specific_input_dependencies(monk
     assert policy["mode"] == "background" and policy["default"] == "background"
     assert policy["desktop_input_allowed"] is False
     assert policy["automatic_interactive_fallback"] is False
-    assert policy["interactive_secondary"] and policy["interactive_discouraged"]
+    assert policy["backend_only"]
     workflows = {item["id"]: item for item in catalog["workflows"]}
-    assert workflows["save_and_delivery"]["input_requirements"]["desktop_input_tools"] == [
+    assert workflows["save_and_delivery"]["unavailable_tools"] == [
         "fl_project_save", "fl_project_save_as"]
-    assert workflows["mix_balance"]["input_requirements"]["desktop_input_tools"] == []
-    assert "fl_render_status" not in workflows["render_and_stems"][
-        "input_requirements"]["desktop_input_tools"]
+    assert workflows["mix_balance"]["unavailable_tools"] == []
+    assert "fl_render_status" not in workflows["render_and_stems"]["unavailable_tools"]
     for workflow in workflows.values():
         assert not set(workflow["preferred_tools"]) & contract.SECONDARY_TOOLS
-        assert set(workflow["secondary_tools"]) <= contract.SECONDARY_TOOLS
-        assert workflow["tools"] == workflow["preferred_tools"] + workflow["secondary_tools"]
+        assert set(workflow["unavailable_tools"]) <= contract.SECONDARY_TOOLS
+        assert workflow["tools"] == workflow["preferred_tools"]
+        assert not set(workflow["tools"]) & contract.SECONDARY_TOOLS
     assert {"fl_plugin_adapter_catalog", "fl_plugin_controls_inspect"} <= contract.READ_TOOLS
     assert "fl_plugin_adapter_catalog" in contract.OFFLINE_TOOLS
     assert "fl_plugin_controls_inspect" not in contract.OFFLINE_TOOLS
     monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", "interactive")
-    assert contract.workflow_catalog()["policy"]["interaction"]["desktop_input_allowed"] is True
+    assert contract.workflow_catalog()["policy"]["interaction"]["desktop_input_allowed"] is False
 
 
 def test_catalog_distinguishes_experimental_background_routes_and_named_control_writes():
@@ -125,8 +125,8 @@ def test_catalog_distinguishes_experimental_background_routes_and_named_control_
     for identifier in ("background_effect_loading", "native_project_save"):
         workflow = workflows[identifier]
         assert workflow["coverage"] == "experimental"
-        assert workflow["input_requirements"]["desktop_input_tools"] == []
-        assert workflow["input_requirements"]["explicit_interactive_mode_required"] is False
+        assert workflow["unavailable_tools"] == []
+        assert workflow["input_requirements"]["backend_only"] is True
     assert "fl_plugin_controls_set" in workflows["plugin_parameters"]["tools"]
     assert {"fl_background_effect_inspect", "fl_project_native_inspect"} <= contract.READ_TOOLS
     assert not {"fl_background_effect_load", "fl_project_save_native"} & contract.READ_TOOLS

@@ -1,6 +1,10 @@
 {
   "schema_version": 1,
   "reviewed_binary_files": {
+    "docs/assets/syncfl-social-preview.jpg": {
+      "sha256": "cb9789ec0eb6d6a620c242abba28d5218e311a8e955d96b5b0a93ca26eba9eb3",
+      "reason": "Generated SyncFL social-preview artwork using the maintainer-supplied logo; JPEG contains no personal metadata."
+    },
     "docs/assets/syncfl-logo.png": {
       "sha256": "3ebf19a1aad7185be6051d88d68a4bbf8666e5ba099977af427c894927024f88",
       "reason": "SyncFL branding PNG supplied by the project maintainer; copied unchanged."
@@ -30,7 +34,7 @@
     "docs/TROUBLESHOOTING.md", "docs/DEVELOPMENT.md", "docs/VALIDATION.md",
     "docs/ROADMAP.md", "docs/PUBLIC-RELEASE.md", "docs/INSTALLERS.md",
     "docs/PLUGIN-CONTROL-GUIDE.md", "docs/NATIVE-SAVE-CONTRACT.md", "docs/KEY-ANALYSIS.md",
-    "docs/TEMPO-ANALYSIS.md",
+    "docs/TEMPO-ANALYSIS.md", "docs/REPOSITORY-MAINTENANCE.md", "docs/assets/syncfl-social-preview.jpg",
     "docs/BACKGROUND-CONTROL-AUDIT.md", "docs/plugin-calibration-evidence.json",
     "docs/reference/TOOLS.md", "docs/reference/tools.json", "docs/assets/syncfl-logo.png", "docs/assets/README.md",
     "scripts/ComposeWithLLM.pyscript", "scripts/build_native_catalog.py",

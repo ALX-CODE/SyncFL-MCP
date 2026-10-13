@@ -7,11 +7,14 @@
 Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 [![Tests](https://github.com/ALX-CODE/SyncFL-MCP/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/ALX-CODE/SyncFL-MCP/actions/workflows/tests.yml)
+[![Latest preview](https://img.shields.io/github/v/release/ALX-CODE/SyncFL-MCP?include_prereleases&label=release)](https://github.com/ALX-CODE/SyncFL-MCP/releases)
 [![Python 3.13 recommended](https://img.shields.io/badge/Python-3.13_recommended-3776AB)](docs/GETTING-STARTED.md)
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 [![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
 
 [Get started](docs/GETTING-STARTED.md) · [Capabilities](docs/CAPABILITIES.md) · [All 143 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+
+[Download a release](https://github.com/ALX-CODE/SyncFL-MCP/releases) · [Questions and demos](https://github.com/ALX-CODE/SyncFL-MCP/discussions) · [Report a bug](https://github.com/ALX-CODE/SyncFL-MCP/issues/new/choose)
 
 </div>
 
@@ -44,6 +47,15 @@ The [capability matrix](docs/CAPABILITIES.md) explains input requirements and li
 ## Get connected
 
 Download the repository ZIP (or clone `main`), extract it to a permanent folder, and **double-click `Install.cmd`**. Choose Codex, Claude Desktop, Claude Code, or manual client setup. Open FL once before installing so its user-data folder exists.
+
+With [Git for Windows](https://gitforwindows.org/) installed, this PowerShell
+command clones SyncFL into a new folder and starts interactive setup with the CLI:
+
+```powershell
+git clone https://github.com/ALX-CODE/SyncFL-MCP.git "$env:USERPROFILE\SyncFL-MCP"; if ($LASTEXITCODE -eq 0) { powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:USERPROFILE\SyncFL-MCP\install.ps1" -Interactive -Cli }
+```
+
+For an existing clone, run its installer directly:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\install.ps1 -Client codex

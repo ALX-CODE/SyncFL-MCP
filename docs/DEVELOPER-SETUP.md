@@ -13,9 +13,9 @@ installation is optional for offline development and tests.
 ## From a downloaded ZIP
 
 1. Install [Git for Windows](https://gitforwindows.org/).
-2. While the repository is private, accept collaborator access and authenticate
-   Git with a GitHub account that can read `ALX-CODE/SyncFL-MCP`. The normal Git
-   credential manager handles sign-in; never put tokens in a script or URL.
+2. The public repository can be cloned without a GitHub sign-in. To submit
+   changes, fork it using your own GitHub account; the normal Git credential
+   manager handles sign-in when pushing. Never put tokens in a script or URL.
 3. Download and extract the repository ZIP, then double-click **`Develop.cmd`**.
 
 The bootstrap clones into `source\SyncFL-MCP` under your user profile. If that
@@ -108,3 +108,20 @@ bootstrap uses the bundled runtimes and does not install Visual Studio or Rust.
 See [development](DEVELOPMENT.md) for code checks and
 [contributing](../CONTRIBUTING.md) for pull requests. Keep personal settings,
 credentials, projects and calibration recordings outside the repository.
+
+## Submit from a fork
+
+The developer bootstrap checks that `origin` points to the main repository.
+Keep that remote so setup can reuse your checkout. Contributors without write
+access should create a fork on GitHub and add it as a separate remote after
+running `Develop.cmd`:
+
+```powershell
+git remote add fork https://github.com/YOUR-USERNAME/SyncFL-MCP.git
+git push -u fork feature/my-change
+```
+
+Replace `YOUR-USERNAME` and `feature/my-change` with your account and branch.
+Open the pull request from your fork against `ALX-CODE/SyncFL-MCP`'s `main`
+branch. Maintainers with write access can push feature branches directly to
+`origin` instead.

@@ -20,6 +20,7 @@ Start with the task you want to complete. These guides describe current behavior
 | Understand or develop the implementation | [Architecture](ARCHITECTURE.md), [Development](DEVELOPMENT.md) |
 | Understand evidence | [Validation](VALIDATION.md), [native-save contract](NATIVE-SAVE-CONTRACT.md) |
 | See planned work | [Roadmap](ROADMAP.md) |
+| Understand repository checks and contribution settings | [Repository maintenance](REPOSITORY-MAINTENANCE.md) |
 | Prepare a public source release | [Public release guide](PUBLIC-RELEASE.md) |
 
 Native build/test notes: [MIDI bridge](../native/midi_bridge/README.md), [experimental background loader](../native/background_bridge/README.md), [SDK prototype](../native/fl_host_bridge/README.md).

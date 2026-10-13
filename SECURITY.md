@@ -10,7 +10,7 @@ Receipts, diagnostics and captures may contain personal paths, plugin names, pro
 
 ## Reporting a vulnerability
 
-Use GitHub's private vulnerability-reporting feature if it is enabled for the published repository. Otherwise contact a listed maintainer privately through their public profile and ask for a secure reporting route. Do not disclose exploit details or secrets in a public issue.
+Use [GitHub's private vulnerability report form](https://github.com/ALX-CODE/SyncFL-MCP/security/advisories/new). Private vulnerability reporting is enabled for this repository. If the form is unavailable, contact a listed maintainer privately through their public profile and ask for a secure reporting route. Do not disclose exploit details or secrets in a public issue.
 
 Include the affected commit/version, component, reproducible steps, impact and a minimal redacted test case. Report third-party host/plugin vulnerabilities to the appropriate vendor as well. No response-time guarantee is currently established.
 

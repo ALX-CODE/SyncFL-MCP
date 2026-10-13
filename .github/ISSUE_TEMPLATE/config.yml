@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup and troubleshooting
+    url: https://github.com/ALX-CODE/SyncFL-MCP/blob/main/docs/TROUBLESHOOTING.md
+    about: Check common installation, connection and FL Studio issues first.
+  - name: Questions and workflow help
+    url: https://github.com/ALX-CODE/SyncFL-MCP/discussions
+    about: Ask for help using SyncFL or discuss a production workflow.
+  - name: Share what you made
+    url: https://github.com/ALX-CODE/SyncFL-MCP/discussions
+    about: Share demos, tips and projects with the community.
+  - name: Report a security vulnerability privately
+    url: https://github.com/ALX-CODE/SyncFL-MCP/security/advisories/new
+    about: Keep security reports and sensitive evidence out of public issues.

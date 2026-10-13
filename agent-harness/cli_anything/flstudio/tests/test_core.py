@@ -47,7 +47,8 @@ def test_stale_and_partial_response_are_not_success(tmp_path, monkeypatch):
     )
     result = conn._wait_for_response(0.5, "wanted")
     assert result["success"] and result["id"] == "wanted" and result["protocol"] == 2
-    assert polls == 3 and elapsed == pytest.approx(0.06)
+    # Three 0.2 ms polls: the first 25 ms of a wait are checked finely.
+    assert polls == 3 and elapsed == pytest.approx(0.0006)
 
 
 def test_timeout_is_explicitly_unknown(tmp_path, monkeypatch):

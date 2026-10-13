@@ -220,3 +220,29 @@ def test_legacy_trigger_stays_blocked_with_interactive_environment(monkeypatch):
     with pytest.raises(RuntimeError, match="backend-only"):
         trigger.trigger()
     assert calls == []
+
+
+def test_native_access_defaults_to_backend_gating():
+    metadata = policy.policy_metadata()
+    assert policy.native_access() == "backend"
+    assert metadata["native_access"] == "backend"
+    assert metadata["native_ui_functions_allowed"] is False
+    assert metadata["access_environment_variable"] == "FL_MCP_ACCESS"
+    assert policy.with_access_note("base") == "base"
+
+
+def test_full_native_access_metadata_and_instructions(monkeypatch):
+    monkeypatch.setenv(policy.ACCESS_VARIABLE, "full")
+    metadata = policy.policy_metadata()
+    assert metadata["native_access"] == "full"
+    assert metadata["native_ui_functions_allowed"] is True
+    assert metadata["native_commands_affected"]["explicit_functions"] == []
+    assert metadata["native_commands_affected"]["model_commands_affected"] is False
+    # Native access never grants desktop input.
+    assert metadata["desktop_input_allowed"] is False
+    with pytest.raises(RuntimeError, match="backend-only"):
+        policy.require_desktop_input("save project")
+    with pytest.raises(RuntimeError, match="backend-only"):
+        policy.check_windows_call("keyboard_control", {"action": "press", "key": "F6"})
+    note = policy.with_access_note("base")
+    assert note.startswith("base") and "FL_MCP_ACCESS=full" in note

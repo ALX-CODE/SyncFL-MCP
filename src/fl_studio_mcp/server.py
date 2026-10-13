@@ -9,6 +9,7 @@ import sys
 from fastmcp import FastMCP
 
 from fl_studio_mcp.utils.connection import get_connection, reset_connection
+from fl_studio_mcp.utils.interaction_policy import with_access_note
 from fl_studio_mcp.utils.tool_lease import FLToolLeaseMiddleware
 
 INSTRUCTIONS = """
@@ -65,7 +66,7 @@ alternatives. Inspect ambiguity; it never changes project tempo or stretches aud
 Use Serum presets and measurements only with an installed, usable plugin.
 Capability discovery and CI counts do not prove every host/plugin combination.
 """
-mcp = FastMCP(name="SyncFL", instructions=INSTRUCTIONS)
+mcp = FastMCP(name="SyncFL", instructions=with_access_note(INSTRUCTIONS))
 
 
 @mcp.resource("fl://status")
@@ -176,11 +177,15 @@ def main():
     """Initialize optional local runtimes before serving MCP over stdio."""
     from fl_studio_mcp.discovery import create_discovery_server
     from fl_studio_mcp.utils.audio_files import initialize_audio_runtime
+    from fl_studio_mcp.utils.interaction_policy import ACCESS_LEVELS, ACCESS_VARIABLE
     from fl_studio_mcp.utils.native_midi import initialize_native_midi
 
     mode = os.environ.get("FL_MCP_TOOL_MODE", "discovery").strip().lower()
     if mode not in {"discovery", "full"}:
         raise ValueError("FL_MCP_TOOL_MODE must be 'discovery' or 'full'")
+    access = os.environ.get(ACCESS_VARIABLE, "backend").strip().lower()
+    if access not in ACCESS_LEVELS:
+        raise ValueError(ACCESS_VARIABLE + " must be 'backend' or 'full'")
     server = create_discovery_server(mcp) if mode == "discovery" else mcp
     initialize_audio_runtime()
     outcome = initialize_native_midi()

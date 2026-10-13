@@ -21,6 +21,10 @@
 
 ## Unreleased — public presentation
 
+- Made the controller round trip about 8x faster. The client checked the response file every 20 ms while FL answers a ping in about 2 ms; it now checks every 0.2 ms for the first 25 ms, then backs off to 1 ms and 5 ms. Measured on FL 2026 (API 45), 40 pings: median 22.8 ms before, 3.0 ms after. The cross-process bridge lock uses the same schedule.
+- A tool that finds another FL tool running now waits up to 10 s for its turn (`FL_MCP_LEASE_WAIT_SECONDS`, 0–60) instead of returning `busy` at once. Nothing is dispatched while waiting. `fl_connection_status` no longer takes the tool lease.
+- Added `FL_MCP_ACCESS=full`, an operator opt-in that lets `fl_native_call` and native batches call every catalogued FL API function: the 50 gated `ui.*`/editor/window functions, plus 11 functions that were previously left out of the controller catalog (`transport.globalTransport`, undo history, raw REC events, `channels.midiNoteOn`, logs). The 11 are catalogued as `access: "full"`; the controller refuses them unless the request envelope carries `access: "full"`, which the server sends only under this setting. The default stays `backend`. Desktop mouse/keyboard input remains unavailable in both. Reload the FL controller to pick up the new catalog.
+
 - Added `fl_project_create` for clean unnamed Empty projects: create the named FLP from the installed template, load it through the backend, initialize Pattern 1, and native-save with file verification. Startup guidance and discovery direct assistants here before loading sounds, instead of requesting a manual first save. Existing or modified projects are preserved. Workflow revision 16 exposes 147 contracts. The new sequence has regression coverage; live end-to-end qualification remains pending.
 
 - Added three experimental background piano tools for FL26: inspect pattern/sound/effect context, switch existing targets, and replace a score through native FSC import with saved-file verification and recovery copies. No Piano Roll script menu is required. Workflow revision 13 exposes 146 tools.

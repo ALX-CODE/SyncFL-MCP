@@ -518,7 +518,8 @@ def test_invalid_or_stale_responses_are_ignored_until_valid(bridge, invalid):
 
     assert result["success"] is True
     assert result["value"] == "fresh"
-    assert result["round_trip_ms"] == 20.0
+    # One poll step: responses are checked every 0.2 ms at first.
+    assert result["round_trip_ms"] == 0.2
     assert len(bridge.sends) == 1
 
 
@@ -533,7 +534,8 @@ def test_malformed_json_or_encoding_is_ignored(bridge, invalid):
     result = bridge.conn.send_command("transport.inspect", timeout=1)
 
     assert result["success"] is True
-    assert result["round_trip_ms"] == 20.0
+    # One poll step: responses are checked every 0.2 ms at first.
+    assert result["round_trip_ms"] == 0.2
 
 
 def test_matching_error_response_is_preserved(bridge):
@@ -583,3 +585,31 @@ def test_invalid_timeout_is_rejected_before_dispatch(bridge, timeout):
 
     assert not bridge.conn._command_file.exists()
     assert bridge.sends == []
+
+
+def test_full_access_is_declared_in_the_command_envelope(bridge, monkeypatch):
+    monkeypatch.setenv("FL_MCP_ACCESS", "full")
+
+    def send(message):
+        bridge.sends.append(message)
+        bridge.reply(value=None)
+
+    bridge.conn._port.send = send
+    result = bridge.conn.send_command(
+        "native.call", {"function": "ui.enter", "args": [], "allow_write": True}, timeout=1)
+    command = json.loads(bridge.conn._command_file.read_text(encoding="utf-8"))
+    assert result["success"] is True
+    assert command["access"] == "full"
+    assert command["params"]["function"] == "ui.enter"
+
+
+def test_response_polling_starts_fine_and_backs_off(bridge):
+    from fl_studio_mcp.utils.protocol import poll_delay
+
+    assert poll_delay(0) == poll_delay(0.02) == 0.0002
+    assert poll_delay(0.1) == 0.001
+    assert poll_delay(1) == poll_delay(60) == 0.005
+    bridge.conn._wait_for_response(0.3, "never-answered", started=bridge.clock.now)
+    assert bridge.clock.sleeps[0] == 0.0002
+    assert max(bridge.clock.sleeps) == 0.005
+    assert sum(bridge.clock.sleeps) == pytest.approx(0.3)

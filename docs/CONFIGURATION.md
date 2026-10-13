@@ -64,12 +64,16 @@ It honors `CODEX_HOME`, otherwise the user's `.codex/config.toml`. Use `--config
 | `FL_USER_DATA_FOLDER` | Image-Line root containing `FL Studio`; otherwise platform path discovery |
 | `FL_MCP_MIDI_PORT` | Explicit output; default Windows route uses the owned ALX endpoint |
 | `FL_MCP_TOOL_MODE` | `discovery` by default; `full` advertises every underlying tool schema |
+| `FL_MCP_ACCESS` | `backend` by default; `full` lets native calls reach every catalogued FL API function (see below) |
+| `FL_MCP_LEASE_WAIT_SECONDS` | How long a tool waits for another FL tool to finish before reporting `busy`; default 10, max 60, 0 = fail fast |
 | `FL_MCP_WINDOWS_SERVER` | Absolute compatible Windows MCP executable for UI/window inspection |
 | `FL_STUDIO_MCP_FFMPEG` | Explicit FFmpeg executable; otherwise PATH resolution |
 
 Reconnect after changes. A variable set in a terminal does not update an already-running desktop client.
 
 ## Input policy and extras
+
+`FL_MCP_ACCESS=full` is an operator setting for trusted local use. It removes the default gating on FL's own window/editor API (`ui.*`, `channels.showEditor`, `mixer.focusEditor`, focus-routed transport jogs) and enables the full-access catalog entries: `transport.globalTransport`, undo-history control, raw REC events, `channels.midiNoteOn` and log functions. These are native FL calls, not mouse or keyboard input. Focus-routed calls such as `ui.enter` or `ui.copy` act on whichever FL window has focus. Mutations still need `allow_write=true`. Older controllers lack the new catalog entries until FL reloads the controller.
 
 Desktop input is unavailable. Unsupported operations do not switch modes or fall back to external mouse/keyboard tools.
 

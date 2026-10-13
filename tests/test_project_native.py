@@ -400,14 +400,14 @@ def test_entrypoint_event_flags_are_actual_bounded_and_cleared(tmp_path, event):
     assert ns["ACTIVE_MIDI_FLAGS"] is None
 
 
-def test_capability_is_typed_and_arbitrary_transport_remains_unavailable(rig):
+def test_capability_is_typed_and_arbitrary_transport_is_full_access_only(rig):
     # Supply the previous dispatch's capability shape for the production extension.
     rig.ns["_previous_dispatch"] = lambda *a: {"typed": []}
     capabilities = rig.ns["extended_dispatch"]("bridge.capabilities", {})
     assert "project.save_current" in capabilities["typed"]
     assert capabilities["project_native"]["protocol"] == 1
     catalog = json.loads((ROOT / "fl_controller/native_catalog.json").read_text())
-    assert "transport.globalTransport" not in catalog
+    assert catalog["transport.globalTransport"]["access"] == "full"
 
 
 def test_restricted_os_process_identity_disables_save_without_breaking_ping(rig, monkeypatch):

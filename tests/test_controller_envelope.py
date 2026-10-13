@@ -109,3 +109,66 @@ def test_receipt_and_fingerprint_eviction_stay_bounded_together(controller):
     assert len(namespace["RECEIPTS"]) == len(namespace["RECEIPT_COMMANDS"]) == 128
     assert namespace["RECEIPTS"].keys() == namespace["RECEIPT_COMMANDS"].keys()
     assert "0" not in namespace["RECEIPTS"]
+
+
+@pytest.fixture
+def native_controller(tmp_path):
+    source = Path(__file__).parents[1] / "fl_controller" / "mcp_extended.py"
+    tree = ast.parse(source.read_text(encoding="utf-8"))
+    names = {"validate_command", "execute_pending_command", "write_response", "validate_native"}
+    functions = ast.Module(
+        body=[node for node in tree.body
+              if isinstance(node, ast.FunctionDef) and node.name in names],
+        type_ignores=[],
+    )
+    namespace = dict(
+        json=json, math=math, time=time, ACTIVE_ACCESS=None,
+        COMMAND_FILE=tmp_path / "command.json", RESPONSE_FILE=tmp_path / "response.json",
+        RECEIPTS={}, RECEIPT_COMMANDS={},
+        MODULES={"general": SimpleNamespace(safeToEdit=lambda: True)},
+        CATALOG={
+            "general.restoreUndoLevel": dict(
+                module="general", function="restoreUndoLevel", arguments=["level"],
+                required=1, signature="level", kind="write", access="full"),
+            "mixer.setTrackVolume": dict(
+                module="mixer", function="setTrackVolume", arguments=["index", "volume"],
+                required=2, signature="index, volume", kind="write"),
+        },
+    )
+    seen = []
+
+    def dispatch(action, params):
+        seen.append(namespace["ACTIVE_ACCESS"])
+        namespace["validate_native"](params)
+        return {"value": None}
+
+    namespace["extended_dispatch"] = dispatch
+    exec(compile(functions, str(source), "exec"), namespace)
+
+    def run(params, **changes):
+        command = dict(envelope(**changes), action="native.call", params=params,
+                       id="native-%d" % len(seen))
+        namespace["COMMAND_FILE"].write_text(json.dumps(command), encoding="utf-8")
+        namespace["execute_pending_command"]()
+        return json.loads(namespace["RESPONSE_FILE"].read_text(encoding="utf-8"))
+
+    return namespace, seen, run
+
+
+def test_full_access_functions_need_the_full_access_envelope(native_controller):
+    namespace, seen, run = native_controller
+    call = {"function": "general.restoreUndoLevel", "args": [1], "allow_write": True}
+    refused = run(call)
+    assert refused["success"] is False
+    assert "FL_MCP_ACCESS=full" in refused["error"]
+    assert run(call, access="full")["success"] is True
+    assert run(call, access="FULL")["success"] is False
+    assert seen == [None, "full", None]
+    assert namespace["ACTIVE_ACCESS"] is None
+
+
+def test_ordinary_native_functions_ignore_the_access_envelope(native_controller):
+    _, _, run = native_controller
+    call = {"function": "mixer.setTrackVolume", "args": [1, 0.5], "allow_write": True}
+    assert run(call)["success"] is True
+    assert run(call, access="full")["success"] is True

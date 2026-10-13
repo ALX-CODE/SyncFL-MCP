@@ -3357,7 +3357,7 @@
   },
   {
     "name": "fl_project_create",
-    "description": "Initialize a named FLP from the current clean, unnamed Empty project.\n\nUse this BEFORE adding sounds, notes or mixer changes when starting a beat\nfrom a blank project. Do not ask the user to save the blank project manually.\nRead fl_production_inspect(scope='project') for expected_revision. Preflight\nby default; apply=True needs a new absolute .flp path and .json receipt_file.\nCopies the installed Empty template, loads it through the native backend,\ninitializes Pattern 1, then native-saves and verifies the resulting FL26 file.\nRejects named, dirty or nonempty projects and never overwrites a file.\nNo keyboard, mouse, Save As dialog or interactive mode. Experimental native load.",
+    "description": "Initialize a named FLP from the current clean, unnamed Empty project.\n\nUse this BEFORE adding sounds, notes or mixer changes when starting a beat\nfrom a blank project. Do not ask the user to save the blank project manually.\nRead fl_production_inspect(scope='project') for expected_revision. Preflight\nby default; apply=True needs a new absolute .flp path and .json receipt_file.\nCopies the installed Empty template, loads it through the native backend,\ninitializes an empty Main pattern, then saves and verifies the FL26 file.\nRequires the updated controller's forced-save support; a clean changed flag\ndoes not skip this first native save.\nRejects named, dirty or nonempty projects and never overwrites a file.\nNo keyboard, mouse, Save As dialog or interactive mode. Experimental native load.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {

@@ -1,7 +1,7 @@
 # MCP tool reference
 
 **147 registered tools.** Generated from the server's actual MCP definitions.
-The default [discovery interface](../TOOL-DISCOVERY.md) advertises six entry tools;
+The default [discovery interface](../TOOL-DISCOVERY.md) advertises core production tools;
 this reference documents the complete underlying catalog (also available in `full` mode).
 Run `python scripts/generate_tool_docs.py --check` to detect drift.
 
@@ -591,7 +591,7 @@ Each step is {action, params}. Slots/channels/mixer tracks are zero-based.
 Stops on first failure and reports applied count; no automatic rollback.
 Use fl_capabilities for actions and fl_native_call for documented API calls.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L153)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L155)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -614,7 +614,7 @@ Live / operation-dependent · Read policy
 
 Discover available native signatures and typed bulk commands in the live controller.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L148)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L150)
 
 No input parameters.
 
@@ -720,7 +720,7 @@ Live / operation-dependent · Potential write policy
 Unavailable in backend-only SyncFL. Appending mixer inserts has no backend
 implementation. Use native mixer tools with existing track indices.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L139)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L141)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1114,7 +1114,7 @@ Profile controls: track, slot, parameter, plugin, name; either value (0..1)
 or target with unit and optional tolerance. Optional display verifies a
 known enum label. Stopped transport required. Receipt includes restore_profile.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L211)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L213)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1237,7 +1237,7 @@ Invoke one advertised FL native API function with positional args, no Python eva
 Advanced surface: caller must inspect the advertised signature and target indices.
 Mutations require allow_write; typed batch operations provide stronger validation.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L165)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L167)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1399,7 +1399,7 @@ Load an exact Plugin database effect name into an empty mixer slot.
 Uses the same guarded file loading as fl_effect_add. Indices are zero-based.
 result_row must remain 0; use fl_effect_add(path=...) to resolve duplicate names.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L115)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L117)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1447,7 +1447,7 @@ Load {track,slot,name,wet?} entries through the serialized native backend.
 Names resolve exact Plugin database files. Target slots must be empty.
 A receipt file records each verified slot for explicit inspection and resumption.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L104)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L106)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1545,7 +1545,7 @@ Live / operation-dependent · Read policy
 
 Search exposed parameters, omitting blank VST padding. Slot 0 is FL Slot 1.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L181)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L183)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1562,7 +1562,7 @@ Live / operation-dependent · Potential write policy
 Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend
 implementation. Native controls can inspect and adjust an existing plugin.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L128)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L130)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1580,7 +1580,7 @@ Probes the control briefly. Not for enumerations or non-monotonic displays.
 Requires exact plugin, parameter name and unit. Reports restoration on failure.
 Do not concurrently edit this control with another client.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L52)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L54)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1601,7 +1601,7 @@ Set normalized parameters with plugin identity guard and before/after readback.
 
 Each change: {parameter: zero-based index, value: 0..1, expected_name: optional}.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L192)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L194)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1683,7 +1683,9 @@ from a blank project. Do not ask the user to save the blank project manually.
 Read fl_production_inspect(scope='project') for expected_revision. Preflight
 by default; apply=True needs a new absolute .flp path and .json receipt_file.
 Copies the installed Empty template, loads it through the native backend,
-initializes Pattern 1, then native-saves and verifies the resulting FL26 file.
+initializes an empty Main pattern, then saves and verifies the FL26 file.
+Requires the updated controller's forced-save support; a clean changed flag
+does not skip this first native save.
 Rejects named, dirty or nonempty projects and never overwrites a file.
 No keyboard, mouse, Save As dialog or interactive mode. Experimental native load.
 
@@ -1716,7 +1718,7 @@ Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is
 unavailable. Use fl_project_native_inspect for native project state; the
 absolute path remains caller-declared.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L75)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L77)
 
 No input parameters.
 
@@ -1748,7 +1750,7 @@ Verify generation, title, channels, source hash, tempo and PPQ. Absolute loaded
 path is caller-declared, not independently exposed by FL. No input or mode switch.
 Unnamed projects are unsupported; stop on dialogs or uncertain completion.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L27)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L29)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1785,7 +1787,7 @@ Live / operation-dependent · Potential write policy
 Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable.
 Use fl_project_save_native to save the current named project.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L85)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L87)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1799,7 +1801,7 @@ Unavailable in backend-only SyncFL. Saving the active project under a new name h
 backend implementation. Use fl_project_save_native for an already named
 project, or fl_project_create to initialize a clean unnamed Empty project.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L94)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L96)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1854,7 +1856,7 @@ Live / operation-dependent · Read policy
 
 Read every channel, all mixer inserts, effect slots, routes and transport state.
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L176)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L178)
 
 No input parameters.
 
@@ -1864,7 +1866,7 @@ Live / operation-dependent · Read policy
 
 Inspect a timed-out command's receipt (last 128 requests, until controller reload).
 
-[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L206)
+[Implementation](../../src/fl_studio_mcp/tools/advanced.py#L208)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|

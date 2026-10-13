@@ -101,6 +101,27 @@ def test_saves_as_one_shot_switch_using_real_event_flags_then_two_clean_callback
     assert json.loads(rig.path.read_text())["status"] == "saved_current_host"
 
 
+def test_forced_named_save_dispatches_even_when_metadata_setters_leave_clean_flag(rig):
+    rig.dirty = 0
+    before = inspect(rig)
+    assert before["qualification"]["force_save_supported"] is True
+    params = dict(expected_revision=before["revision"], expected_window_title=TITLE,
+                  dry_run=True, force=True)
+    preview = rig.ns["project_save_current"](params)
+    assert preview["status"] == "preflighted" and not rig.writes
+    result = rig.ns["project_save_current"]({**params, "dry_run": False})
+    assert result["dispatched"] is True and rig.writes == [(92, 1, 38, 8)]
+
+
+@pytest.mark.parametrize("force", [1, "true", None])
+def test_forced_save_requires_a_boolean_before_dispatch(rig, force):
+    before = inspect(rig)
+    with pytest.raises(ValueError, match="force must be boolean"):
+        rig.ns["project_save_current"](dict(expected_revision=before["revision"],
+                                          expected_window_title=TITLE, force=force))
+    assert not rig.writes
+
+
 @pytest.mark.parametrize("handled,ack", [
     (-1, "recognized_cannot"), (0, "recognized_none"), (1, "recognized_plugin"),
     (2, "recognized_form"), (4, "recognized_menu"), (5, "recognized_delayed"),

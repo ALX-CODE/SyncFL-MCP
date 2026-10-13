@@ -5,7 +5,7 @@ SyncFL is backend-only. There is no execution-mode setting. Legacy
 
 The server uses local stdio. Configure an absolute Python path and repository working directory. An HTTP URL is not provided by this project.
 
-The default `discovery` tool mode advertises six entry tools. Supported backend tools
+The default `discovery` tool mode advertises 32 core production tools and four discovery helpers. Supported backend tools
 remain available through exact-name calls or `fl_discover` → `fl_describe` → `fl_call`.
 Set `FL_MCP_TOOL_MODE=full` to restore the complete initial tool list. This setting
 only changes schema visibility; it cannot enable desktop input. See [tool discovery](TOOL-DISCOVERY.md).

@@ -133,6 +133,33 @@ def test_compact_entry_describes_hidden_capabilities_before_any_discovery_call()
     asyncio.run(run())
 
 
+def test_fresh_sessions_advertise_complete_core_contracts_without_discovery():
+    required = {
+        "fl_project_create", "fl_find_assets", "fl_instrument_add", "fl_sample_add",
+        "fl_preset_load", "fl_background_piano_write", "fl_background_piano_select",
+        "fl_background_effect_load", "fl_plugin_controls_set", "fl_playlist_file_edit",
+        "fl_project_open", "fl_project_save_native", "fl_mixer_scene", "fl_play", "fl_stop",
+    }
+
+    async def run():
+        async with Client(mcp) as raw:
+            originals = {t.name: t for t in await raw.list_tools()}
+        # Each new server/client starts without a discovery call or remembered tool names.
+        for _ in range(2):
+            async with Client(create_discovery_server(mcp)) as client:
+                visible = {t.name: t for t in await client.list_tools()}
+                assert required <= visible.keys()
+                assert PINNED <= originals.keys()
+                assert not PINNED & SECONDARY_TOOLS
+                for name in PINNED:
+                    assert visible[name].model_dump() == originals[name].model_dump()
+                    assert visible[name].inputSchema == originals[name].inputSchema
+                build = (await client.call_tool("fl_build_info", {})).data
+                assert "unavailable" in build["render"]
+
+    asyncio.run(run())
+
+
 @pytest.mark.parametrize(("query", "expected"), [
     ("inspect my new synth", "fl_serum_inspect"),
     ("set attack on my new plugin", "fl_plugin_controls_set"),
@@ -245,13 +272,14 @@ def test_exact_contracts_discovery_bounds_and_full_catalog_remain_available():
     asyncio.run(run())
 
 
-def test_backend_lease_held_once_and_errors_preserved(tmp_path):
+@pytest.mark.parametrize("direct", [False, True])
+def test_backend_lease_held_once_and_errors_preserved(tmp_path, direct):
     backend = FastMCP("guarded canary")
     dispatched = []
     evidence = {"status": "dispatched_unverified", "receipt": "receipt-123", "success": False}
 
     @backend.tool
-    def canary(value: int) -> ToolResult:
+    def fl_sample_add(value: int) -> ToolResult:
         dispatched.append(value)
         return ToolResult(content=[TextContent(type="text", text="exact original error")],
                           structured_content=evidence, meta={"trace": "opaque"}, is_error=True)
@@ -260,23 +288,26 @@ def test_backend_lease_held_once_and_errors_preserved(tmp_path):
 
     async def run():
         async with Client(create_discovery_server(backend)) as client:
+            async def invoke(value):
+                if direct:
+                    return await client.call_tool("fl_sample_add", {"value": value},
+                                                  raise_on_error=False)
+                return await client.call_tool("fl_call", {
+                    "name": "fl_sample_add", "arguments": {"value": value},
+                }, raise_on_error=False)
+
             path = tmp_path / "Hardware/FLStudioMCP/mcp-tool.lock"
             with leases.tool_lease(path):
-                assert not (await client.call_tool("fl_discover", {"query": "canary"})).is_error
-                assert not (await client.call_tool("fl_describe", {"names": ["canary"]})).is_error
-                result = await client.call_tool("fl_call", {
-                    "name": "canary", "arguments": {"value": 1},
-                }, raise_on_error=False)
+                assert not (await client.call_tool("fl_discover", {"query": "sample"})).is_error
+                assert not (await client.call_tool("fl_describe", {
+                    "names": ["fl_sample_add"]})).is_error
+                result = await invoke(1)
                 assert result.is_error
                 assert result.structured_content["outcome"] == "not_dispatched"
                 assert dispatched == []
-            invalid = await client.call_tool("fl_call", {
-                "name": "canary", "arguments": {"value": "not an integer"},
-            }, raise_on_error=False)
+            invalid = await invoke("not an integer")
             assert invalid.is_error and dispatched == []
-            result = await client.call_tool("fl_call", {
-                "name": "canary", "arguments": {"value": 7},
-            }, raise_on_error=False)
+            result = await invoke(7)
             assert result.is_error
             assert result.structured_content == evidence
             assert result.content == [TextContent(type="text", text="exact original error")]

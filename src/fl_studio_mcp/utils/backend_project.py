@@ -26,28 +26,39 @@ def _matches(info, state):
 
 def _load(conn, main, before, source, data, info, executable, receipt, report):
     """Deliver an already prepared FLP once and independently observe its load."""
-    bridge._call(conn, "native.call", dict(
-        function="ui.showWindow", args=[2], allow_write=True))
-    targets = [row for row in native_windows.windows(main["handle"], pid=main["pid"])
-               if row["class"] == "TEventEditForm"
-               and row["title"].startswith("Playlist") and row["enabled"]]
-    if len(targets) != 1:
-        raise RuntimeError("Cannot identify the native Playlist drop target")
-    target = targets[0]
-    x, y, width, height = target["bounds"]
-    point = [x + width * 3 // 4, y + height // 2]
-    if not native_windows.point_belongs_to(point, target["handle"]):
-        native_windows.expose_fl_window(main)
-    if not native_windows.point_belongs_to(point, target["handle"]):
-        raise RuntimeError("Playlist target remains covered; no project load dispatched")
+    # A project belongs to FL's desktop. The Playlist accepts clips, and can
+    # decline an FLP even when its OLE callback itself succeeds.
+    for panel in range(4):
+        bridge._call(conn, "native.call", dict(
+            function="ui.hideWindow", args=[panel], allow_write=True))
+    native_windows.expose_fl_window(main)
+    # Panel visibility/layout updates can follow the controller acknowledgement.
+    deadline = time.monotonic() + 3
+    while True:
+        targets = [row for row in native_windows.windows(main["handle"], pid=main["pid"])
+                   if row["class"] == "TWPControl" and row["parent"] == main["handle"]
+                   and row["bounds"][2] > 0 and row["bounds"][3] > 0 and row["enabled"]]
+        targets.sort(key=lambda row: row["bounds"][2] * row["bounds"][3], reverse=True)
+        if (targets and (len(targets) == 1 or targets[0]["bounds"][2] * targets[0]["bounds"][3]
+                         > targets[1]["bounds"][2] * targets[1]["bounds"][3])):
+            desktop = targets[0]
+            x, y, width, height = desktop["bounds"]
+            point = [x + width * 3 // 4, y + height // 2]
+            if native_windows.point_belongs_to(point, desktop["handle"], exact=True):
+                break
+        if time.monotonic() >= deadline:
+            raise RuntimeError(
+                "FL desktop remains covered or ambiguous; no project load dispatched")
+        time.sleep(.05)
     fresh = bridge._project(conn, None)
     if (fresh["revision"] != before["revision"] or fresh["dirty"]
             or fresh["is_playing"] or fresh["is_recording"]
             or fresh["context"] != before["context"]
             or _window_context() != main or source.read_bytes() != data):
         raise RuntimeError("Project or source changed before native load")
-    window = dict(main=main, mixer=target, point=point,
+    window = dict(main=main, mixer=main, point=point,
                   process=bridge._process_identity(main["pid"]))
+    report["drop_target"] = dict(window=main, desktop=desktop, point=point)
     report.update(status="dispatching", dispatched=True)
     bridge._persist(receipt, report)
     report["cli"] = bridge._dispatch(executable, dict(window=window), source)
@@ -96,6 +107,8 @@ def _clean_blank(conn, main, state, expected_revision):
     if (ping.get("project_native", {}).get("controller_pid") != main["pid"]
             or not ping.get("safe_to_edit")):
         raise RuntimeError("The controller must belong to the idle, safe FL process")
+    if not ping.get("project_native", {}).get("force_save_supported"):
+        raise RuntimeError("Reload the updated controller before creating a blank project")
 
 
 def create_blank_project(path, expected_revision, receipt_file=None, apply=False,
@@ -160,11 +173,15 @@ def create_blank_project(path, expected_revision, receipt_file=None, apply=False
             report.update(success=False, status="initializing_pattern")
             bridge._persist(receipt, report)
             bridge._call(conn, "native.call", dict(
-                function="patterns.setPatternName", args=[1, "Pattern 1"], allow_write=True))
+                function="patterns.setPatternName", args=[1, "Main"], allow_write=True))
             current = bridge._project(conn, None)
+            expected_context = dict(loaded["context"], pattern=1, pattern_name="Main")
+            if current["context"] != expected_context:
+                raise RuntimeError("The initial pattern was not materialized; no save sent")
             saved, saved_info = _save_and_read(conn, dict(
-                context=current["context"], window=_window_context(), path=str(destination)), data)
-            if (not saved_info["version"].startswith("26.") or not _matches(saved_info, current)
+                context=current["context"], window=_window_context(), path=str(destination)), data,
+                force=True)
+            if (not saved_info["version"].startswith("26.") or not _matches(saved_info, before)
                     or any(p["notes"] for p in saved_info["patterns"]) or saved_info["clips"]):
                 raise RuntimeError("The new FL26 blank project was not independently verified")
             final = bridge._project(conn, None)

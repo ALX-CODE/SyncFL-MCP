@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 import struct
+from itertools import count
 from types import SimpleNamespace
 
 import pytest
@@ -222,10 +223,11 @@ def project_rig(tmp_path, monkeypatch):
         project_native=dict(controller_pid=42), safe_to_edit=True))
     monkeypatch.setattr(project.bridge, "verify_runtime", lambda: tmp_path / "bridge.exe")
     monkeypatch.setattr(project.bridge, "_process_identity", lambda *a: {})
-    monkeypatch.setattr(project.native_windows, "point_belongs_to", lambda *a: True)
+    monkeypatch.setattr(project.native_windows, "point_belongs_to", lambda *a, **kw: True)
+    monkeypatch.setattr(project.native_windows, "expose_fl_window", lambda *a: None)
     monkeypatch.setattr(project.native_windows, "windows", lambda *a, **kw: [dict(
-        handle="20", title="Playlist - Arrangement", enabled=True, **{
-            "class": "TEventEditForm", "bounds": [0, 0, 900, 600]})])
+        handle="20", parent="10", title="", enabled=True, **{
+            "class": "TWPControl", "bounds": [0, 0, 900, 600]})])
 
     def dispatch(*args):
         state.drops.append(args)
@@ -247,6 +249,8 @@ def test_native_project_load_preserves_recovery_and_reconciles_unknown_delivery(
     result = project.open_backend_project(**project_rig.args)
     assert result["success"] and not result["absolute_path_verified"]
     assert len(project_rig.drops) == 1
+    assert project_rig.drops[0][1]["window"]["mixer"]["handle"] == "10"
+    assert result["drop_target"]["desktop"]["handle"] == "20"
     assert project_rig.args["recovery_path"].read_bytes() == b"old-project"
     assert project_rig.args["source"].read_bytes() == b"new-project"
     assert json.loads(project_rig.args["receipt_file"].read_text())["status"] == "verified"
@@ -270,10 +274,33 @@ def test_native_project_guards_prevent_dispatch(project_rig, change):
 
 def test_declined_project_load_keeps_recovery_and_never_retries(project_rig, monkeypatch):
     project_rig.decline = True
-    ticks = iter([0, 0, 31])
+    ticks = iter([0, 0, 0, 31])
     monkeypatch.setattr(project.time, "monotonic", lambda: next(ticks))
     monkeypatch.setattr(project.time, "sleep", lambda _: None)
     result = project.open_backend_project(**project_rig.args)
     assert not result["success"] and result["status"] == "unverified"
     assert len(project_rig.drops) == 1
     assert project_rig.args["recovery_path"].read_bytes() == b"old-project"
+
+
+def test_project_load_waits_for_native_desktop_layout(project_rig, monkeypatch):
+    checks = iter([False, True])
+    observed = []
+
+    def desktop_check(point, handle, *, exact):
+        observed.append((handle, exact))
+        return next(checks)
+
+    monkeypatch.setattr(project.native_windows, "point_belongs_to", desktop_check)
+    result = project.open_backend_project(**project_rig.args)
+    assert result["success"] and len(project_rig.drops) == 1
+    assert observed == [("20", True), ("20", True)]
+
+
+def test_project_load_never_drops_on_a_covering_playlist(project_rig, monkeypatch):
+    monkeypatch.setattr(project.native_windows, "point_belongs_to", lambda *a, **kw: False)
+    ticks = count(0, 4)
+    monkeypatch.setattr(project.time, "monotonic", lambda: next(ticks))
+    result = project.open_backend_project(**project_rig.args)
+    assert not result["success"] and "desktop remains covered" in result["error"]
+    assert not project_rig.drops and project_rig.args["recovery_path"].exists()

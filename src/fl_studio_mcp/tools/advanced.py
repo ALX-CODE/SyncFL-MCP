@@ -15,7 +15,9 @@ def register_advanced_tools(mcp):
         Read fl_production_inspect(scope='project') for expected_revision. Preflight
         by default; apply=True needs a new absolute .flp path and .json receipt_file.
         Copies the installed Empty template, loads it through the native backend,
-        initializes Pattern 1, then native-saves and verifies the resulting FL26 file.
+        initializes an empty Main pattern, then saves and verifies the FL26 file.
+        Requires the updated controller's forced-save support; a clean changed flag
+        does not skip this first native save.
         Rejects named, dirty or nonempty projects and never overwrites a file.
         No keyboard, mouse, Save As dialog or interactive mode. Experimental native load.
         """

@@ -23,19 +23,30 @@ from fl_studio_mcp.utils.operator_contract import (
     DESKTOP_INPUT_TOOLS,
     OFFLINE_TOOLS,
     READ_TOOLS,
+    SECONDARY_TOOLS,
     WORKFLOWS,
+    backend_first,
 )
 
 CATALOG = json.loads(Path(__file__).with_name("discovery_catalog.json").read_text("utf-8"))
 PINNED = frozenset({"fl_build_info", "fl_session_inspect"})
 DISCOVERY_INSTRUCTIONS = """
 SyncFL exposes six entry tools and discovers the full FL Studio toolset on demand.
+It can find/load sounds, samples, instruments, synths, VST plugins and presets;
+edit notes, arrange, mix, route, automate, record, render and analyze audio.
+Use fl_discover for these capabilities even when their individual APIs are hidden.
+Backend APIs include existing instrument/pattern selection, piano writing, qualified
+empty-slot effect loading, plugin/synth controls and native saves. General new
+instrument/sample/preset loaders also exist, but currently require interactive mode.
 Start with fl_build_info and, for live work, fl_session_inspect. Use fl_discover for
 the musical task, fl_workflows for supported routes, then fl_describe for the exact
 selected contracts. Execute via fl_call using the original tool name and arguments.
 Discovery is guidance, never authorization. The underlying guards remain authoritative.
-Prefer native/backend workflows in both input modes. UI operations require interactive
-permission. Reinspect exact target identities/revisions before writes; never reuse stale
+Always choose a qualified native/backend workflow first in both input modes.
+Interactive control is secondary and discouraged, including in interactive mode.
+Use it only when no qualified backend route fits and the user permits UI input;
+interactive configuration alone is not a reason to choose UI. Never switch modes
+automatically. Reinspect exact target identities/revisions before writes; never reuse stale
 state after a mutation. Read filtered parameter pages instead of whole catalogs.
 After a timeout, partial result or unknown outcome, inspect the receipt and fresh state;
 never automatically replay or fall back to UI. Keep originals and recovery evidence.
@@ -65,7 +76,9 @@ ROUTES = {
     ),
     "composition": (
         "step sequence|drum pattern|step sequencer|pattern bank|composewithllm|legacy piano",
-        "fl_production_inspect fl_step_sequence_edit fl_piano_roll_prepare fl_send_notes",
+        "fl_production_inspect fl_step_sequence_edit fl_background_piano_inspect "
+        "fl_background_piano_write fl_background_piano_select "
+        "fl_piano_roll_prepare fl_send_notes",
     ),
     "midi_references": (
         "midi reference|midi file|transpose|quantize|humanize|reference melody",
@@ -124,8 +137,8 @@ ROUTES = {
     ),
     "save_and_delivery": (
         "save|save as|backup|package|deliver|project copy|archive project",
-        "fl_project_save fl_project_native_inspect fl_project_save_native "
-        "fl_project_save_as fl_project_package",
+        "fl_project_native_inspect fl_project_save_native fl_project_package "
+        "fl_project_save fl_project_save_as",
     ),
     "native_project_save": (
         "native save|background save|clean state",
@@ -137,11 +150,56 @@ ROUTES = {
 _STOP_WORDS = frozenset(
     "a an and are at be by for from i in is it of on or the this to with".split()
 )
+_TOKEN_ALIASES = dict(zip(
+    ("sounds samples instruments generators synths plugins vsts effects presets "
+     "loading adding").split(),
+    "sound sample instrument generator synth plugin vst effect preset load add".split(),
+))
 
 
 def _tokens(text: str) -> list[str]:
-    return [token for token in re.findall(r"[a-z0-9]+", text.lower())
+    return [_TOKEN_ALIASES.get(token, token) for token in re.findall(r"[a-z0-9]+", text.lower())
             if token not in _STOP_WORDS]
+
+
+def _loading_routes(query: str) -> dict[str, list[str]]:
+    """Distinguish loading/selection from editing an already loaded plugin."""
+    words = set(_tokens(query))
+    sounds = {"sound", "sample", "instrument", "generator", "synth", "plugin", "vst", "serum"}
+    selecting = bool(words & {"select", "switch", "choose"}) or (
+        "use" in words and bool(words & {"existing", "loaded", "already"})
+    )
+    if selecting and words & sounds and not words & {
+        "parameter", "parameters", "control", "controls", "preset",
+    }:
+        return {"background_piano": [
+            "fl_production_inspect", "fl_background_piano_inspect", "fl_background_piano_select",
+        ]}
+    if not words & {"load", "add", "insert", "import", "find", "browse", "search"}:
+        return {}
+    if not words & {"load", "add", "insert", "import"} and words & {
+        "key", "bpm", "tempo", "scale", "pitch", "note", "parameter", "control", "controls",
+    }:
+        return {}
+    effects = {"effect", "compressor", "eq", "reverb", "delay", "limiter", "saturator"}
+    if "preset" in words and not (words & effects and "empty" in words):
+        names = (["fl_serum_inspect_preset", "fl_serum_load_preset"] if "serum" in words
+                 else ["fl_preset_load"])
+        return {"assets_and_plugins": ["fl_find_assets", *names]}
+    routes = {}
+    if words & sounds:
+        names = ["fl_find_assets"]
+        if words & {"instrument", "generator", "synth", "serum", "plugin", "vst", "sound"}:
+            names.append("fl_instrument_add")
+        if words & {"sample", "sound"}:
+            names.append("fl_sample_add")
+        names.append("fl_preset_load")
+        routes["assets_and_plugins"] = names
+    # An unspecified plugin may be a generator or an effect; preserve both routes.
+    if words & effects or (words & {"plugin", "vst"} and not words & {"instrument", "generator"}):
+        names = ROUTES["background_effect_loading"][1].split()
+        routes["background_effect_loading"] = names if words & effects else names[:2]
+    return routes
 
 
 def _bm25(tools: Sequence[Tool], query: str) -> list[str]:
@@ -187,12 +245,14 @@ def _summary(tool: Tool, available: set[str], reason: str) -> dict:
             "read_only_allowlisted": tool.name in READ_TOOLS,
             "offline": tool.name in OFFLINE_TOOLS,
             "explicit_desktop_input": tool.name in DESKTOP_INPUT_TOOLS,
+            "execution_preference": ("secondary_discouraged" if tool.name in SECONDARY_TOOLS
+                                     else "preferred"),
         },
-        "companions": list(dict.fromkeys(
+        "companions": backend_first(
             name for workflow in related_workflows(tool.name)
             for name in ROUTES[workflow["id"]][1].split()
             if name != tool.name and name in available
-        )),
+        ),
     }
 
 
@@ -221,16 +281,28 @@ def discover(tools: Sequence[Tool], query: str, domain: str | None, limit: int) 
         if score and any(name in candidates for name in names.split()):
             route_scores.append((score, workflow_id))
     route_scores.sort(key=lambda item: -item[0])
-    selected_routes = [identifier for score, identifier in route_scores
-                       if score >= route_scores[0][0]][:2] if route_scores else []
+    loading_routes = {identifier: names for identifier, names in _loading_routes(query).items()
+                      if any(name in candidates for name in names)}
+    if loading_routes:
+        selected_routes = list(loading_routes)
+    else:
+        selected_routes = [identifier for score, identifier in route_scores
+                           if score >= route_scores[0][0]][:2] if route_scores else []
     # Interleave bundles: "key and BPM" must return both analysis tools.
-    bundles = [ROUTES[identifier][1].split() for identifier in selected_routes]
+    bundles = [loading_routes.get(identifier, ROUTES[identifier][1].split())
+               for identifier in selected_routes]
+    routed = {}
     for position in range(max(map(len, bundles), default=0)):
         for identifier, names in zip(selected_routes, bundles):
             if position < len(names) and names[position] in candidates:
-                ranked.setdefault(names[position], f"workflow: {identifier}")
-    for name in _bm25(list(candidates.values()), query):
-        ranked.setdefault(name, "contract text match")
+                routed.setdefault(names[position], f"workflow: {identifier}")
+    for name in backend_first(routed):
+        ranked.setdefault(name, routed[name])
+    # A recognized loading task has a complete bundle. Padding it with lexical
+    # matches can suggest parameter edits or channel creation for a selection.
+    if not loading_routes:
+        for name in _bm25(list(candidates.values()), query):
+            ranked.setdefault(name, "contract text match")
     chosen = list(ranked)[:limit]
     return {
         "query": query,
@@ -254,8 +326,11 @@ class DiscoveryTransform(CatalogTransform):
             limit: Annotated[int, Field(ge=1, le=10)] = 5,
             ctx: Context = None,
         ) -> dict:
-            """Find FL tools for a musical task. Returns bounded summaries and companions;
-            exact schemas are fetched separately with fl_describe. No DAW access.
+            """Discover FL Studio APIs to load sounds, samples, instruments, synths, VST
+            plugins and presets; write notes, mix, arrange, automate, record or render.
+            Includes native/backend routes and labels interactive input requirements.
+            Search by task before concluding a hidden capability is unavailable.
+            Returns bounded summaries; fetch exact schemas with fl_describe. No DAW access.
             """
             return discover(await self.get_tool_catalog(ctx), query, domain, limit)
 
@@ -293,8 +368,10 @@ class DiscoveryTransform(CatalogTransform):
             return await ctx.fastmcp.call_tool(name, arguments)
 
         async def fl_workflows(workflow: str | None = None, ctx: Context = None) -> dict:
-            """List compact workflow/domain names, or read one workflow's prerequisites,
-            tools and verification limits. No live DAW access or execution.
+            """Find supported FL Studio workflows: sound/plugin/preset loading, backend
+            piano and effect loading, synth controls, mixing, recording and rendering.
+            Read one workflow's prerequisites, input requirements and verification limits.
+            No live DAW access or execution.
             """
             available = {tool.name for tool in await self.get_tool_catalog(ctx)}
             visible = [item for item in WORKFLOWS
@@ -306,10 +383,17 @@ class DiscoveryTransform(CatalogTransform):
                 return {"workflow": {**selected, "tools": [
                     name for name in selected["tools"] if name in available]},
                     "preferred_tools": [name for name in ROUTES[workflow][1].split()
-                                        if name in available]}
+                                        if name in available and name not in SECONDARY_TOOLS],
+                    "secondary_tools": [name for name in ROUTES[workflow][1].split()
+                                        if name in available and name in SECONDARY_TOOLS],
+                    "interactive_guidance": (
+                        "Secondary and discouraged; use only when no qualified backend "
+                        "route fits and the user permits UI input. Never switch modes "
+                        "or replay an uncertain backend write automatically.")}
             return {
                 "domains": CATALOG["domains"],
-                "workflows": [{"id": item["id"], "coverage": item["coverage"]}
+                "workflows": [{"id": item["id"], "coverage": item["coverage"],
+                               "tasks": ROUTES[item["id"]][0].split("|")[:4]}
                               for item in visible],
                 "next": "Pass a workflow id for prerequisites and verification limits.",
             }

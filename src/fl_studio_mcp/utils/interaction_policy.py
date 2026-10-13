@@ -31,8 +31,10 @@ def require_desktop_input(operation):
     if interaction_mode() != "interactive":
         raise RuntimeError(
             f"{operation} is unsupported in background mode because it requires desktop "
-            "input, focus or window activation. Use a native/background operation, or "
-            f"explicitly set {ENVIRONMENT_VARIABLE}=interactive to allow desktop input. "
+            "input, focus or window activation. Use a native/background operation first. "
+            "Interactive control is a secondary, discouraged fallback only when no "
+            "qualified backend route fits and the user permits UI input. That fallback "
+            f"also requires explicit {ENVIRONMENT_VARIABLE}=interactive configuration. "
             "No interactive fallback was attempted."
         )
 
@@ -71,7 +73,10 @@ def policy_metadata():
         backend_apis_available=True,
         preferred_execution="native_backend",
         shared_backend_in_all_modes=True,
-        ui_usage="Only when no qualified backend route fits; never replay an uncertain write",
+        interactive_secondary=True,
+        interactive_discouraged=True,
+        ui_usage=("Secondary, discouraged fallback only when no qualified backend route fits "
+                  "and the user permits UI input; never replay an uncertain write"),
         automatic_interactive_fallback=False,
         ui_action_preview_allowed=True,
         background_observations="Window metadata, UI snapshots, screenshots and OCR only",

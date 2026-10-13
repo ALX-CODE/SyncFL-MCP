@@ -9,6 +9,7 @@ from mcp.types import TextContent
 
 from fl_studio_mcp.discovery import (
     CATALOG,
+    DISCOVERY_INSTRUCTIONS,
     PINNED,
     ROUTES,
     create_discovery_server,
@@ -16,7 +17,7 @@ from fl_studio_mcp.discovery import (
 )
 from fl_studio_mcp.server import mcp
 from fl_studio_mcp.utils import tool_lease as leases
-from fl_studio_mcp.utils.operator_contract import WORKFLOWS
+from fl_studio_mcp.utils.operator_contract import SECONDARY_TOOLS, WORKFLOWS
 
 ENTRY_TOOLS = PINNED | {"fl_discover", "fl_describe", "fl_call", "fl_workflows"}
 
@@ -71,6 +72,124 @@ def test_task_retrieval_retains_inspection_and_completion_tools(query, expected)
         result = discover(await mcp.list_tools(), query, None, 5)
         assert expected <= {item["name"] for item in result["matches"]}
         assert len(result["matches"]) <= 5
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode", ["background", "interactive"])
+@pytest.mark.parametrize(("query", "expected", "excluded"), [
+    ("load sounds plugins synths in backend mode",
+     {"fl_find_assets", "fl_background_effect_load", "fl_instrument_add", "fl_sample_add"},
+     {"fl_set_loop_mode", "fl_serum_apply"}),
+    ("load Serum preset", {"fl_find_assets", "fl_serum_inspect_preset", "fl_serum_load_preset"},
+     {"fl_serum_apply", "fl_serum_probe"}),
+    ("add VST instrument", {"fl_find_assets", "fl_instrument_add"}, {"fl_serum_apply"}),
+    ("load a synth", {"fl_find_assets", "fl_instrument_add"}, {"fl_serum_apply"}),
+    ("load Serum", {"fl_find_assets", "fl_instrument_add"}, {"fl_serum_apply"}),
+    ("loading samples from my drum library", {"fl_find_assets", "fl_sample_add"}, set()),
+    ("browse presets", {"fl_find_assets", "fl_preset_load"}, set()),
+    ("load a compressor plugin in an empty mixer slot",
+     {"fl_background_effect_inspect", "fl_background_effect_load"},
+     {"fl_plugin_controls_set"}),
+    ("switch to existing synth", {"fl_background_piano_inspect", "fl_background_piano_select"},
+     {"fl_serum_apply", "fl_background_piano_write"}),
+    ("use the already loaded instrument", {"fl_background_piano_select"}, {"fl_instrument_add"}),
+])
+def test_loading_intent_reaches_loaders_in_both_modes(monkeypatch, mode, query, expected, excluded):
+    monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", mode)
+
+    async def run():
+        result = discover(await mcp.list_tools(), query, None, 5)
+        names = {item["name"] for item in result["matches"]}
+        assert expected <= names
+        assert not excluded & names
+        for item in result["matches"]:
+            if item["name"] in {"fl_instrument_add", "fl_sample_add", "fl_serum_load_preset"}:
+                assert item["policy"]["explicit_desktop_input"] is True
+                assert item["policy"]["execution_preference"] == "secondary_discouraged"
+
+    asyncio.run(run())
+
+
+def test_compact_entry_describes_hidden_capabilities_before_any_discovery_call():
+    async def run():
+        async with Client(create_discovery_server(mcp)) as client:
+            entries = {tool.name: tool for tool in await client.list_tools()}
+            description = entries["fl_discover"].description.lower()
+            for word in ("sounds", "samples", "instruments", "synths", "vst", "plugins",
+                         "presets", "backend", "notes", "mix", "record", "render"):
+                assert word in description
+                assert word in DISCOVERY_INSTRUCTIONS.lower()
+            assert "currently require interactive mode" in DISCOVERY_INSTRUCTIONS
+            index = (await client.call_tool("fl_workflows", {})).data
+            assert all(workflow["tasks"] for workflow in index["workflows"])
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize(("query", "expected"), [
+    ("inspect my new synth", "fl_serum_inspect"),
+    ("set attack on my new plugin", "fl_plugin_controls_set"),
+    ("select plugin controls", "fl_plugin_controls_inspect"),
+])
+def test_loading_routes_do_not_capture_parameter_requests(query, expected):
+    async def run():
+        matches = discover(await mcp.list_tools(), query, None, 5)["matches"]
+        assert expected in {item["name"] for item in matches}
+        assert matches[0]["name"] not in {"fl_instrument_add", "fl_background_piano_select"}
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode", ["background", "interactive"])
+@pytest.mark.parametrize("query", ["save project", "write piano notes", "load effect"])
+def test_backend_workflow_tools_precede_discouraged_interactive_tools(monkeypatch, mode, query):
+    monkeypatch.setenv("FL_MCP_INTERACTION_POLICY", mode)
+
+    async def run():
+        result = discover(await mcp.list_tools(), query, None, 10)
+        routed = [item for item in result["matches"] if item["reason"].startswith("workflow:")]
+        secondary = [item["name"] in SECONDARY_TOOLS for item in routed]
+        assert secondary == sorted(secondary)
+        assert any(secondary) and not all(secondary)
+        for item in routed:
+            expected = "secondary_discouraged" if item["name"] in SECONDARY_TOOLS else "preferred"
+            assert item["policy"]["execution_preference"] == expected
+
+    asyncio.run(run())
+
+
+def test_exact_interactive_request_still_resolves_but_is_labeled_secondary():
+    async def run():
+        result = discover(await mcp.list_tools(), "fl_project_save", None, 1)
+        match = result["matches"][0]
+        assert match["name"] == "fl_project_save"
+        assert match["policy"]["execution_preference"] == "secondary_discouraged"
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("name", ["fl_plugin_add", "fl_plugin_chain"])
+def test_loading_aliases_keep_their_underlying_desktop_input_requirement(name):
+    async def run():
+        match = discover(await mcp.list_tools(), name, None, 1)["matches"][0]
+        assert match["policy"]["explicit_desktop_input"] is True
+        assert match["policy"]["execution_preference"] == "secondary_discouraged"
+
+    asyncio.run(run())
+
+
+def test_workflow_separates_preferred_backend_from_secondary_interactive_routes():
+    async def run():
+        async with Client(create_discovery_server(mcp)) as client:
+            result = (await client.call_tool("fl_workflows", {
+                "workflow": "save_and_delivery",
+            })).data
+            assert "fl_project_save_native" in result["preferred_tools"]
+            assert not set(result["preferred_tools"]) & SECONDARY_TOOLS
+            assert "fl_project_save" in result["secondary_tools"]
+            assert set(result["secondary_tools"]) <= SECONDARY_TOOLS
+            assert "discouraged" in result["interactive_guidance"]
 
     asyncio.run(run())
 

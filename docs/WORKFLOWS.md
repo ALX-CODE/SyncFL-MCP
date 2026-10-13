@@ -6,6 +6,13 @@ The JSON examples below are **tool name + arguments**, not requests to execute n
 
 Call `fl_build_info`, `fl_connection_status`, `fl_session_inspect`, then `fl_workflow_catalog`. Confirm the loaded controller matches disk, the intended project is open, and playback/recording state is appropriate. Tool availability alone is not readiness.
 
+Always choose a qualified backend route first, including when interactive mode
+is configured. Interactive control is a secondary, discouraged fallback only
+when no qualified backend route fits and the user permits UI input. Use the
+catalog's `preferred_tools` before its `secondary_tools`. A visible window does
+not require UI control. Never switch modes automatically or replay an uncertain
+backend write through UI.
+
 Use `fl_project_snapshot` for an overview. Read the target's detailed inspector before changing it. Index `0` means the first global channel, but mixer track `0` is Master; never reuse yesterday's index from memory.
 
 ## Preview and change tempo

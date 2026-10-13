@@ -49,6 +49,8 @@ def test_interactive_adds_only_ui_permission_to_the_shared_backend(monkeypatch):
     interactive = policy.policy_metadata()
     assert interactive["preferred_execution"] == "native_backend"
     assert interactive["backend_apis_available"] and interactive["shared_backend_in_all_modes"]
+    assert interactive["interactive_secondary"] and interactive["interactive_discouraged"]
+    assert "user permits UI input" in interactive["ui_usage"]
     assert not interactive["automatic_interactive_fallback"]
     differences = {key for key in background if background[key] != interactive[key]}
     assert differences == {"mode", "desktop_input_allowed"}

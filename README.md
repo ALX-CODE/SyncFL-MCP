@@ -126,10 +126,14 @@ Mappings bind to the **exact exposed parameter layout**. Changed layouts are ref
 
 `FL_MCP_INTERACTION_POLICY=background` is the default. Keyboard/mouse delivery, activation and focus-dependent calls are blocked before dispatch. There is no automatic fallback to interactive mode.
 
-Both modes expose the same tools and use the same backend first. `interactive`
-adds permission for guarded UI when a task needs it; it does not select a separate
-engine or disable backend APIs. An uncertain backend mutation must never be retried
-through the UI.
+Both modes expose the same tools and always use a qualified backend route first.
+**Interactive control is secondary and discouraged**, even when `interactive` is
+configured. Use it only when no qualified backend route fits and the user permits
+UI input. A visible FL window is not a reason to choose UI, and enabling
+interactive mode does not select a separate engine or disable backend APIs.
+Discovery puts backend workflow tools first and labels interactive tools as
+secondary; workflow responses separate preferred tools from secondary tools.
+Never change modes automatically or retry an uncertain backend mutation through UI.
 
 | Route | Current behavior |
 |---|---|

@@ -86,7 +86,7 @@ def register_workflow_tools(mcp):
 
         return dict(
             version=__version__,
-            workflow_revision=13,
+            workflow_revision=14,
             **LOADED_BUILD,
             interaction_policy=policy_metadata(),
             guarded_production="BPM, channel controls, scoped steps; optional native shuffle",
@@ -113,7 +113,7 @@ def register_workflow_tools(mcp):
             mix_analysis="FFmpeg integrated loudness, true peaks and reference level comparisons",
             recording="guarded filename/arm setup; bounded recording and decoded take evidence",
             limitations=[
-                "Background is the default; GUI workflows require explicit interactive opt-in",
+                "Backend first in every mode; interactive is secondary and discouraged",
                 "Basic FL26 scores use the backend; advanced expression and SDK notes "
                 "remain unqualified",
                 "Opaque plugin-internal external assets require inspection",

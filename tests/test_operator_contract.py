@@ -35,6 +35,7 @@ def test_live_readiness_never_saves_opens_dialogs_or_mutates(tmp_path):
     assert conn.calls == ["bridge.ping", "production.inspect", "transport.getStatus"]
     assert result["saved_path_verified"] is False
     assert result["dependencies"]["windows_helper"]["runtime_verified"] is False
+    assert result["next_tools"] == ["fl_workflow_catalog", "fl_production_inspect"]
 
 
 def test_failed_observation_stops_instead_of_inventing_readiness(tmp_path):
@@ -100,12 +101,17 @@ def test_catalog_reports_background_default_and_specific_input_dependencies(monk
     assert policy["mode"] == "background" and policy["default"] == "background"
     assert policy["desktop_input_allowed"] is False
     assert policy["automatic_interactive_fallback"] is False
+    assert policy["interactive_secondary"] and policy["interactive_discouraged"]
     workflows = {item["id"]: item for item in catalog["workflows"]}
     assert workflows["save_and_delivery"]["input_requirements"]["desktop_input_tools"] == [
         "fl_project_save", "fl_project_save_as"]
     assert workflows["mix_balance"]["input_requirements"]["desktop_input_tools"] == []
     assert "fl_render_status" not in workflows["render_and_stems"][
         "input_requirements"]["desktop_input_tools"]
+    for workflow in workflows.values():
+        assert not set(workflow["preferred_tools"]) & contract.SECONDARY_TOOLS
+        assert set(workflow["secondary_tools"]) <= contract.SECONDARY_TOOLS
+        assert workflow["tools"] == workflow["preferred_tools"] + workflow["secondary_tools"]
     assert {"fl_plugin_adapter_catalog", "fl_plugin_controls_inspect"} <= contract.READ_TOOLS
     assert "fl_plugin_adapter_catalog" in contract.OFFLINE_TOOLS
     assert "fl_plugin_controls_inspect" not in contract.OFFLINE_TOOLS

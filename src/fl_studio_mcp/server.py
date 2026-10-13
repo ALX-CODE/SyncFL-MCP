@@ -17,10 +17,12 @@ workflows and offline project/audio utilities. Begin with fl_connection_status
 and fl_session_inspect. Consult fl_workflow_catalog for supported routes.
 
 Both interaction modes use the same native/backend APIs and expose the same
-tools. Prefer the backend in BOTH modes, including background piano and effect
-loading whenever their qualified preconditions fit. Interactive is an additional
-permission to use guarded UI when a task has no applicable backend route; it is
-not a different engine or a reason to choose clicks instead of native calls.
+tools. Always choose the backend first in BOTH modes, including background piano
+and effect loading whenever their qualified preconditions fit. Interactive is
+secondary and discouraged: use guarded UI only when no qualified backend route
+fits and the user permits UI input. Interactive configuration alone is not a
+reason to choose UI. Never change modes automatically or treat a visible window
+as a reason to abandon a backend route. It is not a different engine.
 Background is the default. Keyboard, mouse and focus operations require
 FL_MCP_INTERACTION_POLICY=interactive. Never retry an uncertain/dispatched backend
 mutation through UI. Native transport, mixer, routing, channels, plugin controls

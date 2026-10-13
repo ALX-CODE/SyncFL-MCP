@@ -2,6 +2,10 @@
 
 SyncFL defaults to six advertised entry tools instead of injecting all underlying
 schemas into every new conversation. The complete toolset remains callable.
+The initial instructions and discovery tool descriptions advertise the capabilities
+behind that interface: sound/sample/instrument/synth/VST/preset loading, composition,
+mixing, arrangement, automation, recording, rendering and audio analysis. Clients
+that omit server instructions can still find them in `fl_discover`'s description.
 
 | Entry tool | Purpose |
 |---|---|
@@ -18,7 +22,8 @@ through `fl_call`. Build the scene from those fresh observations. Schemas, targe
 indices, units, defaults and preflight requirements come from the underlying
 tools; the router neither invents arguments nor decides whether a write is authorized.
 
-Discovery ranks exact tool identifiers first, curated musical workflow terms next,
+Discovery ranks exact tool identifiers first, task-specific loading/selection routes
+and curated musical workflow terms next,
 and BM25 over current tool contracts last. It returns inspection/status companions
 alongside candidate writes, including alternative routes when useful. Named plugin
 controls handle supported physical units; legacy setters are not interchangeable.
@@ -26,6 +31,20 @@ All 146 tools have an on-disk domain and usage note in `discovery_catalog.json`.
 Tests check this index against actual registrations, so new tools cannot silently
 go missing from the audited inventory. Unrecognized language can still retrieve
 irrelevant candidates: inspect contracts and use a domain filter to narrow them.
+
+For loading requests, use ordinary language such as `load Serum preset`, `add VST
+instrument`, `load sounds plugins synths in backend mode`, or `switch to existing
+synth`. Loading verbs and asset names are matched separately, including plurals.
+Recognized loading requests return their relevant bundle without padding it with
+unrelated parameter setters. The workflow index includes example tasks.
+
+Backend-first does not imply that every loader works without desktop input.
+Existing instrument/pattern selection and qualified empty-slot effect loading have
+backend routes; general new instrument/sample/FST loaders and the native Serum
+preset loader currently require interactive mode. Discovery preserves those labels
+and the underlying guards. Read the selected workflow's prerequisites and exact
+contracts before executing. Reconnect the MCP client after upgrading so it loads
+the new descriptions; an existing conversation may retain its previous catalog.
 
 ## Execution and recovery
 

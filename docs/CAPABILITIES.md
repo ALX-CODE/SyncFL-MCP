@@ -1,6 +1,6 @@
 # Capabilities and limits
 
-**143 tools, workflow revision 12.** Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
+**146 tools, workflow revision 13.** Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
 
 **Background** means no synthetic keyboard/mouse or activation. **Offline** operates on files without applying them to the live project. **Interactive** needs explicit opt-in and inspected Windows controls. **Experimental** has narrower evidence; inspect failures rather than replaying them.
 
@@ -10,7 +10,8 @@
 | Transport | Transport tools, `fl_get_transport_status` | Supported native actions background | Triggering notes does not persist composition |
 | Project/channel settings | `fl_production_inspect`, `fl_project_settings`, `fl_channel_configure` | Background | Fresh revisions; PPQ/meter edits not enabled |
 | Step sequencing | `fl_step_sequence_edit` | Background | Selected one-based pattern, global channel, explicit extent |
-| Persistent notes | `fl_piano_roll_prepare`, `fl_write_pattern_bank`, piano tools | Interactive on Windows | Script activation needs UI; one channel per pattern-bank workflow |
+| Background scores and sound selection | `fl_background_piano_inspect`, `fl_background_piano_select`, `fl_background_piano_write` | Experimental background, FL26 | Exact saved path; current pattern and explicit channel; full basic-score replacement with independent saved-FLP verification |
+| Script piano workflows | `fl_piano_roll_prepare`, `fl_write_pattern_bank`, piano tools | Interactive on Windows | Script activation needs UI; one channel per pattern-bank workflow |
 | Note transforms | `fl_notes_transform` | Offline | Unapplied transpose/quantize proposal with supported expression |
 | MIDI references | `fl_midi_reference_search` | Offline | Your local files; bounded descriptive scores, not learned quality |
 | Mixer balance | `fl_mixer_scene`, `fl_mixer_meter_watch` | Background | Native sampled peaks are not continuous coverage, RMS, LUFS or true peak |
@@ -19,7 +20,7 @@
 | Generic plugins | `fl_plugin_inspect`, `fl_plugin_apply`, parameter tools | Background where exposed | FL-exposed controls only; host caches may be stale |
 | Named plugins | `fl_plugin_adapter_catalog`, `fl_plugin_controls_inspect`, `fl_plugin_controls_set` | Background | Exact layout; qualified units/enums, explicit normalized fallback; [stock coverage](STOCK-PLUGIN-GUIDE.md) |
 | Assets and loading | `fl_find_assets`, `fl_sample_add`, `fl_instrument_add`, `fl_effect_add`, `fl_preset_load` | Discovery offline; loading interactive | Exact names/paths; plugin FSTs, not complete mixer-track FSTs |
-| Selected-track effect load | `fl_background_effect_inspect`, `fl_background_effect_load` | Experimental background | Empty slot on the selected track whose drop point is visibly exposed; earlier declines were traced to FL's Playlist covering the Mixer |
+| Selected-track effect load | `fl_background_effect_inspect`, `fl_background_effect_load` | Experimental background | Empty slot on selected track; apply exposes the native Mixer/window and rechecks identity before dispatch |
 | Serum | `fl_serum_inspect`, `fl_serum_apply`, preset build/edit tools | Background/offline; preset load interactive | Serum 2-specific mappings/templates |
 | Serum probing | `fl_serum_probe`, `fl_serum_analyze_audio` | Live note/capture or offline | Default-output capture can include other desktop audio; pitch analysis has limits |
 | Saved FLP inspection | `fl_project_file_inspect`, `fl_playlist_file_inspect` | Offline | Supported saved layouts; unsaved state may differ |
@@ -48,7 +49,7 @@
 
 ## Unfinished areas
 
-Full background piano editing, general loading and rendering are not implemented. The native SDK note-write prototype is disabled. Some plugin controls remain normalized-only, including Auto-Tune's Harmony Player and EchoBoy Rhythm Time, and other Soundtoys plugins have no profile. There is no universally qualified perfect vocal chain, automatic mastering, complete transcription or perceptual reference matching.
+Background FSC import supports full replacement with basic note fields; empty-score clearing and advanced expression are not qualified. General loading and rendering remain unfinished. The separate native SDK note-write prototype is disabled. Some plugin controls remain normalized-only, including Auto-Tune's Harmony Player and EchoBoy Rhythm Time, and other Soundtoys plugins have no profile. There is no universally qualified perfect vocal chain, automatic mastering, complete transcription or perceptual reference matching.
 
 Technical verification and musical acceptance differ. Listen in context and retain source projects. See [validation](VALIDATION.md) and [roadmap](ROADMAP.md).
 

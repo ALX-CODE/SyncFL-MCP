@@ -139,6 +139,38 @@ def _stop_helper(process):
         return process.communicate(timeout=2)
 
 
+async def _focus_target(fl, point, handle):
+    """Recover ordinary window occlusion before preparing a one-shot drag."""
+    if native_windows.point_belongs_to(point, handle):
+        return
+    await fl.win("window_management", action="activate", handle=handle)
+    deadline = time.monotonic() + 1.0
+    while not native_windows.point_belongs_to(point, handle):
+        if time.monotonic() >= deadline:
+            raise RuntimeError("File destination is not owned by the expected FL window")
+        await asyncio.sleep(0.05)
+
+
+async def _focus_source(process, title, target_point, monitor):
+    """Wait for activation to settle; never dispatch through another window."""
+    deadline = time.monotonic() + 1.0
+    while True:
+        controls = _helper_controls(process, title)
+        if not controls:
+            raise RuntimeError("File transfer source disappeared before dispatch")
+        form, label = controls
+        x, y, width, height = label["bounds"]
+        source = (x + width // 2, y + height // 2)
+        if (_contains(form["bounds"], target_point)
+                or not _contains(monitor["bounds"], source)):
+            raise RuntimeError("File transfer helper moved or obscures the destination")
+        if native_windows.point_belongs_to(source, form["handle"]):
+            return source
+        if time.monotonic() >= deadline:
+            raise RuntimeError("File transfer helper moved or obscures the destination")
+        await asyncio.sleep(0.05)
+
+
 async def transfer_file(fl, path, target_point, target_handle, validate_target=None):
     """Drag one existing absolute file once; native caller readback is still required.
 
@@ -162,8 +194,7 @@ async def transfer_file(fl, path, target_point, target_handle, validate_target=N
     target_handle = str(int(target_handle))
     monitor = _monitor_for(target_point)
     position = _helper_position(monitor["work"], target_point)
-    if not native_windows.point_belongs_to(target_point, target_handle):
-        raise RuntimeError("File destination is not owned by the expected FL window")
+    await _focus_target(fl, target_point, target_handle)
     signature = _signature(path)
     executable = _helper_executable()
     title = "FL MCP file transfer " + uuid.uuid4().hex
@@ -187,16 +218,7 @@ async def transfer_file(fl, path, target_point, target_handle, validate_target=N
             raise RuntimeError("File transfer helper did not expose its drag source")
         form, _ = controls
         await fl.win("window_management", action="activate", handle=form["handle"])
-        controls = _helper_controls(process, title)
-        if not controls:
-            raise RuntimeError("File transfer source disappeared before dispatch")
-        form, label = controls
-        x, y, width, height = label["bounds"]
-        source = (x + width // 2, y + height // 2)
-        if (_contains(form["bounds"], target_point)
-                or not _contains(monitor["bounds"], source)
-                or not native_windows.point_belongs_to(source, form["handle"])):
-            raise RuntimeError("File transfer helper moved or obscures the destination")
+        source = await _focus_source(process, title, target_point, monitor)
         if signature != _signature(path):
             raise RuntimeError("File changed while preparing its transfer")
         # Last check before input: a newly opened dialog must never receive this drop.

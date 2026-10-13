@@ -194,7 +194,14 @@ def extended_dispatch(action, p):
                         "failed_step_outcome": "may_have_applied; inspect state before retry",
                         "results": results}
         IN_VALIDATED_BATCH = False
-        mixer.afterRoutingChanged()
+        # afterRoutingChanged marks FL dirty even when no routing changed. Keep
+        # legacy mutation notifications, but inspection batches must stay reads.
+        if any(step["action"] not in {"bridge.ping", "bridge.capabilities", "bridge.receipt",
+                                      "mixer.inspect", "plugins.parameters", "project.snapshot"}
+               and not (step["action"] == "native.call"
+                        and CATALOG[step["params"]["function"]]["kind"] == "read")
+               for step in steps):
+            mixer.afterRoutingChanged()
         return {"applied": len(results), "results": results}
     if action == "bridge.ping":
         return {"protocol": 2, "api_version": MODULES["general"].getVersion(),

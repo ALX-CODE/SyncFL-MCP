@@ -36,7 +36,7 @@ def rig(tmp_path, monkeypatch):
         calls=[], transfers=[], on_transfer=None, on_write=None, on_ui_write=None,
         before_validation=None,
         playing=False, popup=False, visible=True, plugin="Synth", channel_type=0, active_track=0,
-        rename_works=True, route_works=True, delivery_confirmed=True,
+        rename_works=True, route_works=True, delivery_confirmed=True, plugin_valid=True,
         plugin_params=[{"index": 0, "name": "Gain", "value": 0.4}], visible_channels=[0, 1],
     )
 
@@ -48,6 +48,8 @@ def rig(tmp_path, monkeypatch):
         if action == "mixer.inspect":
             return {"tracks": [{"index": params["tracks"][0], "slots": deepcopy(state.slots)}]}
         if action == "plugins.getParams":
+            if not state.plugin_valid:
+                raise RuntimeError("Plugin not valid")
             return {"params": deepcopy(state.plugin_params)}
         if action == "channels.setName":
             if state.rename_works:
@@ -81,6 +83,7 @@ def rig(tmp_path, monkeypatch):
                 "channels.getChannelType": state.channel_type,
                 "channels.channelCount": len(state.visible_channels),
                 "plugins.getPluginName": state.plugin,
+                "plugins.isValid": state.plugin_valid,
             }
             assert function in values, f"Unexpected native read: {function}"
             return {"value": values[function]}
@@ -292,6 +295,21 @@ def test_obscured_rack_prevents_loading(rig):
     assert not rig.transfers
 
 
+def test_obscured_rack_is_raised_before_loading(rig):
+    rig.visible = False
+
+    async def activate(name, **kwargs):
+        if name == 'window_management' and kwargs.get('handle') == '200':
+            rig.visible = True
+        return {'success': True}
+
+    rig.fl.win.side_effect = activate
+    rig.on_transfer = lambda: add_sampler(rig)
+    result = asyncio.run(rig.fl.add_sample(str(rig.sample)))
+    assert result['success']
+    assert len(rig.transfers) == 1
+
+
 def test_exact_instrument_name_is_resolved_and_checked(rig, monkeypatch):
     resolutions = []
 
@@ -430,6 +448,35 @@ def test_existing_channel_preset_restores_project_name_and_mixer_role(rig):
     assert result["after"]["params"][0]["value"] == 0.9
     assert rig.channels == original
     assert len(rig.transfers) == 1
+
+
+def test_sampler_can_be_replaced_without_reading_nonexistent_plugin_parameters(rig):
+    original = deepcopy(rig.channels)
+    rig.plugin_valid = False
+
+    def loaded():
+        rig.plugin_valid = True
+        rig.channels[0].update(name="Preset name", target_fx_track=11)
+
+    rig.on_transfer = loaded
+    result = asyncio.run(rig.fl.load_preset(
+        str(rig.preset), target="channel", channel=0, expected_name="Original lead",
+    ))
+    assert result["success"]
+    assert result["before"] == {"name": "Original lead", "params": [], "channel_type": 0}
+    assert result["after"]["params"] == rig.plugin_params
+    assert rig.channels == original
+    assert len(rig.transfers) == 1
+
+
+def test_invalid_non_sampler_channel_is_rejected_before_transfer(rig):
+    rig.plugin_valid = False
+    rig.channel_type = 2
+    with pytest.raises(ValueError, match="no inspectable plugin or native Sampler"):
+        asyncio.run(rig.fl.load_preset(
+            str(rig.preset), target="channel", channel=0, expected_name="Original lead",
+        ))
+    assert not rig.transfers
 
 
 @pytest.mark.parametrize("target", ["channel", "mixer"])

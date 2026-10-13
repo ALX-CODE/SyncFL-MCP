@@ -1,6 +1,6 @@
 # MCP tool reference
 
-**143 registered tools.** Generated from the server's actual MCP definitions.
+**146 registered tools.** Generated from the server's actual MCP definitions.
 Run `python scripts/generate_tool_docs.py --check` to detect drift.
 
 Start with [capabilities](../CAPABILITIES.md) for tasks and limitations,
@@ -39,6 +39,9 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_automation_target_inspect`](#fl_automation_target_inspect)
 - [`fl_background_effect_inspect`](#fl_background_effect_inspect)
 - [`fl_background_effect_load`](#fl_background_effect_load)
+- [`fl_background_piano_inspect`](#fl_background_piano_inspect)
+- [`fl_background_piano_select`](#fl_background_piano_select)
+- [`fl_background_piano_write`](#fl_background_piano_write)
 - [`fl_batch`](#fl_batch)
 - [`fl_build_info`](#fl_build_info)
 - [`fl_capabilities`](#fl_capabilities)
@@ -388,7 +391,7 @@ edits: [{channel,expected_name,operation:'upsert'|'replace',points:
 incoming segment. Values are normalized, never dB. Output must not exist.
 Inspect/review the result, then explicitly open that FLP to use it in FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L140)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L142)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -407,7 +410,7 @@ Read saved FLP automation names, local ticks, normalized values and SHA256.
 Saved-file state only. Call fl_project_save first to include unsaved edits.
 Local ticks start at each clip's start, not the song's start.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L129)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L131)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -530,6 +533,70 @@ Unknown callbacks or mismatches stay unverified; inspect before any recovery.
 | `apply` | boolean | No | false |
 | `receipt_file` | string or null | No | null |
 
+## fl_background_piano_inspect
+
+Live / operation-dependent · Read policy
+
+Inspect a saved FL26 score and its live native target without menus.
+
+Supply the exact active .flp path and zero-based channel. Requires a saved,
+stopped project. Returns the pattern/name, generator or sample source,
+saved generator-state fingerprint, mixer routing, effect slots and revision.
+This reads saved notes; the write tool verifies its exact disk path after save.
+
+[Implementation](../../src/fl_studio_mcp/tools/background_piano.py#L12)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `project_path` | string | Yes | — |
+| `channel` | integer | Yes | — |
+
+## fl_background_piano_select
+
+Live / operation-dependent · Potential write policy
+
+Select an existing pattern and sound through native APIs, then verify both.
+
+Inspect the target channel first; pass its revision. Returns the selected
+pattern name, generator identity, saved preset fingerprint, mixer routing
+and actual effect slots. Opens its piano roll and selects its routed
+mixer track without menu clicks, so subsequent effect operations match.
+FL marks pattern selection dirty, so a changed pattern is saved with
+before/after recovery copies and exact verification of all existing notes.
+
+[Implementation](../../src/fl_studio_mcp/tools/background_piano.py#L23)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `project_path` | string | Yes | — |
+| `channel` | integer | Yes | — |
+| `pattern` | integer | Yes | — |
+| `expected_revision` | string | Yes | — |
+
+## fl_background_piano_write
+
+Live / operation-dependent · Potential write policy
+
+Replace one piano-roll score through native FSC import; no ComposeWithLLM.
+
+Uses the current pattern and explicit channel. Basic note fields: midi,
+time/duration in beats or time_ticks/length_ticks, velocity, pan, release,
+color and slide. Saves the active project and checks exact notes plus all
+other channel/pattern notes in the supplied .flp. Keeps before/after copies.
+Native panel selection is automatic. No keyboard, mouse or interactive fallback.
+
+[Implementation](../../src/fl_studio_mcp/tools/background_piano.py#L37)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `project_path` | string | Yes | — |
+| `channel` | integer | Yes | — |
+| `notes` | array of object | Yes | — |
+| `expected_revision` | string | Yes | — |
+| `expected_channel` | string | Yes | — |
+| `receipt_file` | string | Yes | — |
+| `apply` | boolean | No | false |
+
 ## fl_batch
 
 Live / operation-dependent · Potential write policy
@@ -614,7 +681,7 @@ Live / operation-dependent · Potential write policy
 
 Open a fresh dedicated MIDI session and verify the live controller handshake.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L91)
+[Implementation](../../src/fl_studio_mcp/server.py#L97)
 
 No input parameters.
 
@@ -624,7 +691,7 @@ Live / operation-dependent · Read policy
 
 Report endpoint availability separately from a verified live controller response.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L111)
+[Implementation](../../src/fl_studio_mcp/server.py#L117)
 
 No input parameters.
 
@@ -1141,7 +1208,7 @@ Items: track,expected_name, optional volume (normalized) OR volume_db,
 pan (-1..1), stereo (-1..1). Requires a new receipt_file for apply.
 Automation can override faders during playback; edit its curve separately.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L159)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L161)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1626,7 +1693,7 @@ Offline · Read policy
 
 Inspect a saved FLP's patterns, notes, playlist and external sample references.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L175)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L177)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1691,7 +1758,7 @@ Does not save or mutate FL. Save once first for current edits. Copies only
 referenced assets; retains original FLP plus a portable copy. Plugin
 binaries/licenses are not included. Review missing/internal asset report.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L182)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L184)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|

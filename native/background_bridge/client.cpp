@@ -35,7 +35,7 @@ bool allowed_file(const std::wstring& path) {
     if (!std::filesystem::path(path).is_absolute()) return false;
     auto extension = std::filesystem::path(path).extension().wstring();
     return !_wcsicmp(extension.c_str(), L".fst") || !_wcsicmp(extension.c_str(), L".wav") ||
-           !_wcsicmp(extension.c_str(), L".flp");
+           !_wcsicmp(extension.c_str(), L".flp") || !_wcsicmp(extension.c_str(), L".fsc");
 }
 }
 Result run(const Config& config) {

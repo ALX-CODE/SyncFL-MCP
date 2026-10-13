@@ -1,5 +1,11 @@
 # SyncFL configuration
 
+`FL_MCP_INTERACTION_POLICY` controls permission for desktop input, not backend
+selection. Both `background` and `interactive` expose identical native APIs and
+use the backend first. Interactive additionally permits guarded UI for tasks
+without an applicable backend route. It never authorizes replaying an uncertain
+backend mutation through UI.
+
 The server uses local stdio. Configure an absolute Python path and repository working directory. An HTTP URL is not provided by this project.
 
 ## Generic MCP / Claude-style JSON

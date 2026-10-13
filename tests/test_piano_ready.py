@@ -84,6 +84,13 @@ def selector(tmp_path, monkeypatch):
     monkeypatch.setattr(ready, "point_belongs_to", ownership)
     roll = {"handle": "200", "bounds": [50, 100, 1200, 900], "dpi": 96}
     monkeypatch.setattr(ready, "unique_control", Mock(return_value=roll))
+    visible_windows = [
+        {"handle": "100", "pid": 77, "class": "TFruityLoopsMainForm",
+         "parent": "0", "enabled": True, "bounds": [0, 0, 1920, 1080]},
+        {"handle": "300", "pid": 77, "class": "TQuickPopupMenuWindow",
+         "parent": "100", "enabled": True, "bounds": [50, 110, 450, 700]},
+    ]
+    monkeypatch.setattr(ready, "windows", lambda: visible_windows)
     header = {"lines": [
         {"text": "Piano roll - MCP Test Synth", "bounds": [60, 104, 300, 18]},
         {"text": "Unrelated lower toolbar text", "bounds": [60, 136, 300, 18]},
@@ -114,7 +121,8 @@ def selector(tmp_path, monkeypatch):
     monkeypatch.setattr(ready, "WindowsFL", lambda: fl)
     return SimpleNamespace(fl=fl, state=state, ocr=ocr, header=header, menu=menu,
                            call=native_call, native=native, identity=identity, ownership=ownership,
-                           scripts=scripts, roll=roll, request=request, request_path=request_path)
+                           scripts=scripts, roll=roll, request=request, request_path=request_path,
+                           visible_windows=visible_windows)
 
 
 def dispatch():
@@ -134,6 +142,32 @@ def test_selector_refreshes_channel_opens_toggle_proof_roll_and_dispatches_once(
     assert selector.fl.click.await_args_list[1].args == (125, 235)
     assert selector.fl.click.await_args_list[1].kwargs == {"handle": "200"}
     assert not selector.state.popup
+    assert selector.ownership.call_args_list[-1].args == ((175, 335), "300")
+
+
+@pytest.mark.parametrize("field,value", [
+    ("class", "OtherPopup"), ("parent", "999"), ("pid", 88), ("enabled", False),
+    ("bounds", [900, 900, 100, 100]),
+])
+def test_popup_identity_mismatch_never_dispatches(selector, field, value):
+    selector.visible_windows[1][field] = value
+    with pytest.raises(RuntimeError, match="Cannot identify FL's piano-roll Tools popup"):
+        dispatch()
+    assert selector.fl.click.await_count == 1
+
+
+def test_obscured_piano_roll_is_raised_before_tools_click(selector):
+    selector.ownership.side_effect = [False, True, True]
+    assert dispatch() is True
+    assert any(call.kwargs == {"action": "activate", "handle": "200"}
+               for call in selector.fl.win.await_args_list)
+
+
+def test_obscured_popup_is_raised_before_script_selection(selector):
+    selector.ownership.side_effect = [True, False, True]
+    assert dispatch() is True
+    assert any(call.kwargs == {"action": "activate", "handle": "300"}
+               for call in selector.fl.win.await_args_list)
 
 
 def test_caption_crop_excludes_toolbar_icons_at_scaled_and_negative_origins():
@@ -233,7 +267,7 @@ def test_changed_selection_during_final_project_guard_never_dispatches(selector)
 
 
 def test_menu_item_obscured_after_ocr_never_dispatches(selector):
-    selector.ownership.side_effect = [True, False]
+    selector.ownership.side_effect = lambda point, handle: handle == "200"
     with pytest.raises(RuntimeError, match="menu item is obscured"):
         dispatch()
     assert selector.fl.click.await_count == 1 and not selector.state.popup

@@ -77,3 +77,21 @@ def test_point_belongs_to_restores_dpi_context_after_error(monkeypatch):
     with pytest.raises(RuntimeError, match="hit test failed"):
         native_windows.point_belongs_to([1487, 240], "200")
     assert contexts == [native_windows.w.HANDLE(-4).value, 99]
+
+
+def test_expose_fl_uses_nonactivating_no_move_no_resize_flags(monkeypatch):
+    row = dict(handle="100", pid=123, title="lab.flp - FL Studio", enabled=True,
+               bounds=[0, 0, 1000, 700], **{"class": "TFruityLoopsMainForm"})
+    calls = []
+    monkeypatch.setattr(native_windows, "windows", lambda: [row])
+    monkeypatch.setattr(native_windows, "api", lambda: (SimpleNamespace(
+        SetWindowPos=lambda *args: calls.append(args) or True), None))
+    native_windows.expose_fl_window(row)
+    assert calls == [(100, 0, 0, 0, 0, 0, 0x213)]
+
+
+def test_expose_fl_refuses_changed_identity_before_touching_window(monkeypatch):
+    monkeypatch.setattr(native_windows, "windows", lambda: [])
+    monkeypatch.setattr(native_windows, "api", lambda: pytest.fail("No window write expected"))
+    with pytest.raises(RuntimeError, match="changed"):
+        native_windows.expose_fl_window(dict(handle="100", pid=123, title="lab.flp"))

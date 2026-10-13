@@ -121,6 +121,16 @@ def plugin_state(index, slot=-1):
 
 
 class StudioLoading(WindowsFL):
+    async def reveal_target(self, control, point, label):
+        if point_belongs_to(point, control["handle"]):
+            return
+        await self.win("window_management", action="activate", handle=control["handle"])
+        deadline = time.monotonic() + 1.0
+        while not point_belongs_to(point, control["handle"]):
+            if time.monotonic() >= deadline:
+                raise RuntimeError(label + " is obscured")
+            await asyncio.sleep(0.05)
+
     async def guard(self):
         await self._project_guard()
         if call("transport.isPlaying"):
@@ -135,8 +145,7 @@ class StudioLoading(WindowsFL):
         call("ui.setFocused", 1, write=True)
         rack = unique_control(self.handle, "TStepSeqForm", "Channel rack")
         point = rack_drop_target(rack, windows(rack["handle"]))
-        if not point_belongs_to(point, rack["handle"]):
-            raise RuntimeError("Channel Rack add area is obscured")
+        await self.reveal_target(rack, point, "Channel Rack add area")
         return rack, point
 
     async def transfer(self, path, control, point, validate_target=None):
@@ -263,8 +272,7 @@ class StudioLoading(WindowsFL):
         call("ui.setFocused", 0, write=True)
         mixer = unique_control(self.handle, "TFXForm")
         point = mixer_drop_target(mixer, windows(mixer["handle"]), slot)
-        if not point_belongs_to(point, mixer["handle"]):
-            raise RuntimeError("Mixer effect slot is obscured")
+        await self.reveal_target(mixer, point, "Mixer effect slot")
         return mixer, point, before
 
     async def add_effect(self, track, slot, name=None, path=None):
@@ -369,7 +377,13 @@ class StudioLoading(WindowsFL):
             point = channel_drop_target(
                 rack, windows(rack["handle"]), mapping.index(channel), count
             )
-            prior_state = plugin_state(channel)
+            if call("plugins.isValid", channel, -1, True):
+                prior_state = plugin_state(channel)
+            elif call("channels.getChannelType", channel, True) == 0:
+                # A native Sampler has no plugin parameter interface to inspect.
+                prior_state = {"name": prior["name"], "params": [], "channel_type": 0}
+            else:
+                raise ValueError("Target channel has no inspectable plugin or native Sampler")
 
             def validate_target():
                 if channel_identity(all_channels()) != channel_identity(before):

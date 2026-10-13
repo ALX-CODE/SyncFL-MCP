@@ -43,6 +43,17 @@ def test_native_policy_metadata_describes_selective_ui_gating():
     )
 
 
+def test_interactive_adds_only_ui_permission_to_the_shared_backend(monkeypatch):
+    background = policy.policy_metadata()
+    monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, "interactive")
+    interactive = policy.policy_metadata()
+    assert interactive["preferred_execution"] == "native_backend"
+    assert interactive["backend_apis_available"] and interactive["shared_backend_in_all_modes"]
+    assert not interactive["automatic_interactive_fallback"]
+    differences = {key for key in background if background[key] != interactive[key]}
+    assert differences == {"mode", "desktop_input_allowed"}
+
+
 @pytest.mark.parametrize("mode", ["", "INTERACTIVE", "interactive ", "allow", "false"])
 def test_invalid_policy_fails_closed(monkeypatch, mode):
     monkeypatch.setenv(policy.ENVIRONMENT_VARIABLE, mode)

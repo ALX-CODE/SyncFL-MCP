@@ -28,7 +28,7 @@ fl_automation_target_inspect fl_automation_links_inspect
 fl_mix_diagnose fl_mixer_meter_watch fl_midi_reference_search
 fl_notes_transform fl_plugin_adapter_catalog fl_plugin_controls_inspect
 fl_background_effect_inspect fl_project_native_inspect
-fl_mixer_controls_inspect
+fl_mixer_controls_inspect fl_background_piano_inspect
 """.split()
 )
 
@@ -79,6 +79,14 @@ def _workflow(identifier, coverage, backend, tools, verification, limitations=()
 
 
 WORKFLOWS = [
+    _workflow(
+        "background_piano", "experimental", "native_ole_score",
+        "fl_background_piano_inspect fl_background_piano_select fl_background_piano_write",
+        "Exact saved score and independent native save; other channel/pattern notes preserved",
+        ["Saved FL26 project, explicit active .flp path and stopped transport required",
+         "Basic score replacement; no ComposeWithLLM, menus, keyboard or mouse",
+         "Private OLE interface; no automatic retry after an uncertain dispatch"],
+    ),
     _workflow(
         "tempo_analysis", "integrated", "rust_audio_file",
         "fl_audio_bpm",
@@ -299,7 +307,7 @@ def workflow_catalog():
     return dict(
         success=True,
         schema_version=1,
-        workflow_revision=12,
+        workflow_revision=13,
         workflows=WORKFLOWS,
         read_tools={name: {} for name in sorted(READ_TOOLS)},
         policy=dict(

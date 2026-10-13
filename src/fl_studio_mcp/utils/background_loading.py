@@ -29,12 +29,13 @@ RUNTIME = (
     else Path(__file__).resolve().parents[3] / "native" / "background_bridge" / "runtime"
 )
 RUNTIME_FILES = ("alx-background-bridge.exe", "alx-background-hook.dll")
-MANIFEST_SHA256 = "1d7d8973e50a964293f9e32277c825aa3e69aa3611d5ad4680da59057b4cb3f9"
+MANIFEST_SHA256 = "2048a7efc436688b85bbaa62b3c4a917caa4d4d699eca3a7d4285c208222ed3a"
 MAX_ASSET_BYTES = 64 * 1024 * 1024
 LIMITATIONS = [
     "Experimental private OleDropTargetInterface; not a supported Image-Line API.",
     "Only the currently selected, visibly matching mixer track is supported. No track selection.",
-    "No mouse, key, focus, activation, physical drop, retry or rollback fallback.",
+    "Exposes the addressed Mixer and FL window without activation; no mouse or key input.",
+    "No physical drop, retry or rollback fallback.",
     "The shared lock excludes cooperating clients, not manual edits. Guards are not atomic in FL.",
     "Slot names cannot detect every same-name replacement or prove plugin DSP or licensing.",
     "A timeout is unverified; an already-running callback cannot be cancelled safely.",
@@ -390,6 +391,21 @@ def _target(track, slot):
         raise ValueError("track must be 0..255 and effect slot must be 0..9")
 
 
+def _expose_target(conn, before):
+    """Expose this exact Mixer before dispatch, then revalidate every identity."""
+    if before["drop_point_exposed"]:
+        return before
+    # This is an explicit panel command, not a focused-control shortcut.
+    _call(conn, "native.call", dict(function="ui.showWindow", args=[0], allow_write=True))
+    if not _drop_point_exposed(before["window"]):
+        native_windows.expose_fl_window(before["window"]["main"])
+    after = _inspect(conn, before["track"], before["slot"])
+    for key in ("window", "project", "native_revision", "selected_track", "mixer_tracks"):
+        if before[key] != after[key]:
+            raise RuntimeError("Mixer target changed while exposing its window")
+    return after
+
+
 def inspect_background_effect(track, slot, connection=None):
     _target(track, slot)
     conn = connection if connection is not None else get_connection()
@@ -614,6 +630,14 @@ def load_background_effect(
             raise ValueError("Background loading revision changed; inspect again")
         if before["window"]["main"]["title"] != expected_window_title:
             raise ValueError("FL project window title changed")
+        if apply and not before["drop_point_exposed"]:
+            # Reject every non-occlusion reason before changing window order.
+            if before["reasons"] != [
+                "Another window covers the target effect slot; expose the Mixer slot by moving "
+                "overlapping FL panels or other applications away"
+            ]:
+                raise RuntimeError("; ".join(before["reasons"]))
+            before = _expose_target(conn, before)
         if not before["ready"]:
             raise RuntimeError("; ".join(before["reasons"]))
         executable = verify_runtime()

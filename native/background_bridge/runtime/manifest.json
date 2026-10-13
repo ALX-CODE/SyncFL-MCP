@@ -4,11 +4,11 @@
   "experimental": true,
   "files": {
     "alx-background-bridge.exe": {
-      "sha256": "9467f333c7934b4eb9ed446c8444bbea4f0766b4a7dd05cadb523b4d95e0e84d",
-      "size": 188928
+      "sha256": "1265d33e3d5c603429bee74e844e209003028f6991d4c296ad74246edc95617b",
+      "size": 189440
     },
     "alx-background-hook.dll": {
-      "sha256": "c94e0953b218d057fa0f2b758a7bbdecfe57847eb1750f4225d74e5f72e32846",
+      "sha256": "0c01e98b5258130ea956f95085fa8d9702965c076c4e588b1a741afcbfeda3ce",
       "size": 141312
     }
   }

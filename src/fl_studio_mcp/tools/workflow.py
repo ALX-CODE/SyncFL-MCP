@@ -86,7 +86,7 @@ def register_workflow_tools(mcp):
 
         return dict(
             version=__version__,
-            workflow_revision=12,
+            workflow_revision=13,
             **LOADED_BUILD,
             interaction_policy=policy_metadata(),
             guarded_production="BPM, channel controls, scoped steps; optional native shuffle",
@@ -106,6 +106,7 @@ def register_workflow_tools(mcp):
             plugin_controls=("exact-layout named controls; qualified units and enums; "
                              "explicit normalized fallback"),
             background_loading="experimental selected-visible-track empty-slot FST loading",
+            background_piano="FL26 score import and verified pattern/sound/mixer selection",
             native_save=("typed active named-project save; host readback, "
                          "absolute disk path unknown"),
             ui="FL-scoped UIA/OCR/screenshots, guarded input delivery, then postconditions",
@@ -113,7 +114,8 @@ def register_workflow_tools(mcp):
             recording="guarded filename/arm setup; bounded recording and decoded take evidence",
             limitations=[
                 "Background is the default; GUI workflows require explicit interactive opt-in",
-                "Piano script activation still needs UI; the SDK note prototype is disabled",
+                "Basic FL26 scores use the backend; advanced expression and SDK notes "
+                "remain unqualified",
                 "Opaque plugin-internal external assets require inspection",
                 "GUI plugin helpers require calibrated window geometry",
                 "Render and automation creation require the tested FL26 / 96 DPI layout",

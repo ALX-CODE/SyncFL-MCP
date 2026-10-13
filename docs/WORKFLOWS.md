@@ -113,7 +113,39 @@ This example uses Hz only if that exact control is available and qualified in th
 }
 ```
 
-This returns an unapplied proposal. It preserves supported expression and reports hashes. To write persistent notes on Windows, explicitly enable interactive mode, inspect the intended channel/piano state and use the guarded piano workflow. `fl_write_pattern_bank` appends named patterns for one channel with committed note readback. A transient `fl_trigger_note` does not write a piano-roll note.
+This returns an unapplied proposal. It preserves supported expression and reports hashes. For basic persistent FL26 notes, use the background workflow below. The script-based workflow and `fl_write_pattern_bank` still require explicit interactive mode. A transient `fl_trigger_note` does not write a piano-roll note.
+
+### Background piano and fast pattern/sound switching
+
+Use a named, saved FL26 project with stopped transport. Supply its exact absolute
+`.flp` path. `fl_background_piano_inspect` reads the current pattern number/name,
+the addressed channel, generator name or sample source, saved generator-state
+fingerprint, routed mixer track, and all ten effect slots (including wet levels).
+The fingerprint covers saved generator blobs, not a recovered preset label.
+Preset names remain explicitly unknown when FL does not expose them.
+
+Pass that fresh revision to `fl_background_piano_select` to select an existing
+pattern and explicit sound, open its Piano Roll, and select its routed mixer
+track for subsequent effect operations. It verifies native selection
+and the sound/effect context. FL marks pattern changes dirty, so changed-pattern
+selection saves the project, retaining recovery copies and checking all notes,
+pattern names, channels, project timing and Playlist clips. Same-pattern selection
+does not perform this save.
+
+`fl_background_piano_write` previews by default. With `apply=true` and a new
+absolute JSON receipt path, it **replaces the entire addressed channel score in
+the current pattern**. Supply 1–16,384 notes: MIDI key, beat time/duration or exact
+integer ticks, normalized velocity/pan/release, color 0–15, and slide. Do not send
+unsupported fields; they are rejected rather than discarded. Empty-score clearing
+and advanced expression are not yet qualified.
+
+The backend selects and exposes the exact Piano Roll through native APIs, imports
+one FSC through the experimental OLE helper, saves, and independently parses the
+specified FLP. Success requires exact requested notes, unchanged other scores,
+and matching generator, mixer routing and effects. The result includes a fresh
+`after` context usable for the next operation. Receipt siblings preserve the
+before/after FLP and imported FSC. No arrow menu, ComposeWithLLM, keyboard or mouse
+input is used. An uncertain callback is never automatically replayed.
 
 ## Arrange a saved project
 

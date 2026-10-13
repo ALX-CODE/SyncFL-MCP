@@ -38,6 +38,24 @@ def test_native_observations_and_nonfocus_setters_remain_background_operations(f
     check_native_command("native.call", {"function": function, "allow_write": True})
 
 
+@pytest.mark.parametrize("function,args", [
+    ("ui.showWindow", [0]), ("ui.showWindow", [1]), ("ui.showWindow", [3]),
+    ("ui.showWindow", [4]), ("ui.openEventEditor", [65536, 1, False]),
+])
+def test_addressed_panels_are_background_operations(function, args):
+    check_native_command("native.call", dict(function=function, args=args, allow_write=True))
+
+
+@pytest.mark.parametrize("function,args", [
+    ("ui.showWindow", [True]), ("ui.showWindow", [5]), ("ui.showWindow", [0, 1]),
+    ("ui.openEventEditor", [0, 0, False]), ("ui.openEventEditor", [0, 1, True]),
+    ("ui.openEventEditor", [-1, 1, False]), ("ui.openEventEditor", [0, 1]),
+])
+def test_ambiguous_panel_forms_remain_gated(function, args):
+    with pytest.raises(RuntimeError, match="unsupported in background"):
+        check_native_command("native.call", dict(function=function, args=args, allow_write=True))
+
+
 def test_every_packaged_native_ui_read_remains_allowed():
     root = Path(__file__).resolve().parents[1]
     catalog = json.loads((root / "fl_controller/native_catalog.json").read_text())

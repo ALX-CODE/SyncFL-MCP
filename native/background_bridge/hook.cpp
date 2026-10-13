@@ -94,7 +94,7 @@ void execute(Request& request, HWND hwnd, const std::array<unsigned char, 16>& n
     if (!path.is_absolute() || attributes == INVALID_FILE_ATTRIBUTES ||
         (attributes & FILE_ATTRIBUTE_DIRECTORY) ||
         (_wcsicmp(extension.c_str(), L".fst") && _wcsicmp(extension.c_str(), L".wav") &&
-         _wcsicmp(extension.c_str(), L".flp"))) {
+         _wcsicmp(extension.c_str(), L".flp") && _wcsicmp(extension.c_str(), L".fsc"))) {
         finish(request, State::rejected, ERROR_INVALID_DATA); return;
     }
     IDropTarget* target = nullptr;

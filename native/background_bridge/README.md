@@ -1,7 +1,8 @@
 # Experimental background OLE bridge
 
 Windows x64 laboratory prototype. Exposed by the explicitly experimental
-`fl_background_effect_inspect/load` tools, with additional Python guards. No automatic
+`fl_background_effect_inspect/load` and `fl_background_piano_inspect/select/write`
+tools, with additional Python guards. No automatic
 retry or physical-input fallback. `probe` is the CLI default; `--drop` is a real
 mutation and needs a disposable saved FL project plus independent native readback.
 
@@ -24,7 +25,15 @@ loads into empty Master slots verified on the first dispatch: Auto-Tune Pro,
 Decapitator, EchoBoy, MicroShift and Little AlterBoy. The Python layer now
 reports a covered slot as not ready and rechecks exposure immediately before
 dispatch. The route remains experimental: it still needs the selected track's
-slot to be visibly exposed, and the private interface is unsupported.
+slot to be visibly exposed, and the private interface is unsupported. The Python
+apply path now exposes the Mixer and main FL window through native APIs and
+`SetWindowPos` without activation, then rechecks the exact target before dispatch.
+
+The score route accepts `.fsc`, selects the exact channel and Piano Roll with
+native controller APIs, dispatches once, and verifies the saved FLP notes. FL26
+live tests covered eight channels, two patterns, occupied-score replacement and
+pattern/sound switching. The client/hook still never synthesize desktop input.
+See [the workflow contract](../../docs/WORKFLOWS.md#background-piano-and-fast-patternsound-switching).
 
 Build with the installed Visual Studio C++ workload, without downloads:
 

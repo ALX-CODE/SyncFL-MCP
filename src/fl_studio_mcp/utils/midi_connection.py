@@ -14,8 +14,9 @@ import uuid
 from pathlib import Path
 from typing import Any
 
+from fl_studio_mcp.utils.interaction_policy import native_access
 from fl_studio_mcp.utils.native_interaction_policy import check_native_command
-from fl_studio_mcp.utils.protocol import atomic_json, transaction_lock
+from fl_studio_mcp.utils.protocol import atomic_json, poll_delay, transaction_lock
 
 MANAGED_PORT_BASE = "ALX FL Bridge (Send)"
 
@@ -186,12 +187,12 @@ class MIDIConnection:
                     self.disconnect()
                     raise RuntimeError("MIDI output closed before dispatch; no command sent")
                 check_native_command(action, payload)
-                atomic_json(
-                    self._command_file,
-                    dict(
-                        protocol=2, id=identifier, action=action, params=payload, expires_at=expiry
-                    ),
+                envelope = dict(
+                    protocol=2, id=identifier, action=action, params=payload, expires_at=expiry
                 )
+                if native_access() == "full":
+                    envelope["access"] = "full"
+                atomic_json(self._command_file, envelope)
                 budget()
                 check_native_command(action, payload)
                 attempted = True
@@ -241,7 +242,7 @@ class MIDIConnection:
                     return dict(message, round_trip_ms=round((time.monotonic() - begin) * 1000, 1))
             remaining = stop - time.monotonic()
             if remaining > 0:
-                time.sleep(min(remaining, 0.02))
+                time.sleep(min(remaining, poll_delay(time.monotonic() - begin)))
         return dict(
             success=False,
             id=request_id,

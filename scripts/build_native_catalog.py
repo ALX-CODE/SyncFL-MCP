@@ -6,15 +6,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 STUBS = ROOT / ".venv/Lib/site-packages"
 MODULES = "mixer channels plugins transport patterns playlist ui general arrangement".split()
-DENY = {"processRECEvent", "dumpScoreLog", "clearLog", "restoreUndoLevel",
-        "setUndoHistoryPos", "setUndoHistoryCount", "setUndoHistoryLast",
-        "deleteChannel", "deletePattern", "deleteTrack", "automateEvent",
-        "midiNoteOn", "noteOn", "globalTransport", "directFeedback", "linkToLastTweaked"}
+# Destructive, undo-history, raw event and unrestricted global-command functions.
+# They are catalogued with access="full": the host refuses them unless the server
+# operator sets FL_MCP_ACCESS=full (see native_interaction_policy).
+FULL_ACCESS_ONLY = {"processRECEvent", "dumpScoreLog", "clearLog", "restoreUndoLevel",
+                    "setUndoHistoryPos", "setUndoHistoryCount", "setUndoHistoryLast",
+                    "deleteChannel", "deletePattern", "deleteTrack", "automateEvent",
+                    "midiNoteOn", "noteOn", "globalTransport", "directFeedback",
+                    "linkToLastTweaked"}
 catalog = {}
 for module in MODULES:
     for path in sorted((STUBS / module).glob("*.py")):
         for node in ast.parse(path.read_text(encoding="utf-8")).body:
-            if not isinstance(node, ast.FunctionDef) or node.name.startswith("_") or node.name in DENY:
+            if not isinstance(node, ast.FunctionDef) or node.name.startswith("_"):
                 continue
             args = node.args.posonlyargs + node.args.args
             if node.args.vararg or node.args.kwarg:
@@ -25,6 +29,8 @@ for module in MODULES:
                      "required": len(args) - len(node.args.defaults),
                      "signature": ast.unparse(node.args),
                      "kind": "read" if node.name.startswith(("get", "is", "trackCount", "channelCount", "patternCount", "trackNumber", "channelNumber", "safeToEdit", "selected")) else "write"}
+            if node.name in FULL_ACCESS_ONLY:
+                entry.update(kind="write", access="full")
             # Last overload is normally the complete signature.
             catalog[key] = entry
 catalog["mixer.getPluginMixLevel"] = {"module":"mixer","function":"getPluginMixLevel","arguments":["index","plugIndex"],"required":2,"kind":"read","signature":"index, plugIndex"}

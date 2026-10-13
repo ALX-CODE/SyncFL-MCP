@@ -6,6 +6,7 @@ import pytest
 from fl_studio_mcp.utils.native_interaction_policy import (
     BACKGROUND_UI_FUNCTIONS,
     DESKTOP_NATIVE_FUNCTIONS,
+    FULL_ACCESS_ONLY_FUNCTIONS,
     GLOBAL_ONLY_TRANSPORT_FUNCTIONS,
     GT_GLOBAL,
     check_native_command,
@@ -187,3 +188,52 @@ def test_legacy_mode_value_leaves_native_reads_available_and_focus_calls_blocked
     check_native_command("bridge.ping", {})
     with pytest.raises(RuntimeError, match="backend-only"):
         check_native_command("native.call", {"function": "ui.setFocused", "args": [1]})
+
+
+@pytest.mark.parametrize("function", sorted(FULL_ACCESS_ONLY_FUNCTIONS))
+def test_full_access_only_functions_are_gated_by_default(function):
+    with pytest.raises(RuntimeError, match="FL_MCP_ACCESS=full"):
+        check_native_command(
+            "native.call", {"function": function, "args": [0, 8], "allow_write": True})
+
+
+FULL_ACCESS_SAMPLE = [
+    *sorted(DESKTOP_NATIVE_FUNCTIONS), *sorted(FULL_ACCESS_ONLY_FUNCTIONS),
+    *sorted(GLOBAL_ONLY_TRANSPORT_FUNCTIONS), "ui.setFocused", "ui.enter", "ui.copy",
+    "ui.paste", "ui.showWindow", "ui.openEventEditor", "ui.futureUnreviewedAction",
+]
+
+
+@pytest.mark.parametrize("function", FULL_ACCESS_SAMPLE)
+def test_full_access_allows_every_native_function(function, monkeypatch):
+    monkeypatch.setenv("FL_MCP_ACCESS", "full")
+    check_native_command("native.call", {"function": function, "args": [], "allow_write": True})
+    check_native_command("bridge.batch", {"steps": [
+        {"action": "native.call", "params": {"function": function, "args": [1, 2, 3]}},
+    ]})
+
+
+@pytest.mark.parametrize("value", ["", "backend", "yes", "true", "1", "interactive", "fullest"])
+def test_other_access_values_keep_default_gating(value, monkeypatch):
+    monkeypatch.setenv("FL_MCP_ACCESS", value)
+    with pytest.raises(RuntimeError, match="unsupported in background"):
+        check_native_command("native.call", {"function": "ui.enter", "allow_write": True})
+
+
+def test_full_access_keeps_structural_limits(monkeypatch):
+    monkeypatch.setenv("FL_MCP_ACCESS", " FULL ")
+    with pytest.raises(ValueError, match="nonempty function"):
+        check_native_command("native.call", {"function": ""})
+    nested = {"action": "native.call", "params": {"function": "ui.enter"}}
+    for _ in range(10):
+        nested = batch(nested)
+    with pytest.raises(ValueError, match="depth"):
+        check_native_command(nested["action"], nested["params"])
+
+
+def test_catalog_marks_exactly_the_full_access_functions():
+    root = Path(__file__).resolve().parents[1]
+    catalog = json.loads((root / "fl_controller/native_catalog.json").read_text())
+    marked = {name for name, spec in catalog.items() if spec.get("access") == "full"}
+    assert marked == FULL_ACCESS_ONLY_FUNCTIONS
+    assert all(catalog[name]["kind"] == "write" for name in marked)

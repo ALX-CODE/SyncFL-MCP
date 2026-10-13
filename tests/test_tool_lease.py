@@ -38,7 +38,7 @@ def test_exception_releases_tool_lease(tmp_path):
 
 def test_live_tool_busy_never_dispatches_offline_analysis_can_continue(tmp_path, monkeypatch):
     monkeypatch.setattr(leases, "get_fl_settings_dir", lambda: tmp_path)
-    middleware = leases.FLToolLeaseMiddleware()
+    middleware = leases.FLToolLeaseMiddleware(wait_seconds=0)
     dispatched = []
 
     async def call_next(context):
@@ -121,3 +121,73 @@ def test_client_cancellation_holds_lease_until_real_work_finishes(tmp_path, monk
             pass
 
     asyncio.run(exercise())
+
+
+def test_busy_lease_is_queued_until_the_holder_finishes(tmp_path, monkeypatch):
+    monkeypatch.setattr(leases, "get_fl_settings_dir", lambda: tmp_path)
+    path = tmp_path / "Hardware" / "FLStudioMCP" / "mcp-tool.lock"
+    holder = leases.tool_lease(path)
+    holder.__enter__()
+
+    async def call_next(context):
+        return "dispatched"
+
+    async def exercise():
+        context = SimpleNamespace(message=SimpleNamespace(name="fl_record"))
+        loop = asyncio.get_running_loop()
+        loop.call_later(0.1, holder.__exit__, None, None, None)
+        started = loop.time()
+        result = await leases.FLToolLeaseMiddleware(wait_seconds=5).on_call_tool(
+            context, call_next)
+        return result, loop.time() - started
+
+    result, waited = asyncio.run(exercise())
+    assert result == "dispatched"
+    assert 0.05 < waited < 3
+
+
+def test_lease_wait_times_out_as_not_dispatched(tmp_path, monkeypatch):
+    monkeypatch.setattr(leases, "get_fl_settings_dir", lambda: tmp_path)
+    path = tmp_path / "Hardware" / "FLStudioMCP" / "mcp-tool.lock"
+
+    async def call_next(context):
+        pytest.fail("must not dispatch while another tool holds the lease")
+
+    async def exercise():
+        context = SimpleNamespace(message=SimpleNamespace(name="fl_record"))
+        return await leases.FLToolLeaseMiddleware(wait_seconds=0.05).on_call_tool(
+            context, call_next)
+
+    with leases.tool_lease(path):
+        result = asyncio.run(exercise())
+    assert result.is_error
+    assert result.structured_content["status"] == "busy"
+    assert result.structured_content["outcome"] == "not_dispatched"
+    assert result.structured_content["waited_seconds"] == 0.05
+
+
+def test_connection_status_does_not_wait_for_the_lease(tmp_path, monkeypatch):
+    monkeypatch.setattr(leases, "get_fl_settings_dir", lambda: tmp_path)
+    path = tmp_path / "Hardware" / "FLStudioMCP" / "mcp-tool.lock"
+
+    async def call_next(context):
+        return "status"
+
+    async def exercise():
+        context = SimpleNamespace(message=SimpleNamespace(name="fl_connection_status"))
+        return await leases.FLToolLeaseMiddleware(wait_seconds=5).on_call_tool(
+            context, call_next)
+
+    with leases.tool_lease(path):
+        assert asyncio.run(asyncio.wait_for(exercise(), 1)) == "status"
+
+
+@pytest.mark.parametrize("value,expected", [
+    (None, 10.0), ("2.5", 2.5), ("0", 0.0), ("-1", 0.0), ("bogus", 0.0), ("600", 60.0),
+])
+def test_lease_wait_setting(monkeypatch, value, expected):
+    if value is None:
+        monkeypatch.delenv(leases.WAIT_VARIABLE, raising=False)
+    else:
+        monkeypatch.setenv(leases.WAIT_VARIABLE, value)
+    assert leases.lease_wait_seconds() == expected

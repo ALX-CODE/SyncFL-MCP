@@ -426,6 +426,9 @@ class DiscoveryTransform(CatalogTransform):
 
 def create_discovery_server(backend: FastMCP) -> FastMCP:
     """A separate middleware boundary keeps each execution under exactly one DAW lease."""
-    facade = create_proxy(backend, name="SyncFL", instructions=DISCOVERY_INSTRUCTIONS)
+    from fl_studio_mcp.utils.interaction_policy import with_access_note
+
+    instructions = with_access_note(DISCOVERY_INSTRUCTIONS)
+    facade = create_proxy(backend, name="SyncFL", instructions=instructions)
     facade.add_transform(DiscoveryTransform())
     return facade

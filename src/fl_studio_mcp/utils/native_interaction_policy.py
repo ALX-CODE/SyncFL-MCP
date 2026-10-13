@@ -3,11 +3,14 @@
 Model changes (transport, notes, routing and parameter setters) remain background
 operations. Native UI actions can still activate an editor or act on the current
 focused control even though they do not synthesize Windows input.
+
+FL_MCP_ACCESS=full lifts this gating for every catalogued native function. It is
+an operator setting; structural limits and the host's allow_write check remain.
 """
 
 from __future__ import annotations
 
-from fl_studio_mcp.utils.interaction_policy import require_desktop_input
+from fl_studio_mcp.utils.interaction_policy import ACCESS_VARIABLE, native_access
 
 MAX_BATCH_DEPTH = 8
 MAX_BATCH_STEPS = 256
@@ -32,6 +35,17 @@ DESKTOP_NATIVE_FUNCTIONS = frozenset({
     "channels.focusEditor", "channels.showCSForm", "mixer.focusEditor",
     # Unrestricted global command IDs include dialogs; use typed project.save_current.
     "transport.globalTransport",
+})
+
+
+# Catalogued with access="full" (scripts/build_native_catalog.py): destructive,
+# undo-history, raw event and unrestricted global-command functions. The host
+# also refuses them unless the request envelope carries access="full".
+FULL_ACCESS_ONLY_FUNCTIONS = frozenset({
+    "channels.midiNoteOn", "channels.processRECEvent", "general.clearLog",
+    "general.dumpScoreLog", "general.processRECEvent", "general.restoreUndoLevel",
+    "general.setUndoHistoryCount", "general.setUndoHistoryLast",
+    "general.setUndoHistoryPos", "mixer.automateEvent", "transport.globalTransport",
 })
 
 
@@ -84,6 +98,7 @@ def check_native_command(action, params=None):
     """
     pending = [(action, {} if params is None else params, 0)]
     visited_steps = 0
+    full = native_access() == "full"
     while pending:
         current_action, current_params, depth = pending.pop()
         if (not isinstance(current_action, str) or not current_action
@@ -109,15 +124,28 @@ def check_native_command(action, params=None):
         )
         if not isinstance(function, str) or not function:
             raise ValueError("native.call requires a nonempty function name")
+        if full:
+            continue
         if function in GLOBAL_ONLY_TRANSPORT_FUNCTIONS and not _explicit_global_transport(
             current_action, current_params,
         ):
-            require_desktop_input(
+            _gated(
                 "Focus-routed " + function + "; background requires native.call "
                 "with two positional integers and flags=GT_Global (8)"
             )
         if _explicit_panel_command(current_action, current_params):
             continue
+        if function in FULL_ACCESS_ONLY_FUNCTIONS:
+            _gated("Native " + function)
         if (function in DESKTOP_NATIVE_FUNCTIONS
                 or function.startswith("ui.") and function not in BACKGROUND_UI_FUNCTIONS):
-            require_desktop_input("Native " + function)
+            _gated("Native " + function)
+
+
+def _gated(operation):
+    raise RuntimeError(
+        f"{operation} is unsupported in background mode: SyncFL is backend-only and "
+        "gates FL's focus-routed window/editor API by default. This is a native FL call, "
+        f"not desktop input; the server operator can allow it with {ACCESS_VARIABLE}=full. "
+        "Never use external mouse/keyboard tools instead."
+    )

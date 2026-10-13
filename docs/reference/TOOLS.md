@@ -665,7 +665,7 @@ Live / operation-dependent · Potential write policy
 
 Open a fresh dedicated MIDI session and verify the live controller handshake.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L98)
+[Implementation](../../src/fl_studio_mcp/server.py#L99)
 
 No input parameters.
 
@@ -675,7 +675,7 @@ Live / operation-dependent · Read policy
 
 Report endpoint availability separately from a verified live controller response.
 
-[Implementation](../../src/fl_studio_mcp/server.py#L118)
+[Implementation](../../src/fl_studio_mcp/server.py#L119)
 
 No input parameters.
 

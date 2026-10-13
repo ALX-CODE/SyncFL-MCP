@@ -18,6 +18,9 @@ RECEIPTS = {}
 RECEIPT_COMMANDS = {}
 LEGACY_DISPATCH = dispatch_command
 IN_VALIDATED_BATCH = False
+# Set per request from the envelope; the server sends "full" only when its
+# operator configured FL_MCP_ACCESS=full. Older servers never send it.
+ACTIVE_ACCESS = None
 
 # Capture at script load, so a deployment on disk cannot impersonate a reload.
 _controller_digest = hashlib.sha256()
@@ -87,6 +90,8 @@ def validate_native(p):
             raise ValueError("Non-finite native argument")
     if spec["kind"] != "read" and not p.get("allow_write", False):
         raise ValueError("Native mutations require allow_write=true; prefer typed operations")
+    if spec.get("access") == "full" and ACTIVE_ACCESS != "full":
+        raise ValueError("This native function requires FL_MCP_ACCESS=full on the server")
     return spec, args
 
 
@@ -304,7 +309,7 @@ def validate_command(command):
 
 
 def execute_pending_command(event=None):
-    global ACTIVE_MIDI_FLAGS
+    global ACTIVE_MIDI_FLAGS, ACTIVE_ACCESS
     # Some controller API versions use pmeFlags; the reference uses pmeflags.
     # Never invent permissions when execution did not originate in an event.
     flags = getattr(event, "pmeFlags", getattr(event, "pmeflags", None))
@@ -317,6 +322,7 @@ def execute_pending_command(event=None):
         command = json.loads(COMMAND_FILE.read_text(encoding="utf-8"))
         fingerprint = validate_command(command)
         request_id = command["id"]
+        ACTIVE_ACCESS = "full" if command.get("access") == "full" else None
         if request_id in RECEIPTS:
             if RECEIPT_COMMANDS.get(request_id) != fingerprint:
                 raise ValueError("Request id reused with different content; no action applied")
@@ -333,6 +339,7 @@ def execute_pending_command(event=None):
         response = {"success": False, "error": str(exc)}
     finally:
         ACTIVE_MIDI_FLAGS = None
+        ACTIVE_ACCESS = None
     response.update({"id": request_id, "protocol": 2, "controller_ms": round((time.monotonic()-started)*1000, 2)})
     if request_id and request_id not in RECEIPTS:
         RECEIPTS[request_id] = response

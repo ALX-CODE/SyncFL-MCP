@@ -170,6 +170,23 @@
     "kind": "read",
     "validation": "stub_signature; not individually verified"
   },
+  "mixer.automateEvent": {
+    "module": "mixer",
+    "function": "automateEvent",
+    "arguments": [
+      "index",
+      "value",
+      "flags",
+      "speed",
+      "isIncrement",
+      "res"
+    ],
+    "required": 3,
+    "signature": "index: int, value: int, flags: int, speed: int=0, isIncrement: int=0, res: float=midi.EKRes",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
   "mixer.getTrackInfo": {
     "module": "mixer",
     "function": "getTrackInfo",
@@ -779,6 +796,21 @@
     "kind": "write",
     "validation": "stub_signature; not individually verified"
   },
+  "channels.midiNoteOn": {
+    "module": "channels",
+    "function": "midiNoteOn",
+    "arguments": [
+      "indexGlobal",
+      "note",
+      "velocity",
+      "channel"
+    ],
+    "required": 3,
+    "signature": "indexGlobal: int, note: int, velocity: int, channel: int=-1",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
   "channels.quickQuantize": {
     "module": "channels",
     "function": "quickQuantize",
@@ -1149,6 +1181,20 @@
     "required": 2,
     "signature": "eventId: int, step: int, res: float=1 / 24",
     "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.processRECEvent": {
+    "module": "channels",
+    "function": "processRECEvent",
+    "arguments": [
+      "eventId",
+      "value",
+      "flags"
+    ],
+    "required": 3,
+    "signature": "eventId: int, value: int, flags: int, /",
+    "kind": "write",
+    "access": "full",
     "validation": "stub_signature; not individually verified"
   },
   "channels.getGridBit": {
@@ -1595,6 +1641,21 @@
     "required": 0,
     "signature": "",
     "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.globalTransport": {
+    "module": "transport",
+    "function": "globalTransport",
+    "arguments": [
+      "command",
+      "value",
+      "pmeflags",
+      "flags"
+    ],
+    "required": 2,
+    "signature": "command: int, value: int, pmeflags: int=midi.PME_System, flags=midi.GT_All",
+    "kind": "write",
+    "access": "full",
     "validation": "stub_signature; not individually verified"
   },
   "transport.getSongPos": {
@@ -3240,6 +3301,43 @@
     "kind": "read",
     "validation": "stub_signature; not individually verified"
   },
+  "general.processRECEvent": {
+    "module": "general",
+    "function": "processRECEvent",
+    "arguments": [
+      "eventId",
+      "value",
+      "flags"
+    ],
+    "required": 3,
+    "signature": "eventId: int, value: int, flags: int",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.dumpScoreLog": {
+    "module": "general",
+    "function": "dumpScoreLog",
+    "arguments": [
+      "time",
+      "silent"
+    ],
+    "required": 1,
+    "signature": "time: int, silent: bool=False",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.clearLog": {
+    "module": "general",
+    "function": "clearLog",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
   "general.safeToEdit": {
     "module": "general",
     "function": "safeToEdit",
@@ -3309,6 +3407,18 @@
     "kind": "write",
     "validation": "stub_signature; not individually verified"
   },
+  "general.restoreUndoLevel": {
+    "module": "general",
+    "function": "restoreUndoLevel",
+    "arguments": [
+      "level"
+    ],
+    "required": 1,
+    "signature": "level: int",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
   "general.getUndoLevelHint": {
     "module": "general",
     "function": "getUndoLevelHint",
@@ -3343,6 +3453,42 @@
     "required": 0,
     "signature": "",
     "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.setUndoHistoryPos": {
+    "module": "general",
+    "function": "setUndoHistoryPos",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.setUndoHistoryCount": {
+    "module": "general",
+    "function": "setUndoHistoryCount",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "access": "full",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.setUndoHistoryLast": {
+    "module": "general",
+    "function": "setUndoHistoryLast",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int, /",
+    "kind": "write",
+    "access": "full",
     "validation": "stub_signature; not individually verified"
   },
   "arrangement.liveSelection": {

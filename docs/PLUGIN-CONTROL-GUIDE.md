@@ -5,24 +5,28 @@ tuning speed in milliseconds, or an exact mode label. The adapter resolves the
 parameter from a fresh host inspection; callers do not need remembered parameter
 numbers or screen coordinates.
 
-**Status, 2026-10-12:** 11 exact-layout profiles expose 1,921 named controls.
-Nine profiles retain 379 numeric and 423 enum mappings after 6,496 independent
+**Status, 2026-10-12:** 14 exact-layout profiles expose 1,961 named controls.
+All 14 retain qualified mappings: 420 numeric and 455 enum after 7,059 independent
 live holdout checks. Failed taper endpoints are excluded from retained ranges;
 unqualified controls remain explicitly normalized. The committed
 [calibration evidence](plugin-calibration-evidence.json) records counts, layout
 hashes, withheld controls and restricted ranges.
 
-Auto-Tune Pro's 92 controls and Decapitator's 12 controls currently support named
-normalized access only. Auto-Tune's earlier fast sweep did not meet the final
-settling protocol, so none of its physical/enum conversions is promoted. EchoBoy,
-MicroShift and Little AlterBoy have inventory evidence but no packaged profile.
+An evening pass on the same date qualified Auto-Tune Pro and Decapitator with the
+final settling protocol and added EchoBoy, MicroShift and Little AlterBoy profiles.
+Mode-locked controls carry declared requirements (see
+[Soundtoys](#soundtoys-decapitator-echoboy-microshift-little-alterboy)). Auto-Tune's
+Harmony Player and MIDI options remain normalized: they were outside that sweep.
 Read current metadata before each job. These checks establish host parameter
 mapping, not license status, processing behavior or audible quality.
 
 | Profile | Numeric | Enum | Normalized only |
 |---|---:|---:|---:|
-| Auto-Tune Pro | 0 | 0 | 92 |
-| Decapitator | 0 | 0 | 12 |
+| Auto-Tune Pro | 14 | 10 | 68 |
+| Decapitator | 6 | 6 | 0 |
+| EchoBoy | 12 | 11 | 3 |
+| Little AlterBoy | 4 | 3 | 0 |
+| MicroShift | 5 | 2 | 0 |
 | Pro-C 3 | 34 | 33 | 27 |
 | Pro-DS | 8 | 7 | 4 |
 | Pro-L 2 | 5 | 8 | 4 |
@@ -167,6 +171,33 @@ Amount and linked Groups have distinct functions. Inspect grouping before an
 edit that could affect another linked instance.
 [MetaTune user guide](https://docs.slatedigital.com/MetaTune/MetaTune.html).
 
+Auto-Tune's **Key** labels change spelling with **Modern Scale** (observed: `Db`
+under Major, `C#` under Minor, sharps under Chromatic). Key is qualified only with
+Modern Scale = Chromatic; under another scale, set Key with an explicit normalized
+value and read the literal display. Detune is the reference pitch in Hz (the host
+display is unitless), not cents. Throat Length requires Formant Correction On.
+
+### Soundtoys: Decapitator, EchoBoy, MicroShift, Little AlterBoy
+
+Several Soundtoys controls only respond in a particular mode, and the host shows
+that dependency rather than hiding it. These were qualified under the stated
+condition and declare it as a requirement:
+
+| Control | Requirement | Observed outside the condition |
+|---|---|---|
+| EchoBoy Echo 1 Time / Echo 2 Time | Echo 1 Mode / Echo 2 Mode = Time | Display locked to the note value at the project tempo |
+| EchoBoy Rhythm Time | Rhythm Mode = Time | Display locked to the rhythm note |
+| Decapitator Output Trim | Auto Gain = Off | Auto Gain rewrites the host value as Drive changes while the display keeps the written trim |
+
+EchoBoy Tempo and BeatSync displays did not move across a full sweep in the lab
+(Tempo stayed at the project's 140 bpm), so they remain normalized. EchoBoy's
+`Edited Style` is a status label, not a selectable style, and is excluded from
+Style. Feedback above 1.0 can build up and self-oscillate. EchoBoy Low/High Cut,
+Groove and Feel, and the Decapitator and Little AlterBoy Drive knobs, are unitless
+panel scales, not Hz or dB. MicroShift Detune and Delay are relative percentages
+(50–200 %, log taper, 100 % at centre), not cents or milliseconds. Little AlterBoy
+Pitch and Formant are in semitones; inspect Shift Mode and Formant Link first.
+
 ### Pro-Q 4
 
 Profile keys identify fixed host band slots, not whichever band is selected or
@@ -233,11 +264,12 @@ rendered signal, nor proof that the host's cached mode is current. If a mode is
 not exposed by the profile, report that limitation and verify it separately.
 [FabFilter true-peak manual](https://www.fabfilter.com/help/pro-l/using/truepeaklimiting).
 
-Other observed typography includes Pro-R 2 seconds displayed as `2.500 sec` and
-soothe2 frequencies displayed as `2k5 Hz` or `16k Hz`. The literal parser accepts
-these as 2.5 seconds, 2500 Hz and 16000 Hz respectively. It converts only compatible
-time/frequency units, rejects ambiguous unitless compact notation, and does not
-equate dB, dBTP and percent. This parsing support is not proof that every control
+Other observed typography includes Pro-R 2 seconds displayed as `2.500 sec`,
+soothe2 frequencies displayed as `2k5 Hz` or `16k Hz`, and Soundtoys spellings
+`214.3 msec`, `-12.0 semitones` and `140.0 bpm`. The literal parser accepts these
+as 2.5 seconds, 2500 Hz, 16000 Hz and 214.3 ms; `semitones` and `bpm` are separate
+units that never convert. It converts only compatible time/frequency units, rejects
+ambiguous unitless compact notation, and does not equate dB, dBTP and percent. This parsing support is not proof that every control
 using those units has a completed physical calibration.
 
 ## What a successful write proves

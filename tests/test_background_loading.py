@@ -16,7 +16,7 @@ DISPATCH = loader._dispatch
 
 @pytest.fixture
 def rig(tmp_path, monkeypatch):
-    state = SimpleNamespace(calls=[], drops=[], busy=0, change=None)
+    state = SimpleNamespace(calls=[], drops=[], busy=0, change=None, exposed=True)
     state.window = dict(
         main=dict(
             handle="100", pid=123, title=TITLE, bounds=[0, 0, 1920, 1080], dpi=96, enabled=True
@@ -95,6 +95,7 @@ def rig(tmp_path, monkeypatch):
     state.path.write_bytes(b"FLhd" + struct.pack("<IH", 6, 0x30) + b"\0" * 4 + b"FLdt\0")
     state.receipt = tmp_path / "receipt.json"
     monkeypatch.setattr(loader, "_window_state", lambda slot: copy.deepcopy(state.window))
+    monkeypatch.setattr(loader, "_drop_point_exposed", lambda window: state.exposed)
     monkeypatch.setattr(loader, "verify_runtime", lambda: tmp_path / "helper.exe")
     monkeypatch.setattr(loader, "_input_snapshot", lambda: dict(available=True, cursor=[2, 3]))
     monkeypatch.setattr(loader.time, "sleep", lambda _: None)
@@ -241,7 +242,9 @@ def test_target_change_during_later_scan_chunks_is_rechecked_before_drop(rig):
     assert rig.tracks[1]["slots"][3]["name"] == "User effect"
 
 
-@pytest.mark.parametrize("change", ["selected", "playing", "recording", "popup", "window"])
+@pytest.mark.parametrize(
+    "change", ["selected", "playing", "recording", "popup", "window", "covered"]
+)
 def test_changes_after_journal_flush_are_checked_before_dispatch(rig, monkeypatch, change):
     original = loader._persist
 
@@ -255,6 +258,8 @@ def test_changes_after_journal_flush_are_checked_before_dispatch(rig, monkeypatc
             rig.project["is_" + change] = True
         elif change == "popup":
             rig.popup = True
+        elif change == "covered":
+            rig.exposed = False
         else:
             rig.window["mixer"]["bounds"][0] += 20
 
@@ -287,6 +292,12 @@ def test_unrelated_changes_or_wrong_target_cannot_verify(rig, kind):
     assert len(rig.drops) == 1
 
 
+def test_editor_covering_slot_after_drop_does_not_block_verification(rig):
+    rig.change = lambda: setattr(rig, "exposed", False)
+    result = apply(rig)
+    assert result["status"] == "verified" and result["success"] and len(rig.drops) == 1
+
+
 def test_unknown_cli_never_promoted_by_matching_native_state(rig, monkeypatch):
     original = loader._dispatch
 
@@ -300,7 +311,8 @@ def test_unknown_cli_never_promoted_by_matching_native_state(rig, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "kind", ["selected", "title", "playing", "recording", "popup", "unsafe", "occupied"]
+    "kind",
+    ["selected", "title", "playing", "recording", "popup", "unsafe", "occupied", "covered"],
 )
 def test_preflight_rejects_unsafe_target_without_mutation(rig, kind):
     if kind == "selected":
@@ -313,6 +325,8 @@ def test_preflight_rejects_unsafe_target_without_mutation(rig, kind):
         rig.popup = True
     elif kind == "unsafe":
         rig.safe = False
+    elif kind == "covered":
+        rig.exposed = False
     else:
         rig.tracks[1]["slots"][3] = dict(
             slot=3, occupied=True, name="Existing", user_name="Existing"
@@ -427,3 +441,18 @@ def test_dispatch_uses_mixer_hwnd_and_no_window_process(rig, monkeypatch):
     assert loader._confirmed(dict(returncode=0, result=payload))
     payload["over_hr"] = -1
     assert not loader._confirmed(dict(returncode=0, result=payload))
+
+
+def test_drop_point_must_resolve_to_the_mixer(monkeypatch):
+    window = dict(point=[1487, 240], mixer=dict(handle="200"))
+    seen = []
+
+    def owner(point, parent):
+        seen.append((point, parent))
+        return parent == "200" and point == [1487, 240]
+
+    monkeypatch.setattr(loader.native_windows, "point_belongs_to", owner)
+    assert loader._drop_point_exposed(window)
+    window["mixer"]["handle"] = "300"
+    assert not loader._drop_point_exposed(window)
+    assert seen == [([1487, 240], "200"), ([1487, 240], "300")]

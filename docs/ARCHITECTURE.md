@@ -56,7 +56,7 @@ Serum has separate native preset codecs/builders and its own mapped-control/prob
 
 Saved-FLP readers/editors preserve unknown/unmodified events and create output copies. Supported version/layout boundaries remain explicit. Audio/MIDI operations report file hashes and measurements; they do not silently update the live DAW.
 
-The experimental OLE effect loader uses a pinned helper and narrow process/window/slot checks. Its private FL interface has failed later live loading tests and is not general import support. The FL SDK bridge is a fake-host-tested research prototype; note writes remain disabled. These components are separate from the working MIDI transport.
+The experimental OLE effect loader uses a pinned helper and narrow process/window/slot checks. FL routes the drop by screen position, so the loader refuses a slot whose drop point another window covers; earlier failed tests were traced to a maximized Playlist in front of the Mixer. The private interface remains experimental and is not general import support. The FL SDK bridge is a fake-host-tested research prototype; note writes remain disabled. These components are separate from the working MIDI transport.
 
 ## Repository map
 

@@ -6,6 +6,9 @@
 
 - Added `fl_audio_key` and a standalone NumPy key analyzer: bounded WAV decoding, 4096/1024 Hann STFT, all 24 Krumhansl–Kessler major/minor profiles, ranked correlations and relative confidence. Supports PCM and IEEE float WAVs without desktop input or heavy audio dependencies; silence returns no candidates. Added a lightweight `key` extra, self-tests, decoding/STFT regression checks and a fresh-process MCP test. The server now exposes 142 tools and workflow revision 11.
 
+- Qualified Auto-Tune Pro (24 controls) and Decapitator (12) and added EchoBoy, MicroShift and Little AlterBoy profiles: 14 profiles, 875 retained numeric/enum mappings after 7,059 live holdout checks. Mode-locked controls declare the selector setting they were qualified under. The display parser accepts `msec`, and `semitones`/`bpm` as non-converting units.
+- Fixed background target checks to reject covering owned popups as well as unrelated windows.
+- Background effect loading now reports a covered slot as not ready and rechecks exposure before dispatch. Earlier declined drops were traced to FL's Playlist covering the Mixer.
 - Added a C++20 WinMM MIDI output DLL and CLI, a lazy hash-verified Python binding, exact endpoint selection and attempted-delivery error reporting. Windows output no longer uses RtMidi; MIDI-file support and non-Windows output remain intact.
 
 - Added guarded background mixer EQ and strip-switch tools: inspect, preview, explicit apply, durable receipts and two native readbacks, without selecting a track or sending desktop input.

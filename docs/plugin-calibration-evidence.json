@@ -6,58 +6,63 @@
       "id": "auto_tune_pro",
       "title": "Auto-Tune Pro",
       "layout_sha256": "78d199e6f9c138292ff69ee33a24e0ac47cf2c3323c0363cb0b6c9e88e63a024",
-      "stable_calibration": false,
-      "holdout_checks": 0,
-      "passed_checks": 0,
-      "qualified_controls": 0,
-      "withheld_controls": 23,
+      "stable_calibration": true,
+      "holdout_checks": 180,
+      "passed_checks": 179,
+      "qualified_controls": 24,
+      "withheld_controls": 0,
       "counts": {
-        "numeric": 0,
-        "enum": 0,
-        "normalized": 92
+        "numeric": 14,
+        "enum": 10,
+        "normalized": 68
       },
-      "downgraded": [
-        "scale",
-        "key",
-        "detune",
-        "retune_speed",
-        "vibrato_shape",
-        "vibrato_pitch",
-        "vibrato_rate",
-        "input_type",
-        "ignore_vibrato",
-        "v_onset_delay",
-        "vibrato_amplitude",
-        "vibrato_formant",
-        "vibrato_variation",
-        "v_onset_rate",
-        "midi_octaves",
-        "humanize",
-        "natural_vibrato",
-        "formant_correction",
-        "throat_length",
-        "transpose",
-        "master_bypass",
-        "flex_tune",
-        "modern_scale"
-      ],
-      "restricted": []
+      "holdout_sha256": "705b444541cb1295837ed5ec6cfcbea1cf1c27c0b297b79947711840b7835f98",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "detune",
+          "minimum": 416.11255946386467,
+          "maximum": 461.50510490315395,
+          "retained_checks": 7
+        }
+      ]
     },
     {
       "id": "decapitator",
       "title": "Decapitator",
       "layout_sha256": "880f20a5584dc14325756dcea80b3eef2b8fec602d9aa7e981f92b7a8cb74234",
-      "stable_calibration": false,
-      "holdout_checks": 0,
-      "passed_checks": 0,
-      "qualified_controls": 0,
+      "stable_calibration": true,
+      "holdout_checks": 63,
+      "passed_checks": 63,
+      "qualified_controls": 12,
       "withheld_controls": 0,
       "counts": {
-        "numeric": 0,
-        "enum": 0,
-        "normalized": 12
+        "numeric": 6,
+        "enum": 6,
+        "normalized": 0
       },
+      "holdout_sha256": "f383017107d624e3ec5b354bb409fcb297a0b1ed73a54b27c4c47c477dc56c64",
       "downgraded": [],
+      "restricted": []
+    },
+    {
+      "id": "echoboy",
+      "title": "EchoBoy",
+      "layout_sha256": "1de6f827446697fb11d394958b13a52b629466ac471ed9be8b415719d592a050",
+      "stable_calibration": true,
+      "holdout_checks": 236,
+      "passed_checks": 231,
+      "qualified_controls": 23,
+      "withheld_controls": 1,
+      "counts": {
+        "numeric": 12,
+        "enum": 11,
+        "normalized": 3
+      },
+      "holdout_sha256": "a5bc60cb23f86ee310efacdc3ce3698732cf0719f1775a6d148e4bf3d904f456",
+      "downgraded": [
+        "rhythmtime"
+      ],
       "restricted": []
     },
     {
@@ -433,6 +438,24 @@
       ]
     },
     {
+      "id": "little_alterboy",
+      "title": "Little AlterBoy",
+      "layout_sha256": "1bb96bd74ed63a17a2b147570a6564cd65bbf6087b06aed63ab4df54313eb39e",
+      "stable_calibration": true,
+      "holdout_checks": 39,
+      "passed_checks": 39,
+      "qualified_controls": 7,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 4,
+        "enum": 3,
+        "normalized": 0
+      },
+      "holdout_sha256": "dd21f37839d0ae86723fb237179922f1ab103ecb3b33e64abae7809eb40366ca",
+      "downgraded": [],
+      "restricted": []
+    },
+    {
       "id": "metatune",
       "title": "MetaTune",
       "layout_sha256": "8da9afbc503e68bf5243c3393efbb1ea2b2dbbebea3ac05983ae50b8adb57064",
@@ -462,6 +485,24 @@
           "retained_checks": 6
         }
       ]
+    },
+    {
+      "id": "microshift",
+      "title": "MicroShift",
+      "layout_sha256": "0f2237cf16b03253184873a6c8240b698e6338c4db10829146e062805bafb41c",
+      "stable_calibration": true,
+      "holdout_checks": 45,
+      "passed_checks": 45,
+      "qualified_controls": 7,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 5,
+        "enum": 2,
+        "normalized": 0
+      },
+      "holdout_sha256": "5fe5816fac02d173e86919335a62a550ffb82900ec703f76d90d627c8122876c",
+      "downgraded": [],
+      "restricted": []
     },
     {
       "id": "soothe2",
@@ -570,5 +611,5 @@
       ]
     }
   ],
-  "registry_sha256": "43aea3a5dab5ae36967bb5cca469c890653dc31cc15e93053434c0309b14f3d6"
+  "registry_sha256": "a6b1d6618605e931eda1a04a2130202b0a77ce11d9909b639c1ec5d9a2f1a866"
 }

@@ -26,6 +26,11 @@ from fl_studio_mcp.utils.plugin_display import canonical_display_unit, parse_dis
         (" 2k50 hZ ", "Hz", 2500),
         ("20.00k Hz", "Hz", 20000),
         ("1e2 kHz", "Hz", 100000),
+        ("214.3 msec", "ms", 214.3),
+        ("1500.0 msec", "s", 1.5),
+        ("214.3 msec", "msec", 214.3),
+        ("-12.0 semitones", "semitones", -12),
+        ("140.0 bpm", "bpm", 140),
     ],
 )
 def test_observed_time_and_compact_frequency_spellings(display, unit, expected):
@@ -35,6 +40,7 @@ def test_observed_time_and_compact_frequency_spellings(display, unit, expected):
 def test_seconds_alias_has_one_canonical_unit():
     assert canonical_display_unit("sec") == "s"
     assert canonical_display_unit(" SEC ") == "s"
+    assert canonical_display_unit("msec") == "ms"
 
 
 @pytest.mark.parametrize(
@@ -51,6 +57,9 @@ def test_seconds_alias_has_one_canonical_unit():
         ("inf sec", "s"), ("NaN sec", "s"), ("1e9999 sec", "s"),
         ("1e-999 sec", "s"), ("1e-999 sec", "ms"),
         ("9" * 400 + "k5 Hz", "Hz"), ("0k" + "0" * 400 + "1 Hz", "Hz"),
+        ("3.0 semitones", ""), ("3.0 semitones", "%"), ("3.0", "semitones"),
+        ("140.0 bpm", "Hz"), ("140.0 bpm", ""), ("2.0 semitone", "semitones"),
+        ("214.3 msec", "Hz"), ("214.3 msec", ""), ("214.3 m sec", "ms"),
     ],
 )
 def test_malformed_wrong_unit_nonfinite_and_unrepresentable_formats_fail(display, unit):

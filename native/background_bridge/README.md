@@ -14,9 +14,17 @@ QueryInterface, DragEnter and Drop returned `S_OK`, but Drop returned
 unchanged. An occupied-slot test also declined the drop. Recovered source from
 before the earlier successes has the same successful-call path: the queried
 IDropTarget pointer, CF_HDROP data, key flags and UI-thread dispatch are unchanged.
-The cause of the differing FL behavior is unresolved. Treat this route as an
-unqualified experiment, and require native readback for every attempted load;
-neither the own-host tests nor the earlier FL successes prove reliable routing.
+**Cause found (2026-10-12, later the same day):** FL routes the drop by screen
+position. In the failing sessions FL's maximized Playlist was in front of the
+Mixer, so `WindowFromPoint` at the computed slot point resolved to the Playlist
+(`TEventEditForm`), which declined the `.fst`. FL still reported the Mixer as
+visible. After FL's own `ui.showWindow(0)` brought the Mixer to the front (no
+synthesized input; the OS foreground window was unchanged), five consecutive
+loads into empty Master slots verified on the first dispatch: Auto-Tune Pro,
+Decapitator, EchoBoy, MicroShift and Little AlterBoy. The Python layer now
+reports a covered slot as not ready and rechecks exposure immediately before
+dispatch. The route remains experimental: it still needs the selected track's
+slot to be visibly exposed, and the private interface is unsupported.
 
 Build with the installed Visual Studio C++ workload, without downloads:
 

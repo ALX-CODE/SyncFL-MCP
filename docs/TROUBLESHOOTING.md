@@ -16,7 +16,7 @@ Start with `scripts/doctor.py`, then use `--live` when FL is running. Pass the s
 | Stale revision/name/layout | Reinspect the actual target. Do not remove the expected identity or force another plugin's adapter. |
 | Plugin physical write refused | Check unit, qualified range and mode dependency. Change selectors separately. Auto/INF and unqualified mappings may need explicit normalized access and fresh inspection. |
 | Plugin normalized/display mismatch | Treat it as a verification failure. Preserve the receipt and inspect; caches can remain stale. Do not repeatedly write until a value happens to look right. |
-| Background effect load declined | This route is experimental and selected-track/empty-slot-only. Do not retry uncertain dispatch or assume general loading works. Use an explicit interactive route if appropriate. |
+| Background effect load declined | This route is experimental and selected-track/empty-slot-only. A reason saying another window covers the slot means FL's Playlist or another window is in front of the Mixer: bring the Mixer to the front (F9), inspect again, then load. Do not retry an uncertain dispatch or assume general loading works. |
 | FFmpeg not found / loudness unavailable | Install an FFmpeg build with `loudnorm`, place it on PATH or set `FL_STUDIO_MCP_FFMPEG`. Silence/short audio can legitimately have unavailable LUFS/LRA. |
 | Render command sent but no verified result | Poll `fl_render_status`. Inspect owned dialogs and output diagnostics. Start acknowledgment alone is not completion. |
 | Native save succeeded but path is unknown | That result proves host clean state. Use the interactive exact-path save workflow when disk destination evidence is required. |

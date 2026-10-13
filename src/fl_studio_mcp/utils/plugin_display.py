@@ -1,7 +1,8 @@
 """Parse literal host values without inferring a parameter's scale or meaning.
 
-Observed host spellings include ``sec`` for seconds and compact frequencies such
-as ``2k5 Hz`` (2500 Hz). Compact notation requires an explicit Hz suffix.
+Observed host spellings include ``sec`` for seconds, ``msec`` for milliseconds and
+compact frequencies such as ``2k5 Hz`` (2500 Hz). Compact notation requires an
+explicit Hz suffix. ``semitones`` and ``bpm`` are separate units with no conversion.
 """
 
 import math
@@ -10,16 +11,19 @@ from decimal import Decimal, DecimalException
 
 _NUMBER = r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
 _DISPLAY = re.compile(
-    rf"(?P<number>{_NUMBER})\s*(?P<unit>dBTP|dB|%|ms|sec|s|k\s*Hz|Hz)?", re.IGNORECASE
+    rf"(?P<number>{_NUMBER})\s*(?P<unit>dBTP|dB|%|msec|ms|sec|s|k\s*Hz|Hz|semitones|bpm)?",
+    re.IGNORECASE,
 )
 _COMPACT_HZ = re.compile(
     r"(?P<sign>[+-]?)(?P<whole>[0-9]+)k(?P<fraction>[0-9]*)\s*Hz", re.IGNORECASE
 )
 _RATIO = re.compile(rf"(?P<number>{_NUMBER})\s*:\s*1(?:\.0*)?")
 _UNITS = {
-    unit.casefold(): unit for unit in ("", "dB", "dBTP", "%", "ms", "s", "Hz", "kHz", "ratio")
+    unit.casefold(): unit
+    for unit in ("", "dB", "dBTP", "%", "ms", "s", "Hz", "kHz", "ratio", "semitones", "bpm")
 }
 _UNITS["sec"] = "s"
+_UNITS["msec"] = "ms"
 _SCALES = {
     "ms": ("time", Decimal("0.001")),
     "s": ("time", Decimal(1)),
@@ -35,7 +39,8 @@ def canonical_display_unit(unit):
     canonical = _UNITS.get(unit.strip().casefold())
     if canonical is None:
         raise ValueError(
-            "Unsupported display unit; use dB, dBTP, %, ms, s/sec, Hz, kHz, ratio or ''"
+            "Unsupported display unit; use dB, dBTP, %, ms/msec, s/sec, Hz, kHz, ratio, "
+            "semitones, bpm or ''"
         )
     return canonical
 
@@ -46,7 +51,8 @@ def parse_display_number(display, unit):
     Only a single complete numeric display is accepted. Ratios use N:1; their
     denominator is never guessed. Unitless, percent, dB and dBTP stay distinct.
     Time and frequency may be explicitly converted within their own dimensions;
-    sec is an alias for s, and 2k5 Hz is the explicit frequency spelling 2.5 kHz.
+    sec is an alias for s, msec for ms, and 2k5 Hz is the explicit frequency spelling
+    2.5 kHz. Semitones and bpm never convert to or from another unit.
     """
     target = canonical_display_unit(unit)
     if not isinstance(display, str) or not display.strip():

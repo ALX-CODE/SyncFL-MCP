@@ -274,26 +274,35 @@ def test_bundled_serum_templates_have_only_relative_references_and_no_binary_pay
 
 
 @pytest.mark.parametrize("autocrlf", ["true", "false"])
-def test_checkout_preserves_hash_pinned_runtime_files(tmp_path, autocrlf):
+def test_checkout_preserves_hash_pinned_payloads(tmp_path, autocrlf):
     root = Path(__file__).resolve().parents[1]
     source = tmp_path / "source"
     source.mkdir()
     (source / ".gitattributes").write_bytes((root / ".gitattributes").read_bytes())
-    runtime_files = {}
+    payload_files = {}
+    registry_name = "src/fl_studio_mcp/utils/plugin_adapters.json"
+    evidence_name = "docs/plugin-calibration-evidence.json"
+    for name in (registry_name, evidence_name):
+        data = (root / name).read_bytes()
+        target = source / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        if name == registry_name:
+            payload_files[name] = data
     for bridge in ("midi_bridge", "background_bridge", "midi_transport", "audio_tempo"):
         name = f"native/{bridge}/runtime/manifest.json"
         data = (root / name).read_bytes()
         target = source / name
         target.parent.mkdir(parents=True)
         target.write_bytes(data)
-        runtime_files[name] = data
+        payload_files[name] = data
         for relative in json.loads(data)["files"]:
             filename = f"native/{bridge}/runtime/{relative}"
             contents = (root / filename).read_bytes()
             output = source / filename
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(contents)
-            runtime_files[filename] = contents
+            payload_files[filename] = contents
     command(source, "init")
     command(source, "add", ".")
     command(
@@ -308,7 +317,13 @@ def test_checkout_preserves_hash_pinned_runtime_files(tmp_path, autocrlf):
     )
     checkout = tmp_path / "checkout"
     command(tmp_path, "clone", "--quiet", "--no-checkout", str(source), str(checkout))
+    # Exercise LF checkout as well as Windows autocrlf, regardless of the host OS.
+    command(checkout, "config", "core.eol", "lf")
     command(checkout, "config", "core.autocrlf", autocrlf)
     command(checkout, "checkout", "--force", "HEAD")
-    for name, data in runtime_files.items():
+    for name, data in payload_files.items():
         assert (checkout / name).read_bytes() == data, name
+    evidence = json.loads((checkout / evidence_name).read_bytes())
+    assert hashlib.sha256((checkout / registry_name).read_bytes()).hexdigest() == evidence[
+        "registry_sha256"
+    ]

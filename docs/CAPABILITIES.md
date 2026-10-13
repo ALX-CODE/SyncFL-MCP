@@ -19,7 +19,7 @@
 | Generic plugins | `fl_plugin_inspect`, `fl_plugin_apply`, parameter tools | Background where exposed | FL-exposed controls only; host caches may be stale |
 | Named plugins | `fl_plugin_adapter_catalog`, `fl_plugin_controls_inspect`, `fl_plugin_controls_set` | Background | Exact layout; qualified units/enums, explicit normalized fallback |
 | Assets and loading | `fl_find_assets`, `fl_sample_add`, `fl_instrument_add`, `fl_effect_add`, `fl_preset_load` | Discovery offline; loading interactive | Exact names/paths; plugin FSTs, not complete mixer-track FSTs |
-| Selected-track effect load | `fl_background_effect_inspect`, `fl_background_effect_load` | Experimental background | Empty selected visible slot only; later live attempts failed without slot changes |
+| Selected-track effect load | `fl_background_effect_inspect`, `fl_background_effect_load` | Experimental background | Empty slot on the selected track whose drop point is visibly exposed; earlier declines were traced to FL's Playlist covering the Mixer |
 | Serum | `fl_serum_inspect`, `fl_serum_apply`, preset build/edit tools | Background/offline; preset load interactive | Serum 2-specific mappings/templates |
 | Serum probing | `fl_serum_probe`, `fl_serum_analyze_audio` | Live note/capture or offline | Default-output capture can include other desktop audio; pitch analysis has limits |
 | Saved FLP inspection | `fl_project_file_inspect`, `fl_playlist_file_inspect` | Offline | Supported saved layouts; unsaved state may differ |
@@ -48,6 +48,6 @@
 
 ## Unfinished areas
 
-Full background piano editing, general loading and rendering are not implemented. The native SDK note-write prototype is disabled. Auto-Tune physical calibration, some plugin controls, and Soundtoys profiles beyond Decapitator remain unfinished. There is no universally qualified perfect vocal chain, automatic mastering, complete transcription or perceptual reference matching.
+Full background piano editing, general loading and rendering are not implemented. The native SDK note-write prototype is disabled. Some plugin controls remain normalized-only, including Auto-Tune's Harmony Player and EchoBoy Rhythm Time, and other Soundtoys plugins have no profile. There is no universally qualified perfect vocal chain, automatic mastering, complete transcription or perceptual reference matching.
 
 Technical verification and musical acceptance differ. Listen in context and retain source projects. See [validation](VALIDATION.md) and [roadmap](ROADMAP.md).

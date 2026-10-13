@@ -148,6 +148,12 @@ def _window_state(slot):
     )
 
 
+def _drop_point_exposed(window):
+    # FL routes the drop by screen position. A window over the slot (for example a
+    # maximized Playlist in front of the Mixer) receives it and returns DROPEFFECT_NONE.
+    return native_windows.point_belongs_to(window["point"], window["mixer"]["handle"])
+
+
 def _input_snapshot():
     if os.name != "nt":
         return dict(available=False)
@@ -346,8 +352,12 @@ def _inspect(conn, track, slot, deadline=None):
         reasons.append("Visible mixer title does not match the exact native target track name")
     if tracks[track]["slots"][slot]["occupied"]:
         reasons.append("Target effect slot is occupied")
+    exposed = _drop_point_exposed(window)
+    if not exposed:
+        reasons.append("Another window covers the target effect slot; bring the Mixer to the front")
     identity = dict(
         window=window,
+        drop_point_exposed=exposed,
         project=project["context"],
         native_revision=project["revision"],
         selected_track=selected,
@@ -513,6 +523,8 @@ def _validate_dispatch_state(conn, before):
         raise RuntimeError("Selection or edit safety changed immediately before dispatch")
     if _window_state(before["slot"]) != before["window"]:
         raise RuntimeError("Window geometry changed immediately before dispatch; no drop sent")
+    if not _drop_point_exposed(before["window"]):
+        raise RuntimeError("Target effect slot became covered before dispatch; no drop sent")
 
 
 def _confirmed(cli):

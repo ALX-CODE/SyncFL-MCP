@@ -8,7 +8,7 @@ The [October 12, 2026 landscape review](COMPARISON-2026-10-12.md#what-to-improve
 |---|---|---|
 | Background composition | Persistent notes without script-menu activation | Exact committed note/expression readback while foreground/input remain unchanged |
 | Background loading | Reliable channel/effect import beyond the current experimental private interface | Correct destination, exact instance verification, bounded failure and no focus/input takeover |
-| Plugin precision | Finish Auto-Tune calibration and broaden commonly used Soundtoys mappings | Independent settled holdouts, version/layout provenance and rejected unsupported values |
+| Plugin precision | Qualify Auto-Tune Harmony Player, EchoBoy Rhythm Time and further Soundtoys plugins | Independent settled holdouts, version/layout provenance and rejected unsupported values |
 | Host cache behavior | Resolve isolated-write display inconsistencies | Repeated fresh-host tests with independent readback; no retry-until-pass behavior |
 | Platform compatibility | Qualify additional Windows MIDI builds and macOS routes | Recorded setup/probe/live tests on each supported environment |
 | Public onboarding | Simplify installation and publish synthetic demonstrations | New-user setup from a clean export without private media or machine paths |

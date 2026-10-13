@@ -5,6 +5,7 @@ They do not establish that a plugin build/DSP implements the recorded mapping.
 """
 
 import hashlib
+import json
 import math
 import re
 import shutil
@@ -29,6 +30,14 @@ def packaged_registry():
     assert registry["adapters"], "The shipped catalog must contain a usable adapter"
     assert _SHA256.fullmatch(digest)
     return registry
+
+
+def test_shipped_calibration_evidence_matches_registry_bytes():
+    root = Path(__file__).resolve().parents[1]
+    evidence = json.loads((root / "docs/plugin-calibration-evidence.json").read_bytes())
+    assert hashlib.sha256(adapters.REGISTRY_PATH.read_bytes()).hexdigest() == evidence[
+        "registry_sha256"
+    ]
 
 
 def _analytic(control):

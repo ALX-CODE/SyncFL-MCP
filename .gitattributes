@@ -5,6 +5,7 @@
 *.mp3 binary
 *.SerumPreset binary
 # Hash manifests must survive Windows checkout without line-ending conversion.
+src/fl_studio_mcp/utils/plugin_adapters.json -text whitespace=cr-at-eol
 projects/remake/*.json -text whitespace=cr-at-eol
 projects/remake/README.md -text whitespace=cr-at-eol
 references/lead-midi/original-15/index.json -text whitespace=cr-at-eol

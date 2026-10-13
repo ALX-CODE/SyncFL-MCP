@@ -27,7 +27,7 @@ subsequent native tests, which retained the foreground window.
 | Persistent piano-roll note transactions | ComposeWithLLM script selection | Current activation opens/focuses the roll and selects its script; interactive mode required. Cached score reads and offline transforms stay available. |
 | Add samples/instruments/effects or load `.fst`/Serum presets | Guarded Windows workflow and OLE drag | Interactive mode required; no automatic background fallback. |
 | Project Open / Save As / exact-path discovery / GUI export / automation creation | Owned dialogs and guarded window controls | Interactive mode required. |
-| Background effect loading | Experimental `fl_background_effect_inspect/load` with `native/background_bridge` | Only an empty slot on the already selected, visibly matching mixer track; new controller PID capability, exact revision, pinned binaries, durable receipt and all-track readback required. No track change or rollback. |
+| Background effect loading | Experimental `fl_background_effect_inspect/load` with `native/background_bridge` | Only an empty slot on the already selected, visibly matching mixer track whose drop point is not covered by another window; new controller PID capability, exact revision, pinned binaries, durable receipt and all-track readback required. No track change or rollback. |
 
 ## Audited boundaries and fixes
 

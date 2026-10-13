@@ -98,7 +98,7 @@ Example for an already inspected Pro-Q 4 instance and an active band:
 }
 ```
 
-This example uses Hz only if that exact control is available and qualified in the inspection. Change a mode/selector separately, then inspect again before changing dependent controls. Auto-Tune Pro currently offers explicit normalized access; do not invent a milliseconds conversion. See the [plugin guide](PLUGIN-CONTROL-GUIDE.md).
+This example uses Hz only if that exact control is available and qualified in the inspection. Change a mode/selector separately, then inspect again before changing dependent controls. Auto-Tune Pro Retune Speed is qualified in milliseconds; its Harmony Player controls are normalized-only, so do not invent a conversion for them. See the [plugin guide](PLUGIN-CONTROL-GUIDE.md).
 
 ## Transform notes without touching FL
 

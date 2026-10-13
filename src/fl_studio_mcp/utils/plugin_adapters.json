@@ -19,16 +19,17 @@
         "preset_kind": "favorite",
         "registry_version": "11.0.0",
         "qualification_2026_10_12": {
-          "stable_calibration": false,
-          "holdout_checks": 0,
-          "passed_checks": 0,
-          "qualified_controls": 0,
-          "withheld_controls": 23,
+          "stable_calibration": true,
+          "holdout_checks": 180,
+          "passed_checks": 179,
+          "qualified_controls": 24,
+          "withheld_controls": 0,
           "counts": {
-            "numeric": 0,
-            "enum": 0,
-            "normalized": 92
-          }
+            "numeric": 14,
+            "enum": 10,
+            "normalized": 68
+          },
+          "holdout_sha256": "705b444541cb1295837ed5ec6cfcbea1cf1c27c0b297b79947711840b7835f98"
         }
       },
       "controls": [
@@ -36,81 +37,388 @@
           "key": "scale",
           "parameter": 1,
           "name": "Scale",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (29 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Major",
+              "display": "Major ",
+              "value": 0.015625
+            },
+            {
+              "label": "Minor",
+              "display": "Minor ",
+              "value": 0.046875
+            },
+            {
+              "label": "Chromatic",
+              "display": "Chromatic ",
+              "value": 0.078125
+            },
+            {
+              "label": "Ling Ln",
+              "display": "Ling Ln ",
+              "value": 0.109375
+            },
+            {
+              "label": "Scholar's",
+              "display": "Scholar's ",
+              "value": 0.140625
+            },
+            {
+              "label": "Greek Dia",
+              "display": "Greek Dia ",
+              "value": 0.1875
+            },
+            {
+              "label": "Greek Chr",
+              "display": "Greek Chr ",
+              "value": 0.21875
+            },
+            {
+              "label": "Greek En",
+              "display": "Greek En ",
+              "value": 0.25
+            },
+            {
+              "label": "Pythagor",
+              "display": "Pythagor ",
+              "value": 0.296875
+            },
+            {
+              "label": "Just Major",
+              "display": "Just Major ",
+              "value": 0.328125
+            },
+            {
+              "label": "Just Minor",
+              "display": "Just Minor ",
+              "value": 0.359375
+            },
+            {
+              "label": "Meantone",
+              "display": "Meantone ",
+              "value": 0.390625
+            },
+            {
+              "label": "Werck III",
+              "display": "Werck III ",
+              "value": 0.4375
+            },
+            {
+              "label": "Vallotti",
+              "display": "Vallotti ",
+              "value": 0.46875
+            },
+            {
+              "label": "Barnes",
+              "display": "Barnes ",
+              "value": 0.5
+            },
+            {
+              "label": "Indian",
+              "display": "Indian ",
+              "value": 0.546875
+            },
+            {
+              "label": "Slendro",
+              "display": "Slendro ",
+              "value": 0.578125
+            },
+            {
+              "label": "Pelog",
+              "display": "Pelog ",
+              "value": 0.609375
+            },
+            {
+              "label": "Arabic 1",
+              "display": "Arabic 1 ",
+              "value": 0.640625
+            },
+            {
+              "label": "Arabic 2",
+              "display": "Arabic 2 ",
+              "value": 0.6875
+            },
+            {
+              "label": "19 Tone",
+              "display": "19 Tone ",
+              "value": 0.71875
+            },
+            {
+              "label": "24 Tone",
+              "display": "24 Tone ",
+              "value": 0.75
+            },
+            {
+              "label": "31 Tone",
+              "display": "31 Tone ",
+              "value": 0.796875
+            },
+            {
+              "label": "53 Tone",
+              "display": "53 Tone ",
+              "value": 0.828125
+            },
+            {
+              "label": "Partch",
+              "display": "Partch ",
+              "value": 0.859375
+            },
+            {
+              "label": "Carlos A",
+              "display": "Carlos A ",
+              "value": 0.890625
+            },
+            {
+              "label": "Carlos B",
+              "display": "Carlos B ",
+              "value": 0.9375
+            },
+            {
+              "label": "Carlos G",
+              "display": "Carlos G ",
+              "value": 0.96875
+            },
+            {
+              "label": "Harmonic",
+              "display": "Harmonic ",
+              "value": 1.0
+            }
           ]
         },
         {
           "key": "key",
           "parameter": 2,
           "name": "Key",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Exact labels observed with Modern Scale = Chromatic; spellings change with that selector (observed).",
+            "Independent live holdout passed within the retained range on 2026-10-12 (12 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "C",
+              "display": "C ",
+              "value": 0.015625
+            },
+            {
+              "label": "C#",
+              "display": "C# ",
+              "value": 0.09375
+            },
+            {
+              "label": "D",
+              "display": "D ",
+              "value": 0.1875
+            },
+            {
+              "label": "D#",
+              "display": "D# ",
+              "value": 0.28125
+            },
+            {
+              "label": "E",
+              "display": "E ",
+              "value": 0.375
+            },
+            {
+              "label": "F",
+              "display": "F ",
+              "value": 0.453125
+            },
+            {
+              "label": "F#",
+              "display": "F# ",
+              "value": 0.546875
+            },
+            {
+              "label": "G",
+              "display": "G ",
+              "value": 0.640625
+            },
+            {
+              "label": "G#",
+              "display": "G# ",
+              "value": 0.734375
+            },
+            {
+              "label": "A",
+              "display": "A ",
+              "value": 0.828125
+            },
+            {
+              "label": "A#",
+              "display": "A# ",
+              "value": 0.921875
+            },
+            {
+              "label": "B",
+              "display": "B ",
+              "value": 0.984375
+            }
+          ],
+          "requires": [
+            {
+              "control": "modern_scale",
+              "one_of": [
+                "Chromatic"
+              ]
+            }
           ]
         },
         {
           "key": "detune",
           "parameter": 3,
           "name": "Detune",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
+            "Calibrated from installed plugin host displays in a muted lab.",
             "Reference pitch display mode; do not interpret these values as cents.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Range restricted to the contiguous passing holdout interval; failed taper/endpoints are excluded without widening tolerance.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (7 checks); range and mode limits still apply."
+          ],
+          "unit": "Hz",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "log",
+            "minimum": 415.2959354681372,
+            "maximum": 466.16814906099324
+          },
+          "minimum": 416.11255946386467,
+          "maximum": 461.50510490315395,
+          "display_unit": ""
         },
         {
           "key": "retune_speed",
           "parameter": 4,
           "name": "Retune Speed",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Correction time; lower values correct faster.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "ms",
+          "tolerance": 0.505,
+          "curve": {
+            "kind": "exp",
+            "minimum": 400.0,
+            "maximum": 0.0,
+            "k": -3.890079921505352
+          },
+          "minimum": 0.0,
+          "maximum": 400.0
         },
         {
           "key": "vibrato_shape",
           "parameter": 5,
           "name": "Vibrato Shape",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (4 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "(No Vibrato)",
+              "display": "(No Vibrato) ",
+              "value": 0.078125
+            },
+            {
+              "label": "Sine Wave",
+              "display": "Sine Wave ",
+              "value": 0.328125
+            },
+            {
+              "label": "Square",
+              "display": "Square ",
+              "value": 0.671875
+            },
+            {
+              "label": "Sawtooth",
+              "display": "Sawtooth ",
+              "value": 0.921875
+            }
           ]
         },
         {
           "key": "vibrato_pitch",
           "parameter": 6,
           "name": "Vibrato Pitch",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "vibrato_rate",
           "parameter": 7,
           "name": "Vibrato Rate",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "Hz",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.1,
+            "maximum": 10.0
+          },
+          "minimum": 0.1,
+          "maximum": 10.0,
+          "display_unit": ""
         },
         {
           "key": "input_type",
           "parameter": 10,
           "name": "Input Type",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (5 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Soprano",
+              "display": "Soprano ",
+              "value": 0.0625
+            },
+            {
+              "label": "Alto-Tenor",
+              "display": "Alto-Tenor ",
+              "value": 0.25
+            },
+            {
+              "label": "Low Male",
+              "display": "Low Male ",
+              "value": 0.5
+            },
+            {
+              "label": "Instrument",
+              "display": "Instrument ",
+              "value": 0.75
+            },
+            {
+              "label": "Bass Inst.",
+              "display": "Bass Inst. ",
+              "value": 0.9375
+            }
           ]
         },
         {
@@ -135,144 +443,291 @@
           "key": "ignore_vibrato",
           "parameter": 44,
           "name": "Ignore Vibrato",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "v_onset_delay",
           "parameter": 46,
           "name": "V.Onset Delay",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "ms",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 1500.0
+          },
+          "minimum": 0.0,
+          "maximum": 1500.0
         },
         {
           "key": "vibrato_amplitude",
           "parameter": 47,
           "name": "Vibrato Amplitude",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 30.0
+          },
+          "minimum": 0.0,
+          "maximum": 30.0
         },
         {
           "key": "vibrato_formant",
           "parameter": 48,
           "name": "Vibrato Formant",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "vibrato_variation",
           "parameter": 49,
           "name": "Vibrato Variation",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "v_onset_rate",
           "parameter": 50,
           "name": "V.Onset Rate",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "ms",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 1500.0
+          },
+          "minimum": 0.0,
+          "maximum": 1500.0
         },
         {
           "key": "midi_octaves",
           "parameter": 58,
           "name": "MIDI Octaves",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "As Played",
+              "display": "As Played ",
+              "value": 0.25
+            },
+            {
+              "label": "All",
+              "display": "All ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "humanize",
           "parameter": 61,
           "name": "Humanize",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
+            "Calibrated from installed plugin host displays in a muted lab.",
             "Affects sustained portions of long notes.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "natural_vibrato",
           "parameter": 62,
           "name": "Natural Vibrato",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -12.0,
+            "maximum": 12.0
+          },
+          "minimum": -12.0,
+          "maximum": 12.0
         },
         {
           "key": "formant_correction",
           "parameter": 70,
           "name": "Formant Correction",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "throat_length",
           "parameter": 71,
           "name": "Throat Length",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays.",
-            "Mode condition has no qualified selector mapping; inspect the selector manually before using explicit normalized values."
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.507192,
+          "curve": {
+            "kind": "exp",
+            "minimum": 50.0,
+            "maximum": 180.0,
+            "k": 0.9408712609282297
+          },
+          "minimum": 50.0,
+          "maximum": 180.0,
+          "requires": [
+            {
+              "control": "formant_correction",
+              "one_of": [
+                "On"
+              ]
+            }
           ]
         },
         {
           "key": "transpose",
           "parameter": 74,
           "name": "Transpose",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
+            "Calibrated from installed plugin host displays in a muted lab.",
             "Semitones; the host display is unitless.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "semitones",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -12.0,
+            "maximum": 12.0
+          },
+          "minimum": -12.0,
+          "maximum": 12.0,
+          "display_unit": ""
         },
         {
           "key": "master_bypass",
           "parameter": 89,
           "name": "Master Bypass",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "flex_tune",
           "parameter": 90,
           "name": "Flex-Tune",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Calibrated from installed plugin host displays in a muted empty lab.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "wet_dry_mix",
@@ -280,7 +735,8 @@
           "name": "Wet-Dry Mix",
           "kind": "normalized",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Host-exposed normalized control; physical conversion is not yet qualified.",
+            "The host display reads '100% %' (doubled unit), which the literal parser rejects."
           ]
         },
         {
@@ -710,10 +1166,52 @@
           "key": "modern_scale",
           "parameter": 162,
           "name": "Modern Scale",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
             "Exact labels observed from this installed build.",
-            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Chromatic",
+              "display": "Chromatic ",
+              "value": 0.015625
+            },
+            {
+              "label": "Major",
+              "display": "Major ",
+              "value": 0.078125
+            },
+            {
+              "label": "Minor",
+              "display": "Minor ",
+              "value": 0.140625
+            },
+            {
+              "label": "Harmonic Minor",
+              "display": "Harmonic Minor ",
+              "value": 0.21875
+            },
+            {
+              "label": "Jazz Melodic Minor",
+              "display": "Jazz Melodic Minor ",
+              "value": 0.28125
+            },
+            {
+              "label": "Dorian",
+              "display": "Dorian ",
+              "value": 0.359375
+            },
+            {
+              "label": "Phrygian",
+              "display": "Phrygian ",
+              "value": 0.4375
+            },
+            {
+              "label": "Lydian",
+              "display": "Lydian ",
+              "value": 0.484375
+            }
           ]
         },
         {
@@ -864,9 +1362,22 @@
           "key": "transpose_in_scale",
           "parameter": 179,
           "name": "Transpose In Scale",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Ignoring Scale",
+              "display": "Ignoring Scale ",
+              "value": 0.25
+            },
+            {
+              "label": "In Scale",
+              "display": "In Scale ",
+              "value": 1.0
+            }
           ]
         },
         {
@@ -910,16 +1421,17 @@
         "preset_kind": "installed",
         "registry_version": null,
         "qualification_2026_10_12": {
-          "stable_calibration": false,
-          "holdout_checks": 0,
-          "passed_checks": 0,
-          "qualified_controls": 0,
+          "stable_calibration": true,
+          "holdout_checks": 63,
+          "passed_checks": 63,
+          "qualified_controls": 12,
           "withheld_controls": 0,
           "counts": {
-            "numeric": 0,
-            "enum": 0,
-            "normalized": 12
-          }
+            "numeric": 6,
+            "enum": 6,
+            "normalized": 0
+          },
+          "holdout_sha256": "f383017107d624e3ec5b354bb409fcb297a0b1ed73a54b27c4c47c477dc56c64"
         }
       },
       "controls": [
@@ -927,108 +1439,1401 @@
           "key": "bypass",
           "parameter": 0,
           "name": "Bypass",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "style",
           "parameter": 1,
           "name": "Style",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (5 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "A",
+              "display": "A ",
+              "value": 0.0625
+            },
+            {
+              "label": "E",
+              "display": "E ",
+              "value": 0.25
+            },
+            {
+              "label": "N",
+              "display": "N ",
+              "value": 0.5
+            },
+            {
+              "label": "T",
+              "display": "T ",
+              "value": 0.75
+            },
+            {
+              "label": "P",
+              "display": "P ",
+              "value": 0.9375
+            }
           ]
         },
         {
           "key": "drive",
           "parameter": 2,
           "name": "Drive",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless 0..10 panel scale.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 10.0
+          },
+          "minimum": 0.0,
+          "maximum": 10.0
         },
         {
           "key": "punish",
           "parameter": 3,
           "name": "Punish",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Adds substantial extra input drive; check the output level after enabling it.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "lowcut",
           "parameter": 4,
           "name": "LowCut",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "Hz",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "log",
+            "minimum": 20.0,
+            "maximum": 1000.0
+          },
+          "minimum": 20.0,
+          "maximum": 1000.0
         },
         {
           "key": "tone",
           "parameter": 5,
           "name": "Tone",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "0 dB is neutral.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -12.0,
+            "maximum": 12.0
+          },
+          "minimum": -12.0,
+          "maximum": 12.0
         },
         {
           "key": "highcut",
           "parameter": 6,
           "name": "HighCut",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "Hz",
+          "tolerance": 0.051632,
+          "curve": {
+            "kind": "log",
+            "minimum": 1000.0,
+            "maximum": 20000.0
+          },
+          "minimum": 1000.0,
+          "maximum": 20000.0
         },
         {
           "key": "mix",
           "parameter": 7,
           "name": "Mix",
-          "kind": "normalized",
+          "kind": "numeric",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
-          ]
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
         },
         {
           "key": "autogain",
           "parameter": 8,
           "name": "AutoGain",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Observed: with Auto Gain On, Decapitator rewrites Output Trim's host value as Drive changes while the trim display keeps the written value.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "lowthump",
           "parameter": 9,
           "name": "LowThump",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "highslope",
           "parameter": 10,
           "name": "HighSlope",
-          "kind": "normalized",
+          "kind": "enum",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Gentle",
+              "display": "Gentle ",
+              "value": 0.25
+            },
+            {
+              "label": "Steep",
+              "display": "Steep ",
+              "value": 0.75
+            }
           ]
         },
         {
           "key": "outputtrim",
           "parameter": 11,
           "name": "OutputTrim",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated with AutoGain = Off in a muted lab; the host display stays fixed in other modes.",
+            "With Auto Gain On the host value drifts with Drive (observed); calibrated with Auto Gain Off only.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -24.0,
+            "maximum": 0.0
+          },
+          "minimum": -24.0,
+          "maximum": 0.0,
+          "requires": [
+            {
+              "control": "autogain",
+              "one_of": [
+                "Off"
+              ]
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Full host catalog signature verified in FL Studio 2026. Binary version is recorded evidence, not live instance attestation."
+      ]
+    },
+    {
+      "id": "echoboy",
+      "title": "EchoBoy",
+      "plugin_names": [
+        "EchoBoy"
+      ],
+      "layout_sha256": "1de6f827446697fb11d394958b13a52b629466ac471ed9be8b415719d592a050",
+      "parameter_count": 4240,
+      "evidence": {
+        "id": "echoboy",
+        "title": "EchoBoy",
+        "version": "5.0.1 64 bit",
+        "file_version": "5.0.1",
+        "binary_sha256": "279fbe37b635557edce16f25f9e33736f637c45b6fde1f4c455081c69cef9284",
+        "preset_sha256": "bc7531cbd595787bfbf4ca81c997381e4388ff82079d53179625322a198affec",
+        "preset_kind": "installed",
+        "registry_version": null,
+        "qualification_2026_10_12": {
+          "stable_calibration": true,
+          "holdout_checks": 236,
+          "passed_checks": 231,
+          "qualified_controls": 23,
+          "withheld_controls": 1,
+          "counts": {
+            "numeric": 12,
+            "enum": 11,
+            "normalized": 3
+          },
+          "holdout_sha256": "a5bc60cb23f86ee310efacdc3ce3698732cf0719f1775a6d148e4bf3d904f456"
+        }
+      },
+      "controls": [
+        {
+          "key": "bypass",
+          "parameter": 0,
+          "name": "Bypass",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
+          ]
+        },
+        {
+          "key": "inputgain",
+          "parameter": 1,
+          "name": "InputGain",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "linear",
+            "minimum": -24.0,
+            "maximum": 24.0
+          },
+          "minimum": -24.0,
+          "maximum": 24.0
+        },
+        {
+          "key": "outputgain",
+          "parameter": 2,
+          "name": "OutputGain",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "linear",
+            "minimum": -24.0,
+            "maximum": 24.0
+          },
+          "minimum": -24.0,
+          "maximum": 24.0
+        },
+        {
+          "key": "mix",
+          "parameter": 3,
+          "name": "Mix",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
+        },
+        {
+          "key": "mode",
+          "parameter": 4,
+          "name": "Mode",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Which echo and rhythm controls are audible depends on Mode; their host displays change in every mode (observed).",
+            "Independent live holdout passed within the retained range on 2026-10-12 (4 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Single",
+              "display": "Single ",
+              "value": 0.078125
+            },
+            {
+              "label": "Dual",
+              "display": "Dual ",
+              "value": 0.328125
+            },
+            {
+              "label": "Ping-Pong",
+              "display": "Ping-Pong ",
+              "value": 0.671875
+            },
+            {
+              "label": "Rhythm",
+              "display": "Rhythm ",
+              "value": 0.921875
+            }
+          ]
+        },
+        {
+          "key": "echo1mode",
+          "parameter": 5,
+          "name": "Echo1Mode",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (5 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Time",
+              "display": "Time ",
+              "value": 0.0625
+            },
+            {
+              "label": "Note",
+              "display": "Note ",
+              "value": 0.25
+            },
+            {
+              "label": "Dotted",
+              "display": "Dotted ",
+              "value": 0.5
+            },
+            {
+              "label": "Triplet",
+              "display": "Triplet ",
+              "value": 0.75
+            },
+            {
+              "label": "Beats",
+              "display": "Beats ",
+              "value": 0.9375
+            }
+          ],
+          "caution": "Coupled with Echo1Note (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "echo1note",
+          "parameter": 6,
+          "name": "Echo1Note",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (21 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "1/1 note",
+              "display": "1/1 note ",
+              "value": 0.015625
+            },
+            {
+              "label": "1/2 note",
+              "display": "1/2 note ",
+              "value": 0.046875
+            },
+            {
+              "label": "1/4 note",
+              "display": "1/4 note ",
+              "value": 0.09375
+            },
+            {
+              "label": "1/8th",
+              "display": "1/8th ",
+              "value": 0.15625
+            },
+            {
+              "label": "1/16th",
+              "display": "1/16th ",
+              "value": 0.203125
+            },
+            {
+              "label": "1/32nd",
+              "display": "1/32nd ",
+              "value": 0.25
+            },
+            {
+              "label": "1/64th",
+              "display": "1/64th ",
+              "value": 0.296875
+            },
+            {
+              "label": "1/1 trip",
+              "display": "1/1 trip ",
+              "value": 0.34375
+            },
+            {
+              "label": "1/2 trip",
+              "display": "1/2 trip ",
+              "value": 0.40625
+            },
+            {
+              "label": "1/4 trip",
+              "display": "1/4 trip ",
+              "value": 0.453125
+            },
+            {
+              "label": "1/8 trip",
+              "display": "1/8 trip ",
+              "value": 0.5
+            },
+            {
+              "label": "1/16 trip",
+              "display": "1/16 trip ",
+              "value": 0.546875
+            },
+            {
+              "label": "1/32 trip",
+              "display": "1/32 trip ",
+              "value": 0.59375
+            },
+            {
+              "label": "1/64 trip",
+              "display": "1/64 trip ",
+              "value": 0.65625
+            },
+            {
+              "label": "1/1 dot",
+              "display": "1/1 dot ",
+              "value": 0.703125
+            },
+            {
+              "label": "1/2 dot",
+              "display": "1/2 dot ",
+              "value": 0.75
+            },
+            {
+              "label": "1/4 dot",
+              "display": "1/4 dot ",
+              "value": 0.796875
+            },
+            {
+              "label": "1/8 dot",
+              "display": "1/8 dot ",
+              "value": 0.84375
+            },
+            {
+              "label": "1/16 dot",
+              "display": "1/16 dot ",
+              "value": 0.90625
+            },
+            {
+              "label": "1/32 dot",
+              "display": "1/32 dot ",
+              "value": 0.953125
+            },
+            {
+              "label": "1/64 dot",
+              "display": "1/64 dot ",
+              "value": 1.0
+            }
+          ],
+          "caution": "Coupled with Echo1Mode (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "echo1time",
+          "parameter": 7,
+          "name": "Echo1Time",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated with Echo1Mode = Time in a muted lab; the host display stays fixed in other modes.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "ms",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "exp",
+            "minimum": 0.0,
+            "maximum": 15000.0,
+            "k": 11.91835485725512
+          },
+          "minimum": 0.0,
+          "maximum": 15000.0,
+          "requires": [
+            {
+              "control": "echo1mode",
+              "one_of": [
+                "Time"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "echo2mode",
+          "parameter": 8,
+          "name": "Echo2Mode",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (5 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Time",
+              "display": "Time ",
+              "value": 0.0625
+            },
+            {
+              "label": "Note",
+              "display": "Note ",
+              "value": 0.25
+            },
+            {
+              "label": "Dotted",
+              "display": "Dotted ",
+              "value": 0.5
+            },
+            {
+              "label": "Triplet",
+              "display": "Triplet ",
+              "value": 0.75
+            },
+            {
+              "label": "Beats",
+              "display": "Beats ",
+              "value": 0.9375
+            }
+          ],
+          "caution": "Coupled with Echo2Note (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "echo2note",
+          "parameter": 9,
+          "name": "Echo2Note",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (21 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "1/1 note",
+              "display": "1/1 note ",
+              "value": 0.015625
+            },
+            {
+              "label": "1/2 note",
+              "display": "1/2 note ",
+              "value": 0.046875
+            },
+            {
+              "label": "1/4 note",
+              "display": "1/4 note ",
+              "value": 0.09375
+            },
+            {
+              "label": "1/8th",
+              "display": "1/8th ",
+              "value": 0.15625
+            },
+            {
+              "label": "1/16th",
+              "display": "1/16th ",
+              "value": 0.203125
+            },
+            {
+              "label": "1/32nd",
+              "display": "1/32nd ",
+              "value": 0.25
+            },
+            {
+              "label": "1/64th",
+              "display": "1/64th ",
+              "value": 0.296875
+            },
+            {
+              "label": "1/1 trip",
+              "display": "1/1 trip ",
+              "value": 0.34375
+            },
+            {
+              "label": "1/2 trip",
+              "display": "1/2 trip ",
+              "value": 0.40625
+            },
+            {
+              "label": "1/4 trip",
+              "display": "1/4 trip ",
+              "value": 0.453125
+            },
+            {
+              "label": "1/8 trip",
+              "display": "1/8 trip ",
+              "value": 0.5
+            },
+            {
+              "label": "1/16 trip",
+              "display": "1/16 trip ",
+              "value": 0.546875
+            },
+            {
+              "label": "1/32 trip",
+              "display": "1/32 trip ",
+              "value": 0.59375
+            },
+            {
+              "label": "1/64 trip",
+              "display": "1/64 trip ",
+              "value": 0.65625
+            },
+            {
+              "label": "1/1 dot",
+              "display": "1/1 dot ",
+              "value": 0.703125
+            },
+            {
+              "label": "1/2 dot",
+              "display": "1/2 dot ",
+              "value": 0.75
+            },
+            {
+              "label": "1/4 dot",
+              "display": "1/4 dot ",
+              "value": 0.796875
+            },
+            {
+              "label": "1/8 dot",
+              "display": "1/8 dot ",
+              "value": 0.84375
+            },
+            {
+              "label": "1/16 dot",
+              "display": "1/16 dot ",
+              "value": 0.90625
+            },
+            {
+              "label": "1/32 dot",
+              "display": "1/32 dot ",
+              "value": 0.953125
+            },
+            {
+              "label": "1/64 dot",
+              "display": "1/64 dot ",
+              "value": 1.0
+            }
+          ],
+          "caution": "Coupled with Echo2Mode (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "echo2time",
+          "parameter": 10,
+          "name": "Echo2Time",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated with Echo2Mode = Time in a muted lab; the host display stays fixed in other modes.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "ms",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "exp",
+            "minimum": 0.0,
+            "maximum": 15000.0,
+            "k": 11.91835485725512
+          },
+          "minimum": 0.0,
+          "maximum": 15000.0,
+          "requires": [
+            {
+              "control": "echo2mode",
+              "one_of": [
+                "Time"
+              ]
+            }
+          ]
+        },
+        {
+          "key": "feedback",
+          "parameter": 11,
+          "name": "Feedback",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless host scale; the top of the range exceeds 1.0.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.00525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 1.25
+          },
+          "minimum": 0.0,
+          "maximum": 1.25,
+          "caution": "Feedback above 1.0 can build up and self-oscillate."
+        },
+        {
+          "key": "primenumbers",
+          "parameter": 12,
+          "name": "PrimeNumbers",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
+          ]
+        },
+        {
+          "key": "groove",
+          "parameter": 13,
+          "name": "Groove",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless signed host scale.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.000525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -0.25,
+            "maximum": 0.25
+          },
+          "minimum": -0.25,
+          "maximum": 0.25
+        },
+        {
+          "key": "feel",
+          "parameter": 14,
+          "name": "Feel",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless signed host scale.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.000525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -0.25,
+            "maximum": 0.25
+          },
+          "minimum": -0.25,
+          "maximum": 0.25
+        },
+        {
+          "key": "saturation",
+          "parameter": 15,
+          "name": "Saturation",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.00505,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 24.0
+          },
+          "minimum": 0.0,
+          "maximum": 24.0
+        },
+        {
+          "key": "lowcut",
+          "parameter": 16,
+          "name": "LowCut",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless 0..1 panel scale, not Hz.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.00525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        {
+          "key": "highcut",
+          "parameter": 17,
+          "name": "HighCut",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless 0..1 panel scale, not Hz.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.00525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        {
+          "key": "rhythmmode",
+          "parameter": 18,
+          "name": "RhythmMode",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (7 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Time",
+              "display": "Time ",
+              "value": 0.046875
+            },
+            {
+              "label": "Note",
+              "display": "Note ",
+              "value": 0.171875
+            },
+            {
+              "label": "Dotted",
+              "display": "Dotted ",
+              "value": 0.328125
+            },
+            {
+              "label": "Triplet",
+              "display": "Triplet ",
+              "value": 0.5
+            },
+            {
+              "label": "Pattern",
+              "display": "Pattern ",
+              "value": 0.671875
+            },
+            {
+              "label": "CustomTime",
+              "display": "CustomTime ",
+              "value": 0.828125
+            },
+            {
+              "label": "CustomBeats",
+              "display": "CustomBeats ",
+              "value": 0.96875
+            }
+          ],
+          "caution": "Coupled with RhythmNote (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "rhythmnote",
+          "parameter": 19,
+          "name": "RhythmNote",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (18 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "1/2 note",
+              "display": "1/2 note ",
+              "value": 0.015625
+            },
+            {
+              "label": "1/4 note",
+              "display": "1/4 note ",
+              "value": 0.0625
+            },
+            {
+              "label": "1/8th",
+              "display": "1/8th ",
+              "value": 0.125
+            },
+            {
+              "label": "1/16th",
+              "display": "1/16th ",
+              "value": 0.1875
+            },
+            {
+              "label": "1/32nd",
+              "display": "1/32nd ",
+              "value": 0.234375
+            },
+            {
+              "label": "1/64th",
+              "display": "1/64th ",
+              "value": 0.296875
+            },
+            {
+              "label": "1/2 trip",
+              "display": "1/2 trip ",
+              "value": 0.359375
+            },
+            {
+              "label": "1/4 trip",
+              "display": "1/4 trip ",
+              "value": 0.421875
+            },
+            {
+              "label": "1/8 trip",
+              "display": "1/8 trip ",
+              "value": 0.46875
+            },
+            {
+              "label": "1/16 trip",
+              "display": "1/16 trip ",
+              "value": 0.53125
+            },
+            {
+              "label": "1/32 trip",
+              "display": "1/32 trip ",
+              "value": 0.59375
+            },
+            {
+              "label": "1/64 trip",
+              "display": "1/64 trip ",
+              "value": 0.65625
+            },
+            {
+              "label": "1/2 dot",
+              "display": "1/2 dot ",
+              "value": 0.71875
+            },
+            {
+              "label": "1/4 dot",
+              "display": "1/4 dot ",
+              "value": 0.765625
+            },
+            {
+              "label": "1/8 dot",
+              "display": "1/8 dot ",
+              "value": 0.828125
+            },
+            {
+              "label": "1/16 dot",
+              "display": "1/16 dot ",
+              "value": 0.890625
+            },
+            {
+              "label": "1/32 dot",
+              "display": "1/32 dot ",
+              "value": 0.953125
+            },
+            {
+              "label": "1/64 dot",
+              "display": "1/64 dot ",
+              "value": 1.0
+            }
+          ],
+          "caution": "Coupled with RhythmMode (observed): a note value sets Mode to Note/Triplet/Dotted, and writing Triplet or Dotted converts the note. Change one, inspect, then change the other; never both in one batch."
+        },
+        {
+          "key": "rhythmtime",
+          "parameter": 20,
+          "name": "RhythmTime",
+          "requires": [
+            {
+              "control": "rhythmmode",
+              "one_of": [
+                "Time"
+              ]
+            }
+          ],
           "kind": "normalized",
           "notes": [
-            "Host-exposed normalized control; physical conversion is not yet qualified."
+            "Calibrated with RhythmMode = Time in a muted lab; the host display stays fixed in other modes.",
+            "Physical/enum mapping withheld: independent holdout did not qualify this entire control. Use explicit normalized values and inspect live displays."
+          ]
+        },
+        {
+          "key": "rhythmrepeats",
+          "parameter": 21,
+          "name": "RhythmRepeats",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (16 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "1",
+              "display": "1 ",
+              "value": 0.015625
+            },
+            {
+              "label": "2",
+              "display": "2 ",
+              "value": 0.078125
+            },
+            {
+              "label": "3",
+              "display": "3 ",
+              "value": 0.140625
+            },
+            {
+              "label": "4",
+              "display": "4 ",
+              "value": 0.203125
+            },
+            {
+              "label": "5",
+              "display": "5 ",
+              "value": 0.265625
+            },
+            {
+              "label": "6",
+              "display": "6 ",
+              "value": 0.34375
+            },
+            {
+              "label": "7",
+              "display": "7 ",
+              "value": 0.40625
+            },
+            {
+              "label": "8",
+              "display": "8 ",
+              "value": 0.46875
+            },
+            {
+              "label": "9",
+              "display": "9 ",
+              "value": 0.53125
+            },
+            {
+              "label": "10",
+              "display": "10 ",
+              "value": 0.609375
+            },
+            {
+              "label": "11",
+              "display": "11 ",
+              "value": 0.671875
+            },
+            {
+              "label": "12",
+              "display": "12 ",
+              "value": 0.734375
+            },
+            {
+              "label": "13",
+              "display": "13 ",
+              "value": 0.8125
+            },
+            {
+              "label": "14",
+              "display": "14 ",
+              "value": 0.875
+            },
+            {
+              "label": "15",
+              "display": "15 ",
+              "value": 0.9375
+            },
+            {
+              "label": "16",
+              "display": "16 ",
+              "value": 0.984375
+            }
+          ]
+        },
+        {
+          "key": "rhythmdecay",
+          "parameter": 22,
+          "name": "RhythmDecay",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 40.0
+          },
+          "minimum": 0.0,
+          "maximum": 40.0
+        },
+        {
+          "key": "style",
+          "parameter": 23,
+          "name": "Style",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "'Edited Style' (top of the range) is a status label, not a selectable style; excluded.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (31 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Master Tape",
+              "display": "Master Tape ",
+              "value": 0.015625
+            },
+            {
+              "label": "Studio Tape",
+              "display": "Studio Tape ",
+              "value": 0.046875
+            },
+            {
+              "label": "EchoPlex",
+              "display": "EchoPlex ",
+              "value": 0.078125
+            },
+            {
+              "label": "Space Echo",
+              "display": "Space Echo ",
+              "value": 0.109375
+            },
+            {
+              "label": "Tube Tape",
+              "display": "Tube Tape ",
+              "value": 0.140625
+            },
+            {
+              "label": "Cheap Tape",
+              "display": "Cheap Tape ",
+              "value": 0.171875
+            },
+            {
+              "label": "Memory Man",
+              "display": "Memory Man ",
+              "value": 0.203125
+            },
+            {
+              "label": "DM-2",
+              "display": "DM-2 ",
+              "value": 0.234375
+            },
+            {
+              "label": "TelRay",
+              "display": "TelRay ",
+              "value": 0.265625
+            },
+            {
+              "label": "Binsonette",
+              "display": "Binsonette ",
+              "value": 0.296875
+            },
+            {
+              "label": "Telephone",
+              "display": "Telephone ",
+              "value": 0.328125
+            },
+            {
+              "label": "AM Radio",
+              "display": "AM Radio ",
+              "value": 0.359375
+            },
+            {
+              "label": "FM Radio",
+              "display": "FM Radio ",
+              "value": 0.390625
+            },
+            {
+              "label": "Shortwave",
+              "display": "Shortwave ",
+              "value": 0.421875
+            },
+            {
+              "label": "Transmitter",
+              "display": "Transmitter ",
+              "value": 0.453125
+            },
+            {
+              "label": "Digital Delay",
+              "display": "Digital Delay ",
+              "value": 0.484375
+            },
+            {
+              "label": "Analog Delay",
+              "display": "Analog Delay ",
+              "value": 0.515625
+            },
+            {
+              "label": "DigitalChorus",
+              "display": "DigitalChorus ",
+              "value": 0.5625
+            },
+            {
+              "label": "Analog Chorus",
+              "display": "Analog Chorus ",
+              "value": 0.59375
+            },
+            {
+              "label": "CE-1 Chorus",
+              "display": "CE-1 Chorus ",
+              "value": 0.625
+            },
+            {
+              "label": "Vibrato",
+              "display": "Vibrato ",
+              "value": 0.65625
+            },
+            {
+              "label": "Saturated",
+              "display": "Saturated ",
+              "value": 0.6875
+            },
+            {
+              "label": "Fat",
+              "display": "Fat ",
+              "value": 0.71875
+            },
+            {
+              "label": "Distressed",
+              "display": "Distressed ",
+              "value": 0.75
+            },
+            {
+              "label": "Limited",
+              "display": "Limited ",
+              "value": 0.78125
+            },
+            {
+              "label": "Distorted",
+              "display": "Distorted ",
+              "value": 0.8125
+            },
+            {
+              "label": "Queeked",
+              "display": "Queeked ",
+              "value": 0.84375
+            },
+            {
+              "label": "Ambient",
+              "display": "Ambient ",
+              "value": 0.875
+            },
+            {
+              "label": "Diffused",
+              "display": "Diffused ",
+              "value": 0.90625
+            },
+            {
+              "label": "Splattered",
+              "display": "Splattered ",
+              "value": 0.9375
+            },
+            {
+              "label": "Verbed",
+              "display": "Verbed ",
+              "value": 0.96875
+            }
+          ]
+        },
+        {
+          "key": "tempo",
+          "parameter": 24,
+          "name": "Tempo",
+          "kind": "normalized",
+          "notes": [
+            "Host-exposed normalized control; physical conversion is not yet qualified.",
+            "The host display did not change across the full normalized sweep in this lab; no physical mapping is claimed. It stayed at the project tempo (140 bpm)."
+          ]
+        },
+        {
+          "key": "beatsync",
+          "parameter": 25,
+          "name": "BeatSync",
+          "kind": "normalized",
+          "notes": [
+            "Host-exposed normalized control; physical conversion is not yet qualified.",
+            "The host display did not change across the full normalized sweep in this lab; no physical mapping is claimed."
           ]
         }
       ],
@@ -43199,6 +45004,193 @@
       ]
     },
     {
+      "id": "little_alterboy",
+      "title": "Little AlterBoy",
+      "plugin_names": [
+        "Little AlterBoy"
+      ],
+      "layout_sha256": "1bb96bd74ed63a17a2b147570a6564cd65bbf6087b06aed63ab4df54313eb39e",
+      "parameter_count": 4240,
+      "evidence": {
+        "id": "little_alterboy",
+        "title": "Little AlterBoy",
+        "version": "5.0.1 64 bit",
+        "file_version": "5.0.1",
+        "binary_sha256": "362b0a519ca6e4f470b7e7063139c73c959789bfce5ae66bbe58210ef86c839b",
+        "preset_sha256": "5794f0fa1d5c18ea8b2704bd0837627b0df382424d080eb6030eefeb99df3492",
+        "preset_kind": "favorite",
+        "registry_version": null,
+        "qualification_2026_10_12": {
+          "stable_calibration": true,
+          "holdout_checks": 39,
+          "passed_checks": 39,
+          "qualified_controls": 7,
+          "withheld_controls": 0,
+          "counts": {
+            "numeric": 4,
+            "enum": 3,
+            "normalized": 0
+          },
+          "holdout_sha256": "dd21f37839d0ae86723fb237179922f1ab103ecb3b33e64abae7809eb40366ca"
+        }
+      },
+      "controls": [
+        {
+          "key": "bypass",
+          "parameter": 0,
+          "name": "Bypass",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
+          ]
+        },
+        {
+          "key": "pitch",
+          "parameter": 1,
+          "name": "Pitch",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "semitones",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -12.0,
+            "maximum": 12.0
+          },
+          "minimum": -12.0,
+          "maximum": 12.0
+        },
+        {
+          "key": "formant",
+          "parameter": 2,
+          "name": "Formant",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "semitones",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -12.0,
+            "maximum": 12.0
+          },
+          "minimum": -12.0,
+          "maximum": 12.0
+        },
+        {
+          "key": "drive",
+          "parameter": 3,
+          "name": "Drive",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Unitless 0..10 panel scale.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 10.0
+          },
+          "minimum": 0.0,
+          "maximum": 10.0
+        },
+        {
+          "key": "mix",
+          "parameter": 4,
+          "name": "Mix",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
+        },
+        {
+          "key": "shiftmode",
+          "parameter": 5,
+          "name": "ShiftMode",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Robot and Quantize change how Pitch is applied; inspect Shift Mode first.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (3 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Transpose",
+              "display": "Transpose ",
+              "value": 0.125
+            },
+            {
+              "label": "Quantize",
+              "display": "Quantize ",
+              "value": 0.5
+            },
+            {
+              "label": "Robot",
+              "display": "Robot ",
+              "value": 0.875
+            }
+          ]
+        },
+        {
+          "key": "formantlink",
+          "parameter": 6,
+          "name": "FormantLink",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Link ties Formant to Pitch; inspect it before setting Formant independently.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
+          ]
+        }
+      ],
+      "notes": [
+        "Full host catalog signature verified in FL Studio 2026. Binary version is recorded evidence, not live instance attestation."
+      ]
+    },
+    {
       "id": "metatune",
       "title": "MetaTune",
       "plugin_names": [
@@ -43806,6 +45798,189 @@
           "notes": [
             "Host-exposed normalized control; physical conversion is not yet qualified.",
             "Linked instances can affect each other; avoid simultaneous automation sources."
+          ]
+        }
+      ],
+      "notes": [
+        "Full host catalog signature verified in FL Studio 2026. Binary version is recorded evidence, not live instance attestation."
+      ]
+    },
+    {
+      "id": "microshift",
+      "title": "MicroShift",
+      "plugin_names": [
+        "MicroShift"
+      ],
+      "layout_sha256": "0f2237cf16b03253184873a6c8240b698e6338c4db10829146e062805bafb41c",
+      "parameter_count": 4240,
+      "evidence": {
+        "id": "microshift",
+        "title": "MicroShift",
+        "version": "5.0.1 64 bit",
+        "file_version": "5.0.1",
+        "binary_sha256": "21ec3f22458e740c5d929b84be70596f9f6b9970aad2a28480292b9641a6c23e",
+        "preset_sha256": "af82393b6f6a56ac9545011dfbb68ad4cfd969bc62282a180888d0bb8afb5be5",
+        "preset_kind": "installed",
+        "registry_version": null,
+        "qualification_2026_10_12": {
+          "stable_calibration": true,
+          "holdout_checks": 45,
+          "passed_checks": 45,
+          "qualified_controls": 7,
+          "withheld_controls": 0,
+          "counts": {
+            "numeric": 5,
+            "enum": 2,
+            "normalized": 0
+          },
+          "holdout_sha256": "5fe5816fac02d173e86919335a62a550ffb82900ec703f76d90d627c8122876c"
+        }
+      },
+      "controls": [
+        {
+          "key": "bypass",
+          "parameter": 0,
+          "name": "Bypass",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (2 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "Off",
+              "display": "Off ",
+              "value": 0.25
+            },
+            {
+              "label": "On",
+              "display": "On ",
+              "value": 0.75
+            }
+          ]
+        },
+        {
+          "key": "mix",
+          "parameter": 1,
+          "name": "Mix",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": 0.0,
+            "maximum": 100.0
+          },
+          "minimum": 0.0,
+          "maximum": 100.0
+        },
+        {
+          "key": "inputgain",
+          "parameter": 2,
+          "name": "InputGain",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "dB",
+          "tolerance": 0.0525,
+          "curve": {
+            "kind": "linear",
+            "minimum": -3.0,
+            "maximum": 6.0
+          },
+          "minimum": -3.0,
+          "maximum": 6.0
+        },
+        {
+          "key": "detune",
+          "parameter": 3,
+          "name": "Detune",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Relative percentage with a log taper (100% at centre); not cents.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.051688,
+          "curve": {
+            "kind": "log",
+            "minimum": 50.0,
+            "maximum": 200.0
+          },
+          "minimum": 50.0,
+          "maximum": 200.0
+        },
+        {
+          "key": "delay",
+          "parameter": 4,
+          "name": "Delay",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Relative percentage with a log taper (100% at centre); not milliseconds.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "%",
+          "tolerance": 0.051688,
+          "curve": {
+            "kind": "log",
+            "minimum": 50.0,
+            "maximum": 200.0
+          },
+          "minimum": 50.0,
+          "maximum": 200.0
+        },
+        {
+          "key": "focus",
+          "parameter": 5,
+          "name": "Focus",
+          "kind": "numeric",
+          "notes": [
+            "Calibrated from installed plugin host displays in a muted lab.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (8 checks); range and mode limits still apply."
+          ],
+          "unit": "Hz",
+          "tolerance": 0.0505,
+          "curve": {
+            "kind": "log",
+            "minimum": 20.0,
+            "maximum": 10000.0
+          },
+          "minimum": 20.0,
+          "maximum": 10000.0
+        },
+        {
+          "key": "style",
+          "parameter": 6,
+          "name": "Style",
+          "kind": "enum",
+          "notes": [
+            "Exact labels observed from this installed build.",
+            "Independent live holdout passed within the retained range on 2026-10-12 (3 checks); range and mode limits still apply."
+          ],
+          "choices": [
+            {
+              "label": "I",
+              "display": "I ",
+              "value": 0.125
+            },
+            {
+              "label": "II",
+              "display": "II ",
+              "value": 0.5
+            },
+            {
+              "label": "III",
+              "display": "III ",
+              "value": 0.875
+            }
           ]
         }
       ],

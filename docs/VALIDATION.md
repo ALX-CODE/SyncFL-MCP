@@ -63,6 +63,40 @@ Windows MIDI Services still supplies the virtual endpoint. The C++ component
 replaces the output client library. Mido remains for MIDI files, and non-Windows
 output retains Mido/RtMidi. See the [native transport](../native/midi_transport/README.md).
 
+## Plugin qualification and background loading pass: October 12, 2026 (evening)
+
+In the same disposable lab (Master muted), earlier declined background loads were
+traced to FL's maximized Playlist covering the Mixer: FL routes the OLE drop by screen
+position, and the slot's drop point resolved to the Playlist. After FL's own
+`ui.showWindow(0)` brought the Mixer forward, five empty Master-slot loads verified on
+their first dispatch, and the OS foreground window was unchanged. The loader now
+refuses a covered slot.
+
+Integration regression checks also reject owned popups covering a target while
+accepting real child controls. The calibration registry is stored byte-for-byte
+so its published evidence hash survives both LF and Windows CRLF checkout settings.
+
+Auto-Tune Pro, Decapitator, EchoBoy, MicroShift and Little AlterBoy were then calibrated
+with the final settling protocol: at least 400 ms, then two equal value/display reads
+200 ms apart. They were held out at off-grid positions and promoted under the unchanged
+rules: 563 checks, 557 passed, and every touched parameter restored. Calibration exposed
+three host couplings, each now declared or handled:
+
+- Decapitator Auto Gain rewrites Output Trim's host value, so Output Trim requires Auto Gain Off.
+- Auto-Tune Key spelling follows Modern Scale, so Key requires Chromatic.
+- EchoBoy Mode and Note values drive each other. The joint sweep mislabelled Triplet and
+  Dotted; the joint holdout caught it. An isolated re-sweep and a one-control-at-a-time
+  holdout corrected the labels.
+
+EchoBoy Rhythm Time, a sampled table that failed its holdout, stays normalized.
+
+A fresh stdio server from the updated source then applied 23 named-control writes and
+restores across the five profiles through `fl_plugin_controls_set`, all `verified`. It
+refused an unmet mode condition, an out-of-range value and the withheld control. A
+final read found zero drift from the baselines. The offline suite passed 2,331 tests
+before the registry update. As with the earlier pass, this is host parameter/display
+evidence, not proof of audible DSP behavior.
+
 ## Live background-control pass: October 12, 2026
 
 The updated source passed **2,317 Python tests with 2 skips** on Python 3.13.13,

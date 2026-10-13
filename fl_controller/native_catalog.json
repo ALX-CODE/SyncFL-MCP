@@ -1,0 +1,3635 @@
+{
+  "mixer.getEqBandCount": {
+    "module": "mixer",
+    "function": "getEqBandCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEqGain": {
+    "module": "mixer",
+    "function": "getEqGain",
+    "arguments": [
+      "index",
+      "band",
+      "mode"
+    ],
+    "required": 2,
+    "signature": "index: int, band: int, mode: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setEqGain": {
+    "module": "mixer",
+    "function": "setEqGain",
+    "arguments": [
+      "index",
+      "band",
+      "value"
+    ],
+    "required": 3,
+    "signature": "index: int, band: int, value: float",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEqFrequency": {
+    "module": "mixer",
+    "function": "getEqFrequency",
+    "arguments": [
+      "index",
+      "band",
+      "mode"
+    ],
+    "required": 2,
+    "signature": "index: int, band: int, mode: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setEqFrequency": {
+    "module": "mixer",
+    "function": "setEqFrequency",
+    "arguments": [
+      "index",
+      "band",
+      "value"
+    ],
+    "required": 3,
+    "signature": "index: int, band: int, value: float",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEqBandwidth": {
+    "module": "mixer",
+    "function": "getEqBandwidth",
+    "arguments": [
+      "index",
+      "band"
+    ],
+    "required": 2,
+    "signature": "index: int, band: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setEqBandwidth": {
+    "module": "mixer",
+    "function": "setEqBandwidth",
+    "arguments": [
+      "index",
+      "band",
+      "value"
+    ],
+    "required": 3,
+    "signature": "index: int, band: int, value: float",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackPluginId": {
+    "module": "mixer",
+    "function": "getTrackPluginId",
+    "arguments": [
+      "index",
+      "plugIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, plugIndex: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackPluginValid": {
+    "module": "mixer",
+    "function": "isTrackPluginValid",
+    "arguments": [
+      "index",
+      "plugIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, plugIndex: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEventValue": {
+    "module": "mixer",
+    "function": "getEventValue",
+    "arguments": [
+      "index",
+      "value",
+      "smoothTarget"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=midi.MaxInt, smoothTarget: int=1",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.remoteFindEventValue": {
+    "module": "mixer",
+    "function": "remoteFindEventValue",
+    "arguments": [
+      "index",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "index: int, flags: int=0, /",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEventIDName": {
+    "module": "mixer",
+    "function": "getEventIDName",
+    "arguments": [
+      "index",
+      "shortname"
+    ],
+    "required": 1,
+    "signature": "index: int, shortname: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getEventIDValueString": {
+    "module": "mixer",
+    "function": "getEventIDValueString",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getAutoSmoothEventValue": {
+    "module": "mixer",
+    "function": "getAutoSmoothEventValue",
+    "arguments": [
+      "index",
+      "locked"
+    ],
+    "required": 1,
+    "signature": "index: int, locked: int=1",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackInfo": {
+    "module": "mixer",
+    "function": "getTrackInfo",
+    "arguments": [
+      "mode"
+    ],
+    "required": 1,
+    "signature": "mode: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.trackCount": {
+    "module": "mixer",
+    "function": "trackCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getSongStepPos": {
+    "module": "mixer",
+    "function": "getSongStepPos",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getCurrentTempo": {
+    "module": "mixer",
+    "function": "getCurrentTempo",
+    "arguments": [
+      "asInt"
+    ],
+    "required": 0,
+    "signature": "asInt: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getRecPPS": {
+    "module": "mixer",
+    "function": "getRecPPS",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getSongTickPos": {
+    "module": "mixer",
+    "function": "getSongTickPos",
+    "arguments": [
+      "mode"
+    ],
+    "required": 0,
+    "signature": "mode: int=midi.ST_Int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getLastPeakVol": {
+    "module": "mixer",
+    "function": "getLastPeakVol",
+    "arguments": [
+      "section"
+    ],
+    "required": 1,
+    "signature": "section: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.focusEditor": {
+    "module": "mixer",
+    "function": "focusEditor",
+    "arguments": [
+      "index",
+      "plugIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, plugIndex: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getActiveEffectIndex": {
+    "module": "mixer",
+    "function": "getActiveEffectIndex",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.trackNumber": {
+    "module": "mixer",
+    "function": "trackNumber",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackNumber": {
+    "module": "mixer",
+    "function": "setTrackNumber",
+    "arguments": [
+      "trackNumber",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "trackNumber: int, flags: int=0",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackSelected": {
+    "module": "mixer",
+    "function": "isTrackSelected",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.selectTrack": {
+    "module": "mixer",
+    "function": "selectTrack",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.selectAll": {
+    "module": "mixer",
+    "function": "selectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.deselectAll": {
+    "module": "mixer",
+    "function": "deselectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setActiveTrack": {
+    "module": "mixer",
+    "function": "setActiveTrack",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackName": {
+    "module": "mixer",
+    "function": "getTrackName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackName": {
+    "module": "mixer",
+    "function": "setTrackName",
+    "arguments": [
+      "index",
+      "name"
+    ],
+    "required": 2,
+    "signature": "index: int, name: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackColor": {
+    "module": "mixer",
+    "function": "getTrackColor",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackColor": {
+    "module": "mixer",
+    "function": "setTrackColor",
+    "arguments": [
+      "index",
+      "color"
+    ],
+    "required": 2,
+    "signature": "index: int, color: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getSlotColor": {
+    "module": "mixer",
+    "function": "getSlotColor",
+    "arguments": [
+      "index",
+      "slot"
+    ],
+    "required": 2,
+    "signature": "index: int, slot: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setSlotColor": {
+    "module": "mixer",
+    "function": "setSlotColor",
+    "arguments": [
+      "index",
+      "slot",
+      "color"
+    ],
+    "required": 3,
+    "signature": "index: int, slot: int, color: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackArmed": {
+    "module": "mixer",
+    "function": "isTrackArmed",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.armTrack": {
+    "module": "mixer",
+    "function": "armTrack",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackSolo": {
+    "module": "mixer",
+    "function": "isTrackSolo",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.soloTrack": {
+    "module": "mixer",
+    "function": "soloTrack",
+    "arguments": [
+      "index",
+      "value",
+      "mode"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, mode: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackEnabled": {
+    "module": "mixer",
+    "function": "isTrackEnabled",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackAutomationEnabled": {
+    "module": "mixer",
+    "function": "isTrackAutomationEnabled",
+    "arguments": [
+      "index",
+      "plugIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, plugIndex: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.enableTrack": {
+    "module": "mixer",
+    "function": "enableTrack",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackMuted": {
+    "module": "mixer",
+    "function": "isTrackMuted",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.muteTrack": {
+    "module": "mixer",
+    "function": "muteTrack",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackMuteLock": {
+    "module": "mixer",
+    "function": "isTrackMuteLock",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackVolume": {
+    "module": "mixer",
+    "function": "getTrackVolume",
+    "arguments": [
+      "index",
+      "mode"
+    ],
+    "required": 1,
+    "signature": "index: int, mode: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackVolume": {
+    "module": "mixer",
+    "function": "setTrackVolume",
+    "arguments": [
+      "index",
+      "volume",
+      "pickupMode"
+    ],
+    "required": 2,
+    "signature": "index: int, volume: float, pickupMode: int=midi.PIM_None",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackPan": {
+    "module": "mixer",
+    "function": "getTrackPan",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackPan": {
+    "module": "mixer",
+    "function": "setTrackPan",
+    "arguments": [
+      "index",
+      "pan",
+      "pickupMode"
+    ],
+    "required": 2,
+    "signature": "index: int, pan: float, pickupMode: int=midi.PIM_None",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackStereoSep": {
+    "module": "mixer",
+    "function": "getTrackStereoSep",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setTrackStereoSep": {
+    "module": "mixer",
+    "function": "setTrackStereoSep",
+    "arguments": [
+      "index",
+      "pan",
+      "pickupMode"
+    ],
+    "required": 2,
+    "signature": "index: int, pan: float, pickupMode: int=midi.PIM_None",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setRouteTo": {
+    "module": "mixer",
+    "function": "setRouteTo",
+    "arguments": [
+      "index",
+      "destIndex",
+      "value",
+      "updateUI"
+    ],
+    "required": 3,
+    "signature": "index: int, destIndex: int, value: bool, updateUI: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setRouteToLevel": {
+    "module": "mixer",
+    "function": "setRouteToLevel",
+    "arguments": [
+      "index",
+      "destIndex",
+      "level"
+    ],
+    "required": 3,
+    "signature": "index: int, destIndex: int, level: float",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getRouteToLevel": {
+    "module": "mixer",
+    "function": "getRouteToLevel",
+    "arguments": [
+      "index",
+      "destIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, destIndex: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getRouteSendActive": {
+    "module": "mixer",
+    "function": "getRouteSendActive",
+    "arguments": [
+      "index",
+      "destIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, destIndex: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.afterRoutingChanged": {
+    "module": "mixer",
+    "function": "afterRoutingChanged",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackPeaks": {
+    "module": "mixer",
+    "function": "getTrackPeaks",
+    "arguments": [
+      "index",
+      "mode"
+    ],
+    "required": 2,
+    "signature": "index: int, mode: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackRecordingFileName": {
+    "module": "mixer",
+    "function": "getTrackRecordingFileName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.linkTrackToChannel": {
+    "module": "mixer",
+    "function": "linkTrackToChannel",
+    "arguments": [
+      "mode"
+    ],
+    "required": 1,
+    "signature": "mode: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getTrackDockSide": {
+    "module": "mixer",
+    "function": "getTrackDockSide",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackSlotsEnabled": {
+    "module": "mixer",
+    "function": "isTrackSlotsEnabled",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.enableTrackSlots": {
+    "module": "mixer",
+    "function": "enableTrackSlots",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 1,
+    "signature": "index: int, value: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackRevPolarity": {
+    "module": "mixer",
+    "function": "isTrackRevPolarity",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.revTrackPolarity": {
+    "module": "mixer",
+    "function": "revTrackPolarity",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 1,
+    "signature": "index: int, value: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.isTrackSwapChannels": {
+    "module": "mixer",
+    "function": "isTrackSwapChannels",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.swapTrackChannels": {
+    "module": "mixer",
+    "function": "swapTrackChannels",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 1,
+    "signature": "index: int, value: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.linkChannelToTrack": {
+    "module": "mixer",
+    "function": "linkChannelToTrack",
+    "arguments": [
+      "channel",
+      "track",
+      "select"
+    ],
+    "required": 2,
+    "signature": "channel: int, track: int, select: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.quickQuantize": {
+    "module": "channels",
+    "function": "quickQuantize",
+    "arguments": [
+      "index",
+      "startOnly",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, startOnly: int=1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.selectedChannel": {
+    "module": "channels",
+    "function": "selectedChannel",
+    "arguments": [
+      "canBeNone",
+      "offset",
+      "indexGlobal"
+    ],
+    "required": 0,
+    "signature": "canBeNone: bool=False, offset: int=0, indexGlobal: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.channelNumber": {
+    "module": "channels",
+    "function": "channelNumber",
+    "arguments": [
+      "canBeNone",
+      "offset"
+    ],
+    "required": 0,
+    "signature": "canBeNone: bool=False, offset: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.channelCount": {
+    "module": "channels",
+    "function": "channelCount",
+    "arguments": [
+      "globalCount"
+    ],
+    "required": 0,
+    "signature": "globalCount: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelName": {
+    "module": "channels",
+    "function": "getChannelName",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setChannelName": {
+    "module": "channels",
+    "function": "setChannelName",
+    "arguments": [
+      "index",
+      "name",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, name: str, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelColor": {
+    "module": "channels",
+    "function": "getChannelColor",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setChannelColor": {
+    "module": "channels",
+    "function": "setChannelColor",
+    "arguments": [
+      "index",
+      "color",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, color: int, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isChannelMuted": {
+    "module": "channels",
+    "function": "isChannelMuted",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.muteChannel": {
+    "module": "channels",
+    "function": "muteChannel",
+    "arguments": [
+      "index",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isChannelSolo": {
+    "module": "channels",
+    "function": "isChannelSolo",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.soloChannel": {
+    "module": "channels",
+    "function": "soloChannel",
+    "arguments": [
+      "index",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index, value=-1, useGlobalIndex=False",
+    "kind": "write",
+    "minimum_api_version": 33,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "channels.getChannelVolume": {
+    "module": "channels",
+    "function": "getChannelVolume",
+    "arguments": [
+      "index",
+      "mode",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, mode: bool=False, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setChannelVolume": {
+    "module": "channels",
+    "function": "setChannelVolume",
+    "arguments": [
+      "index",
+      "volume",
+      "pickupMode",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, volume: float, pickupMode: int=midi.PIM_None, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelPan": {
+    "module": "channels",
+    "function": "getChannelPan",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setChannelPan": {
+    "module": "channels",
+    "function": "setChannelPan",
+    "arguments": [
+      "index",
+      "pan",
+      "pickupMode",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, pan: float, pickupMode: int=midi.PIM_None, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelPitch": {
+    "module": "channels",
+    "function": "getChannelPitch",
+    "arguments": [
+      "index",
+      "mode",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, mode: int=0, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setChannelPitch": {
+    "module": "channels",
+    "function": "setChannelPitch",
+    "arguments": [
+      "index",
+      "value",
+      "mode",
+      "pickupMode",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, value: float, mode: int=0, pickupMode: int=midi.PIM_None, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelType": {
+    "module": "channels",
+    "function": "getChannelType",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isChannelSelected": {
+    "module": "channels",
+    "function": "isChannelSelected",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.selectOneChannel": {
+    "module": "channels",
+    "function": "selectOneChannel",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.selectChannel": {
+    "module": "channels",
+    "function": "selectChannel",
+    "arguments": [
+      "index",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.selectAll": {
+    "module": "channels",
+    "function": "selectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.deselectAll": {
+    "module": "channels",
+    "function": "deselectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelMidiInPort": {
+    "module": "channels",
+    "function": "getChannelMidiInPort",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getChannelIndex": {
+    "module": "channels",
+    "function": "getChannelIndex",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getTargetFxTrack": {
+    "module": "channels",
+    "function": "getTargetFxTrack",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setTargetFxTrack": {
+    "module": "channels",
+    "function": "setTargetFxTrack",
+    "arguments": [
+      "channelIndex",
+      "mixerIndex",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "channelIndex: int, mixerIndex: int, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getRecEventId": {
+    "module": "channels",
+    "function": "getRecEventId",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.incEventValue": {
+    "module": "channels",
+    "function": "incEventValue",
+    "arguments": [
+      "eventId",
+      "step",
+      "res"
+    ],
+    "required": 2,
+    "signature": "eventId: int, step: int, res: float=1 / 24",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getGridBit": {
+    "module": "channels",
+    "function": "getGridBit",
+    "arguments": [
+      "index",
+      "position",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, position: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getGridBitWithLoop": {
+    "module": "channels",
+    "function": "getGridBitWithLoop",
+    "arguments": [
+      "index",
+      "position",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "index: int, position: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setGridBit": {
+    "module": "channels",
+    "function": "setGridBit",
+    "arguments": [
+      "index",
+      "position",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 3,
+    "signature": "index: int, position: int, value: bool, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isGridBitAssigned": {
+    "module": "channels",
+    "function": "isGridBitAssigned",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getStepParam": {
+    "module": "channels",
+    "function": "getStepParam",
+    "arguments": [
+      "step",
+      "param",
+      "offset",
+      "startPos",
+      "padsStride",
+      "useGlobalIndex"
+    ],
+    "required": 4,
+    "signature": "step: int, param: int, offset: int, startPos: int, padsStride: int=16, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getCurrentStepParam": {
+    "module": "channels",
+    "function": "getCurrentStepParam",
+    "arguments": [
+      "index",
+      "step",
+      "param",
+      "useGlobalIndex"
+    ],
+    "required": 3,
+    "signature": "index: int, step: int, param: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.setStepParameterByIndex": {
+    "module": "channels",
+    "function": "setStepParameterByIndex",
+    "arguments": [
+      "index",
+      "patNum",
+      "step",
+      "param",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 5,
+    "signature": "index: int, patNum: int, step: int, param: int, value: int, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.updateGraphEditor": {
+    "module": "channels",
+    "function": "updateGraphEditor",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.closeGraphEditor": {
+    "module": "channels",
+    "function": "closeGraphEditor",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int, /",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isHighLighted": {
+    "module": "channels",
+    "function": "isHighLighted",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.showGraphEditor": {
+    "module": "channels",
+    "function": "showGraphEditor",
+    "arguments": [
+      "temporary",
+      "param",
+      "step",
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 4,
+    "signature": "temporary: bool, param: int, step: int, index: int, useGlobalIndex: bool=True",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.isGraphEditorVisible": {
+    "module": "channels",
+    "function": "isGraphEditorVisible",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.showEditor": {
+    "module": "channels",
+    "function": "showEditor",
+    "arguments": [
+      "index",
+      "value",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.focusEditor": {
+    "module": "channels",
+    "function": "focusEditor",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.showCSForm": {
+    "module": "channels",
+    "function": "showCSForm",
+    "arguments": [
+      "index",
+      "state",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, state: int=1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "channels.getActivityLevel": {
+    "module": "channels",
+    "function": "getActivityLevel",
+    "arguments": [
+      "index",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.isValid": {
+    "module": "plugins",
+    "function": "isValid",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getPluginName": {
+    "module": "plugins",
+    "function": "getPluginName",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "userName",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, userName: bool=False, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getParamCount": {
+    "module": "plugins",
+    "function": "getParamCount",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getParamName": {
+    "module": "plugins",
+    "function": "getParamName",
+    "arguments": [
+      "paramIndex",
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "paramIndex: int, index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getParamValue": {
+    "module": "plugins",
+    "function": "getParamValue",
+    "arguments": [
+      "paramIndex",
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "paramIndex: int, index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.setParamValue": {
+    "module": "plugins",
+    "function": "setParamValue",
+    "arguments": [
+      "value",
+      "paramIndex",
+      "index",
+      "slotIndex",
+      "pickupMode",
+      "useGlobalIndex"
+    ],
+    "required": 3,
+    "signature": "value: float, paramIndex: int, index: int, slotIndex: int=-1, pickupMode: int=0, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getParamValueString": {
+    "module": "plugins",
+    "function": "getParamValueString",
+    "arguments": [
+      "paramIndex",
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 2,
+    "signature": "paramIndex, index, slotIndex=-1, useGlobalIndex=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getColor": {
+    "module": "plugins",
+    "function": "getColor",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "flag",
+      "paramIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index, slotIndex=-1, flag=0, paramIndex=0, useGlobalIndex=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getName": {
+    "module": "plugins",
+    "function": "getName",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "flag",
+      "paramIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, flag: int=midi.FPN_Param, paramIndex: int=0, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getPadInfo": {
+    "module": "plugins",
+    "function": "getPadInfo",
+    "arguments": [
+      "chanIndex",
+      "slotIndex",
+      "paramOption",
+      "paramIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "chanIndex: int, slotIndex: int=-1, paramOption: int=0, paramIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.getPresetCount": {
+    "module": "plugins",
+    "function": "getPresetCount",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.nextPreset": {
+    "module": "plugins",
+    "function": "nextPreset",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "plugins.prevPreset": {
+    "module": "plugins",
+    "function": "prevPreset",
+    "arguments": [
+      "index",
+      "slotIndex",
+      "useGlobalIndex"
+    ],
+    "required": 1,
+    "signature": "index: int, slotIndex: int=-1, useGlobalIndex: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.start": {
+    "module": "transport",
+    "function": "start",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.stop": {
+    "module": "transport",
+    "function": "stop",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.isPlaying": {
+    "module": "transport",
+    "function": "isPlaying",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.record": {
+    "module": "transport",
+    "function": "record",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.isRecording": {
+    "module": "transport",
+    "function": "isRecording",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.getLoopMode": {
+    "module": "transport",
+    "function": "getLoopMode",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.setLoopMode": {
+    "module": "transport",
+    "function": "setLoopMode",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.getSongPos": {
+    "module": "transport",
+    "function": "getSongPos",
+    "arguments": [
+      "mode"
+    ],
+    "required": 0,
+    "signature": "mode: int=-1",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.setSongPos": {
+    "module": "transport",
+    "function": "setSongPos",
+    "arguments": [
+      "position",
+      "mode"
+    ],
+    "required": 1,
+    "signature": "position: 'float | int', mode: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.getSongLength": {
+    "module": "transport",
+    "function": "getSongLength",
+    "arguments": [
+      "mode"
+    ],
+    "required": 1,
+    "signature": "mode: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.getSongPosHint": {
+    "module": "transport",
+    "function": "getSongPosHint",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.markerJumpJog": {
+    "module": "transport",
+    "function": "markerJumpJog",
+    "arguments": [
+      "value",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "value: int, flags: int=midi.GT_All",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.markerSelJog": {
+    "module": "transport",
+    "function": "markerSelJog",
+    "arguments": [
+      "value",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "value: int, flags: int=midi.GT_All",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.getHWBeatLEDState": {
+    "module": "transport",
+    "function": "getHWBeatLEDState",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.rewind": {
+    "module": "transport",
+    "function": "rewind",
+    "arguments": [
+      "startStop",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "startStop: int, flags: int=midi.GT_All",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.fastForward": {
+    "module": "transport",
+    "function": "fastForward",
+    "arguments": [
+      "startStop",
+      "flags"
+    ],
+    "required": 1,
+    "signature": "startStop: int, flags: int=midi.GT_All",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.continuousMove": {
+    "module": "transport",
+    "function": "continuousMove",
+    "arguments": [
+      "speed",
+      "startStop"
+    ],
+    "required": 2,
+    "signature": "speed: int, startStop: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.continuousMovePos": {
+    "module": "transport",
+    "function": "continuousMovePos",
+    "arguments": [
+      "speed",
+      "startStop"
+    ],
+    "required": 2,
+    "signature": "speed: int, startStop: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "transport.setPlaybackSpeed": {
+    "module": "transport",
+    "function": "setPlaybackSpeed",
+    "arguments": [
+      "speedMultiplier"
+    ],
+    "required": 1,
+    "signature": "speedMultiplier: float",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getActivePatternGroup": {
+    "module": "patterns",
+    "function": "getActivePatternGroup",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternGroupCount": {
+    "module": "patterns",
+    "function": "getPatternGroupCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternGroupName": {
+    "module": "patterns",
+    "function": "getPatternGroupName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int, /",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternsInGroup": {
+    "module": "patterns",
+    "function": "getPatternsInGroup",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int, /",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getBlockSetStatus": {
+    "module": "patterns",
+    "function": "getBlockSetStatus",
+    "arguments": [
+      "left",
+      "top",
+      "right",
+      "bottom"
+    ],
+    "required": 4,
+    "signature": "left: int, top: int, right: int, bottom: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.ensureValidNoteRecord": {
+    "module": "patterns",
+    "function": "ensureValidNoteRecord",
+    "arguments": [
+      "index",
+      "playNow"
+    ],
+    "required": 1,
+    "signature": "index: int, playNow: int=0, /",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.patternNumber": {
+    "module": "patterns",
+    "function": "patternNumber",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.patternCount": {
+    "module": "patterns",
+    "function": "patternCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.patternMax": {
+    "module": "patterns",
+    "function": "patternMax",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternName": {
+    "module": "patterns",
+    "function": "getPatternName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.setPatternName": {
+    "module": "patterns",
+    "function": "setPatternName",
+    "arguments": [
+      "index",
+      "name"
+    ],
+    "required": 2,
+    "signature": "index: int, name: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternColor": {
+    "module": "patterns",
+    "function": "getPatternColor",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.setPatternColor": {
+    "module": "patterns",
+    "function": "setPatternColor",
+    "arguments": [
+      "index",
+      "color"
+    ],
+    "required": 2,
+    "signature": "index: int, color: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getPatternLength": {
+    "module": "patterns",
+    "function": "getPatternLength",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.jumpToPattern": {
+    "module": "patterns",
+    "function": "jumpToPattern",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.findFirstNextEmptyPat": {
+    "module": "patterns",
+    "function": "findFirstNextEmptyPat",
+    "arguments": [
+      "flags",
+      "x",
+      "y"
+    ],
+    "required": 1,
+    "signature": "flags: int, x: int=-1, y: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.isPatternSelected": {
+    "module": "patterns",
+    "function": "isPatternSelected",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.selectPattern": {
+    "module": "patterns",
+    "function": "selectPattern",
+    "arguments": [
+      "index",
+      "value",
+      "preview"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, preview: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.selectAll": {
+    "module": "patterns",
+    "function": "selectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.deselectAll": {
+    "module": "patterns",
+    "function": "deselectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.burnLoop": {
+    "module": "patterns",
+    "function": "burnLoop",
+    "arguments": [
+      "index",
+      "storeUndo",
+      "updateUi"
+    ],
+    "required": 1,
+    "signature": "index: int, storeUndo: int=1, updateUi: int=1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.isPatternDefault": {
+    "module": "patterns",
+    "function": "isPatternDefault",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.clonePattern": {
+    "module": "patterns",
+    "function": "clonePattern",
+    "arguments": [
+      "index"
+    ],
+    "required": 0,
+    "signature": "index: Optional[int]=None",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.getChannelLoopStyle": {
+    "module": "patterns",
+    "function": "getChannelLoopStyle",
+    "arguments": [
+      "pattern",
+      "channel"
+    ],
+    "required": 2,
+    "signature": "pattern: int, channel: int, /",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "patterns.setChannelLoop": {
+    "module": "patterns",
+    "function": "setChannelLoop",
+    "arguments": [
+      "channel",
+      "loopPoint"
+    ],
+    "required": 2,
+    "signature": "channel: int, loopPoint: int, /",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getDisplayZone": {
+    "module": "playlist",
+    "function": "getDisplayZone",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.lockDisplayZone": {
+    "module": "playlist",
+    "function": "lockDisplayZone",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.liveDisplayZone": {
+    "module": "playlist",
+    "function": "liveDisplayZone",
+    "arguments": [
+      "left",
+      "top",
+      "right",
+      "bottom",
+      "duration"
+    ],
+    "required": 4,
+    "signature": "left: int, top: int, right: int, bottom: int, duration: int=0",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveLoopMode": {
+    "module": "playlist",
+    "function": "getLiveLoopMode",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveTriggerMode": {
+    "module": "playlist",
+    "function": "getLiveTriggerMode",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLivePosSnap": {
+    "module": "playlist",
+    "function": "getLivePosSnap",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveTrigSnap": {
+    "module": "playlist",
+    "function": "getLiveTrigSnap",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveStatus": {
+    "module": "playlist",
+    "function": "getLiveStatus",
+    "arguments": [
+      "index",
+      "mode"
+    ],
+    "required": 1,
+    "signature": "index: int, mode: int=midi.LB_Status_Default",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveBlockStatus": {
+    "module": "playlist",
+    "function": "getLiveBlockStatus",
+    "arguments": [
+      "index",
+      "blockNum",
+      "mode"
+    ],
+    "required": 2,
+    "signature": "index: int, blockNum: int, mode: int=midi.LB_Status_Default",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getLiveBlockColor": {
+    "module": "playlist",
+    "function": "getLiveBlockColor",
+    "arguments": [
+      "index",
+      "blockNum"
+    ],
+    "required": 2,
+    "signature": "index: int, blockNum: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.triggerLiveClip": {
+    "module": "playlist",
+    "function": "triggerLiveClip",
+    "arguments": [
+      "index",
+      "subNum",
+      "flags",
+      "velocity"
+    ],
+    "required": 3,
+    "signature": "index: int, subNum: int, flags: int, velocity: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.incLivePosSnap": {
+    "module": "playlist",
+    "function": "incLivePosSnap",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.incLiveTrigSnap": {
+    "module": "playlist",
+    "function": "incLiveTrigSnap",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.incLiveLoopMode": {
+    "module": "playlist",
+    "function": "incLiveLoopMode",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.incLiveTrigMode": {
+    "module": "playlist",
+    "function": "incLiveTrigMode",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getVisTimeBar": {
+    "module": "playlist",
+    "function": "getVisTimeBar",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getVisTimeStep": {
+    "module": "playlist",
+    "function": "getVisTimeStep",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getVisTimeTick": {
+    "module": "playlist",
+    "function": "getVisTimeTick",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getPerformanceModeState": {
+    "module": "playlist",
+    "function": "getPerformanceModeState",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getSongStartTickPos": {
+    "module": "playlist",
+    "function": "getSongStartTickPos",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.liveBlockNumToTime": {
+    "module": "playlist",
+    "function": "liveBlockNumToTime",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.liveTimeToBlockNum": {
+    "module": "playlist",
+    "function": "liveTimeToBlockNum",
+    "arguments": [
+      "time"
+    ],
+    "required": 1,
+    "signature": "time: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.scrollTo": {
+    "module": "playlist",
+    "function": "scrollTo",
+    "arguments": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "required": 4,
+    "signature": "a: int, b: int, c: int, d: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.trackCount": {
+    "module": "playlist",
+    "function": "trackCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getTrackName": {
+    "module": "playlist",
+    "function": "getTrackName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.setTrackName": {
+    "module": "playlist",
+    "function": "setTrackName",
+    "arguments": [
+      "index",
+      "name"
+    ],
+    "required": 2,
+    "signature": "index: int, name: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getTrackColor": {
+    "module": "playlist",
+    "function": "getTrackColor",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.setTrackColor": {
+    "module": "playlist",
+    "function": "setTrackColor",
+    "arguments": [
+      "index",
+      "color"
+    ],
+    "required": 2,
+    "signature": "index: int, color: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.isTrackMuted": {
+    "module": "playlist",
+    "function": "isTrackMuted",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.muteTrack": {
+    "module": "playlist",
+    "function": "muteTrack",
+    "arguments": [
+      "index",
+      "value"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.isTrackMuteLock": {
+    "module": "playlist",
+    "function": "isTrackMuteLock",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.muteTrackLock": {
+    "module": "playlist",
+    "function": "muteTrackLock",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.isTrackSolo": {
+    "module": "playlist",
+    "function": "isTrackSolo",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.soloTrack": {
+    "module": "playlist",
+    "function": "soloTrack",
+    "arguments": [
+      "index",
+      "value",
+      "inGroup"
+    ],
+    "required": 1,
+    "signature": "index: int, value: int=-1, inGroup: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.isTrackSelected": {
+    "module": "playlist",
+    "function": "isTrackSelected",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.selectTrack": {
+    "module": "playlist",
+    "function": "selectTrack",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.selectAll": {
+    "module": "playlist",
+    "function": "selectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.deselectAll": {
+    "module": "playlist",
+    "function": "deselectAll",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getTrackActivityLevel": {
+    "module": "playlist",
+    "function": "getTrackActivityLevel",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "playlist.getTrackActivityLevelVis": {
+    "module": "playlist",
+    "function": "getTrackActivityLevelVis",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.navigateBrowser": {
+    "module": "ui",
+    "function": "navigateBrowser",
+    "arguments": [
+      "direction",
+      "shiftHeld"
+    ],
+    "required": 2,
+    "signature": "direction: int, shiftHeld: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.navigateBrowserMenu": {
+    "module": "ui",
+    "function": "navigateBrowserMenu",
+    "arguments": [
+      "direction",
+      "shiftHeld"
+    ],
+    "required": 2,
+    "signature": "direction: int, shiftHeld: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.navigateBrowserTabs": {
+    "module": "ui",
+    "function": "navigateBrowserTabs",
+    "arguments": [
+      "direction"
+    ],
+    "required": 1,
+    "signature": "direction: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.previewBrowserMenuItem": {
+    "module": "ui",
+    "function": "previewBrowserMenuItem",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.selectBrowserMenuItem": {
+    "module": "ui",
+    "function": "selectBrowserMenuItem",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocusedNodeCaption": {
+    "module": "ui",
+    "function": "getFocusedNodeCaption",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocusedNodeFileType": {
+    "module": "ui",
+    "function": "getFocusedNodeFileType",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isBrowserAutoHide": {
+    "module": "ui",
+    "function": "isBrowserAutoHide",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setBrowserAutoHide": {
+    "module": "ui",
+    "function": "setBrowserAutoHide",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.toggleBrowserNode": {
+    "module": "ui",
+    "function": "toggleBrowserNode",
+    "arguments": [
+      "value"
+    ],
+    "required": 0,
+    "signature": "value: int=-1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.launchAudioEditor": {
+    "module": "ui",
+    "function": "launchAudioEditor",
+    "arguments": [
+      "reuse",
+      "filename",
+      "index",
+      "preset",
+      "presetGUID"
+    ],
+    "required": 5,
+    "signature": "reuse: int, filename: str, index: int, preset: str, presetGUID: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.openEventEditor": {
+    "module": "ui",
+    "function": "openEventEditor",
+    "arguments": [
+      "eventId",
+      "mode",
+      "newWindow"
+    ],
+    "required": 2,
+    "signature": "eventId: int, mode: int, newWindow: bool=False",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.cut": {
+    "module": "ui",
+    "function": "cut",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.copy": {
+    "module": "ui",
+    "function": "copy",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.paste": {
+    "module": "ui",
+    "function": "paste",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.insert": {
+    "module": "ui",
+    "function": "insert",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.delete": {
+    "module": "ui",
+    "function": "delete",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.enter": {
+    "module": "ui",
+    "function": "enter",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.escape": {
+    "module": "ui",
+    "function": "escape",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.yes": {
+    "module": "ui",
+    "function": "yes",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.no": {
+    "module": "ui",
+    "function": "no",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.up": {
+    "module": "ui",
+    "function": "up",
+    "arguments": [
+      "value"
+    ],
+    "required": 0,
+    "signature": "value: int=1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.down": {
+    "module": "ui",
+    "function": "down",
+    "arguments": [
+      "value"
+    ],
+    "required": 0,
+    "signature": "value: int=1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.left": {
+    "module": "ui",
+    "function": "left",
+    "arguments": [
+      "value"
+    ],
+    "required": 0,
+    "signature": "value: int=1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.right": {
+    "module": "ui",
+    "function": "right",
+    "arguments": [
+      "value"
+    ],
+    "required": 0,
+    "signature": "value: int=1",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.jog": {
+    "module": "ui",
+    "function": "jog",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.jog2": {
+    "module": "ui",
+    "function": "jog2",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.strip": {
+    "module": "ui",
+    "function": "strip",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.stripJog": {
+    "module": "ui",
+    "function": "stripJog",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.stripHold": {
+    "module": "ui",
+    "function": "stripHold",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.previous": {
+    "module": "ui",
+    "function": "previous",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.next": {
+    "module": "ui",
+    "function": "next",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.moveJog": {
+    "module": "ui",
+    "function": "moveJog",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.horZoom": {
+    "module": "ui",
+    "function": "horZoom",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.verZoom": {
+    "module": "ui",
+    "function": "verZoom",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isInPopupMenu": {
+    "module": "ui",
+    "function": "isInPopupMenu",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.closeActivePopupMenu": {
+    "module": "ui",
+    "function": "closeActivePopupMenu",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.crDisplayRect": {
+    "module": "ui",
+    "function": "crDisplayRect",
+    "arguments": [
+      "left",
+      "top",
+      "right",
+      "bottom",
+      "duration",
+      "flags"
+    ],
+    "required": 5,
+    "signature": "left: int, top: int, right: int, bottom: int, duration: int, flags: int=0",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.miDisplayRect": {
+    "module": "ui",
+    "function": "miDisplayRect",
+    "arguments": [
+      "start",
+      "end",
+      "duration",
+      "flags"
+    ],
+    "required": 3,
+    "signature": "start: int, end: int, duration: int, flags: int=0",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.miDisplayDockRect": {
+    "module": "ui",
+    "function": "miDisplayDockRect",
+    "arguments": [
+      "start",
+      "length",
+      "dock_side",
+      "time"
+    ],
+    "required": 4,
+    "signature": "start: int, length: int, dock_side: int, time: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isClosing": {
+    "module": "ui",
+    "function": "isClosing",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isMetronomeEnabled": {
+    "module": "ui",
+    "function": "isMetronomeEnabled",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isStartOnInputEnabled": {
+    "module": "ui",
+    "function": "isStartOnInputEnabled",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isPrecountEnabled": {
+    "module": "ui",
+    "function": "isPrecountEnabled",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.isLoopRecEnabled": {
+    "module": "ui",
+    "function": "isLoopRecEnabled",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getSnapMode": {
+    "module": "ui",
+    "function": "getSnapMode",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.snapMode": {
+    "module": "ui",
+    "function": "snapMode",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setSnapMode": {
+    "module": "ui",
+    "function": "setSnapMode",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.snapOnOff": {
+    "module": "ui",
+    "function": "snapOnOff",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getTimeDispMin": {
+    "module": "ui",
+    "function": "getTimeDispMin",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setTimeDispMin": {
+    "module": "ui",
+    "function": "setTimeDispMin",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getHintMsg": {
+    "module": "ui",
+    "function": "getHintMsg",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setHintMsg": {
+    "module": "ui",
+    "function": "setHintMsg",
+    "arguments": [
+      "msg"
+    ],
+    "required": 1,
+    "signature": "msg: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.showNotification": {
+    "module": "ui",
+    "function": "showNotification",
+    "arguments": [
+      "notificationId"
+    ],
+    "required": 1,
+    "signature": "notificationId: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getHintValue": {
+    "module": "ui",
+    "function": "getHintValue",
+    "arguments": [
+      "value",
+      "max"
+    ],
+    "required": 2,
+    "signature": "value: int, max: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getProgTitle": {
+    "module": "ui",
+    "function": "getProgTitle",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getVersion": {
+    "module": "ui",
+    "function": "getVersion",
+    "arguments": [
+      "mode"
+    ],
+    "required": 0,
+    "signature": "mode: int=4",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getStepEditMode": {
+    "module": "ui",
+    "function": "getStepEditMode",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setStepEditMode": {
+    "module": "ui",
+    "function": "setStepEditMode",
+    "arguments": [
+      "newValue"
+    ],
+    "required": 1,
+    "signature": "newValue: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getVisible": {
+    "module": "ui",
+    "function": "getVisible",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.showWindow": {
+    "module": "ui",
+    "function": "showWindow",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.hideWindow": {
+    "module": "ui",
+    "function": "hideWindow",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocused": {
+    "module": "ui",
+    "function": "getFocused",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.setFocused": {
+    "module": "ui",
+    "function": "setFocused",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocusedFormCaption": {
+    "module": "ui",
+    "function": "getFocusedFormCaption",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocusedFormID": {
+    "module": "ui",
+    "function": "getFocusedFormID",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.getFocusedPluginName": {
+    "module": "ui",
+    "function": "getFocusedPluginName",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.scrollWindow": {
+    "module": "ui",
+    "function": "scrollWindow",
+    "arguments": [
+      "index",
+      "value",
+      "directionFlag"
+    ],
+    "required": 2,
+    "signature": "index: int, value: int, directionFlag: int=0",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.nextWindow": {
+    "module": "ui",
+    "function": "nextWindow",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.selectWindow": {
+    "module": "ui",
+    "function": "selectWindow",
+    "arguments": [
+      "shift"
+    ],
+    "required": 1,
+    "signature": "shift: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "ui.closeAllMenu": {
+    "module": "ui",
+    "function": "closeAllMenu",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getRecPPB": {
+    "module": "general",
+    "function": "getRecPPB",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getRecPPQ": {
+    "module": "general",
+    "function": "getRecPPQ",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getUseMetronome": {
+    "module": "general",
+    "function": "getUseMetronome",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getPrecount": {
+    "module": "general",
+    "function": "getPrecount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getChangedFlag": {
+    "module": "general",
+    "function": "getChangedFlag",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getVersion": {
+    "module": "general",
+    "function": "getVersion",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.safeToEdit": {
+    "module": "general",
+    "function": "safeToEdit",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.saveUndo": {
+    "module": "general",
+    "function": "saveUndo",
+    "arguments": [
+      "undoName",
+      "flags",
+      "update"
+    ],
+    "required": 2,
+    "signature": "undoName: str, flags: int, update: bool=True",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.undo": {
+    "module": "general",
+    "function": "undo",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.undoUp": {
+    "module": "general",
+    "function": "undoUp",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.undoDown": {
+    "module": "general",
+    "function": "undoDown",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.undoUpDown": {
+    "module": "general",
+    "function": "undoUpDown",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value: int",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.restoreUndo": {
+    "module": "general",
+    "function": "restoreUndo",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getUndoLevelHint": {
+    "module": "general",
+    "function": "getUndoLevelHint",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getUndoHistoryPos": {
+    "module": "general",
+    "function": "getUndoHistoryPos",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getUndoHistoryCount": {
+    "module": "general",
+    "function": "getUndoHistoryCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "general.getUndoHistoryLast": {
+    "module": "general",
+    "function": "getUndoHistoryLast",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.liveSelection": {
+    "module": "arrangement",
+    "function": "liveSelection",
+    "arguments": [
+      "time",
+      "stop"
+    ],
+    "required": 2,
+    "signature": "time: int, stop: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.liveSelectionStart": {
+    "module": "arrangement",
+    "function": "liveSelectionStart",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.jumpToMarker": {
+    "module": "arrangement",
+    "function": "jumpToMarker",
+    "arguments": [
+      "delta",
+      "select"
+    ],
+    "required": 2,
+    "signature": "delta: int, select: bool",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.getMarkerName": {
+    "module": "arrangement",
+    "function": "getMarkerName",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.addAutoTimeMarker": {
+    "module": "arrangement",
+    "function": "addAutoTimeMarker",
+    "arguments": [
+      "time",
+      "name"
+    ],
+    "required": 2,
+    "signature": "time: int, name: str",
+    "kind": "write",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.selectionStart": {
+    "module": "arrangement",
+    "function": "selectionStart",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.selectionEnd": {
+    "module": "arrangement",
+    "function": "selectionEnd",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.currentTime": {
+    "module": "arrangement",
+    "function": "currentTime",
+    "arguments": [
+      "snap"
+    ],
+    "required": 1,
+    "signature": "snap: int",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "arrangement.currentTimeHint": {
+    "module": "arrangement",
+    "function": "currentTimeHint",
+    "arguments": [
+      "mode",
+      "time",
+      "setRecPPB",
+      "isLength"
+    ],
+    "required": 2,
+    "signature": "mode: int, time: int, setRecPPB: int=0, isLength: int=0",
+    "kind": "read",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.getPluginMixLevel": {
+    "module": "mixer",
+    "function": "getPluginMixLevel",
+    "arguments": [
+      "index",
+      "plugIndex"
+    ],
+    "required": 2,
+    "kind": "read",
+    "signature": "index, plugIndex",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setPluginMixLevel": {
+    "module": "mixer",
+    "function": "setPluginMixLevel",
+    "arguments": [
+      "index",
+      "plugIndex",
+      "value",
+      "pickupMode"
+    ],
+    "required": 3,
+    "kind": "write",
+    "signature": "index, plugIndex, value, pickupMode=0",
+    "validation": "stub_signature; not individually verified"
+  },
+  "mixer.setCurrentTempo": {
+    "module": "mixer",
+    "function": "setCurrentTempo",
+    "arguments": [
+      "tempo",
+      "asInt"
+    ],
+    "required": 1,
+    "signature": "tempo, asInt=0",
+    "kind": "write",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "channels.getShuffle": {
+    "module": "channels",
+    "function": "getShuffle",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "minimum_api_version": 42,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "channels.setShuffle": {
+    "module": "channels",
+    "function": "setShuffle",
+    "arguments": [
+      "value"
+    ],
+    "required": 1,
+    "signature": "value",
+    "kind": "write",
+    "minimum_api_version": 42,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.getProjectTitle": {
+    "module": "general",
+    "function": "getProjectTitle",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.getProjectAuthor": {
+    "module": "general",
+    "function": "getProjectAuthor",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.getProjectGenre": {
+    "module": "general",
+    "function": "getProjectGenre",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.setRecPPQ": {
+    "module": "general",
+    "function": "setRecPPQ",
+    "arguments": [
+      "ppq"
+    ],
+    "required": 1,
+    "signature": "ppq",
+    "kind": "write",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.setNumerator": {
+    "module": "general",
+    "function": "setNumerator",
+    "arguments": [
+      "numerator"
+    ],
+    "required": 1,
+    "signature": "numerator",
+    "kind": "write",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "general.setDenominator": {
+    "module": "general",
+    "function": "setDenominator",
+    "arguments": [
+      "denominator"
+    ],
+    "required": 1,
+    "signature": "denominator",
+    "kind": "write",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "patterns.setPatternLength": {
+    "module": "patterns",
+    "function": "setPatternLength",
+    "arguments": [
+      "index",
+      "length"
+    ],
+    "required": 2,
+    "signature": "index, length",
+    "kind": "write",
+    "minimum_api_version": 39,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "patterns.incrementPatternLength": {
+    "module": "patterns",
+    "function": "incrementPatternLength",
+    "arguments": [
+      "index",
+      "offset"
+    ],
+    "required": 2,
+    "signature": "index, offset",
+    "kind": "write",
+    "minimum_api_version": 39,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "patterns.duplicatePatternData": {
+    "module": "patterns",
+    "function": "duplicatePatternData",
+    "arguments": [
+      "index"
+    ],
+    "required": 1,
+    "signature": "index",
+    "kind": "write",
+    "minimum_api_version": 45,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  },
+  "mixer.getTrackCount": {
+    "module": "mixer",
+    "function": "getTrackCount",
+    "arguments": [],
+    "required": 0,
+    "signature": "",
+    "kind": "read",
+    "minimum_api_version": 38,
+    "source": "https://www.image-line.com/fl-studio-learning/fl-studio-online-manual/html/midi_scripting.htm",
+    "validation": "signature_reviewed; runtime availability is not a live test"
+  }
+}

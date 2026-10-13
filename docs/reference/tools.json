@@ -1,0 +1,5984 @@
+[
+  {
+    "name": "fl_arm_track",
+    "description": "Toggle recording arm on one mixer strip; use readback to determine its new state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_bpm",
+    "description": "Estimate a WAV's tempo with the bundled Rust core; no FL or desktop input.\n\nReturns BPM candidates, periodicity, window consistency and half/double\nrelationships. Confidence is relative among returned candidates, not a\nprobability of correctness. Silence/insufficient pulse produces no BPM.\nUses at most the first 180 seconds and reports the analyzed duration.\nFixed-tempo estimate only: variable tempo and sparse/syncopated music can\nbe ambiguous. min/max bound search (20..400 BPM), top_n is 1..10.\nSupports PCM/IEEE float RIFF WAV; the bundled runtime is Windows x64.\nNever changes project tempo, stretches audio or writes the input file.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "min_bpm": {
+          "default": 40.0,
+          "type": "number"
+        },
+        "max_bpm": {
+          "default": 240.0,
+          "type": "number"
+        },
+        "top_n": {
+          "default": 5,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_clip_add",
+    "description": "Import one WAV as a new Playlist Audio Clip; preview by default.\n\nRequires the WAV hash from fl_audio_inspect, current project revision from\nfl_production_inspect, stopped transport, and an absolute NEW work directory.\nposition_ticks is nonnegative; Playlist track is one-based 1..500. The\nvisible FL26.1/96 DPI Playlist must contain a default-named, unmuted row\nempty across saved arrangements. Native import creates a new audio source;\nthe server saves, places it exactly in a new FLP, opens and saves that copy\nto prove placement/source identity. Active project becomes verified.flp.\nKeeps before.flp and durable receipts. A timeout/needs_inspection result\nmust be inspected before retrying; one file drop is dispatched at most.\nDoes not trim/stretch audio or measure audible playback. success/verified\nboth true with status=verified establish saved placement after native reload.\nsuccess_scope is audio_clip_placement. Exact permitted native bookkeeping\nnormalizations are reported; existing plugin payload changes fail closed.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "expected_audio_sha256": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "directory": {
+          "type": "string"
+        },
+        "position_ticks": {
+          "type": "integer"
+        },
+        "track": {
+          "type": "integer"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "expected_audio_sha256",
+        "expected_revision",
+        "directory",
+        "position_ticks",
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_compare",
+    "description": "Compare full mix/reference files by measured loudness, peaks, RMS and stereo metrics.\n\nRead-only fl_audio_loudness bounds and dependencies apply to each file.\nDeltas are candidate minus reference. Optional constant-gain estimate\nreports matching gain, predicted true peak, ceiling headroom and gain\nlimited by the explicit -24..0 dBTP ceiling. It never applies gain or\nclaims perceptual similarity. Files are not time-aligned; duration and\nchannel-count mismatches are reported. Remeasure audio after processing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "reference_path": {
+          "type": "string"
+        },
+        "level_match": {
+          "default": true,
+          "type": "boolean"
+        },
+        "true_peak_ceiling_dbtp": {
+          "default": -1.0,
+          "type": "number"
+        },
+        "activity_dbfs": {
+          "default": -60.0,
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "default": 120.0,
+          "type": "number"
+        },
+        "dual_mono": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path",
+        "reference_path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_edit",
+    "description": "Trim/reverse/fade/gain a sample to a NEW WAV with exact frame and sample readback.\n\nSource hash from fl_audio_inspect. End frame is exclusive. Linear fades\nuse zero or at least two frames and cannot overlap. Normalization applies\nafter fades and requires gain_db=0. Formats: PCM_16/PCM_24/FLOAT. PCM clipping\nis rejected. Preview by default; select <=48 million interleaved samples.\nSource stays unchanged; loop/cue metadata is not copied. Use fl_sample_add\nto load the result into FL. Requires the audio dependency extra.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "expected_sha256": {
+          "type": "string"
+        },
+        "start_frame": {
+          "default": 0,
+          "type": "integer"
+        },
+        "end_frame": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "gain_db": {
+          "default": 0.0,
+          "type": "number"
+        },
+        "fade_in_frames": {
+          "default": 0,
+          "type": "integer"
+        },
+        "fade_out_frames": {
+          "default": 0,
+          "type": "integer"
+        },
+        "reverse": {
+          "default": false,
+          "type": "boolean"
+        },
+        "normalize_peak_dbfs": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "subtype": {
+          "default": "PCM_24",
+          "type": "string"
+        },
+        "dry_run": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "output",
+        "expected_sha256"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_inspect",
+    "description": "Measure a WAV/FLAC/etc: hash, duration, levels, DC, silence and stereo correlation.\n\nStreams songs up to two hours/eight channels. Includes one-second level\ntimeline; no LUFS/true-peak claim. All channels contribute to levels, so\nanti-phase stereo is not incorrectly classified as silence.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "activity_dbfs": {
+          "default": -60.0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_key",
+    "description": "Rank global major/minor key candidates from a WAV, without FL or desktop input.\n\nNumPy only (install the key extra). Reads PCM 8/16/24/32-bit and IEEE\nfloat 32/64-bit RIFF WAVs, 1..8 channels, up to two hours. Uses a 4096/1024\nHann STFT, 55..5000 Hz, A440 and Krumhansl-Kessler profiles. top_n: 1..24;\ntemperature must be positive. Confidence is a relative softmax share of\nALL 24 candidates, not a probability of correctness. Silence/flat chroma\nreturns no candidates. A global estimate cannot track modulations and\ncan confuse relative keys, percussion, detuning or short excerpts.\nNever changes audio, the project or plugin tuning settings.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "top_n": {
+          "default": 5,
+          "type": "integer"
+        },
+        "temperature": {
+          "default": 0.15,
+          "type": "number"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_audio_loudness",
+    "description": "Read a complete audio file's LUFS, loudness range and oversampled true peak.\n\nRequires the audio extra and installed FFmpeg with loudnorm (PATH,\n~/.local/bin, or FL_STUDIO_MCP_FFMPEG). Mono/stereo, 8..192 kHz, <=2 hours\nand <=4 GiB. FFmpeg has a per-file 1..300-second timeout. No audio is\nwritten; source hash is checked. Compact sample/RMS/DC/stereo metrics\naccompany EBU R128 input measurements. Silence, below-gate material and\n<400 ms files have unavailable LUFS; LRA is unavailable below 3 seconds.\ndual_mono=true models mono playback through two speakers. Does not use FL.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "activity_dbfs": {
+          "default": -60.0,
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "default": 120.0,
+          "type": "number"
+        },
+        "dual_mono": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_create_channel",
+    "description": "Create linked Channel Rack volume/pan automation and verify the saved link and curve.\n\nGlobal channel index/name and project revision are required. Target must be\nvisible after switching the Channel Rack to All when necessary. parameter\nis volume or pan. Preview by default; apply uses a NEW directory containing\nbefore.flp recovery, created.flp and a receipt. Refuses an existing target\ncontroller link. FL chooses initial clip range/placement; exact curve edits\nuse fl_automation_file_edit followed by fl_project_open. FL26/96 DPI only.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "parameter": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "directory": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "channel",
+        "expected_name",
+        "parameter",
+        "expected_revision",
+        "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_file_edit",
+    "description": "Edit existing automation precisely in a NEW FLP; original/live project untouched.\n\nedits: [{channel,expected_name,operation:'upsert'|'replace',points:\n[{tick:integer,value:0..1,mode:'linear'|'hold'}]}]. Mode controls the\nincoming segment. Values are normalized, never dB. Output must not exist.\nInspect/review the result, then explicitly open that FLP to use it in FL.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "expected_sha256": {
+          "type": "string"
+        },
+        "edits": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "dry_run": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "output",
+        "expected_sha256",
+        "edits"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_file_inspect",
+    "description": "Read saved FLP automation names, local ticks, normalized values and SHA256.\n\nSaved-file state only. Call fl_project_save first to include unsaved edits.\nLocal ticks start at each clip's start, not the song's start.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_file_retarget",
+    "description": "Preview or redirect one existing automation link into a NEW saved FLP.\n\nInspect both the saved links and native target first. Supply the exact\nsource hash, automation channel/name/old event ID, target revision and\nnative full event label. Requires stopped FL, matching live/saved channel\nroster, one controller-zero link with tested flags, and an unlinked\ndestination. Plugin short label must match its exposed parameter name.\nUse a fresh saved project copy: roster equality is not proof of matching\nplugin contents. Only four event-ID bytes change; curves/placement and all\nother bytes remain intact. Apply writes output plus a new adjacent\n.automation-retarget.json receipt containing inspected target context.\nIt never edits the source or live DAW. Reopen/save the output and inspect\nlinks, then audition/render to verify automation in FL.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "expected_sha256": {
+          "type": "string"
+        },
+        "automation_channel": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "expected_event_id": {
+          "type": "integer"
+        },
+        "target": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "expected_target_revision": {
+          "type": "string"
+        },
+        "expected_event_name": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "output",
+        "expected_sha256",
+        "automation_channel",
+        "expected_name",
+        "expected_event_id",
+        "target",
+        "expected_target_revision",
+        "expected_event_name"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_links_inspect",
+    "description": "Read exact saved FL26.1 automation links and compact curve identities.\n\nsource is an absolute FLP path (<=256 MiB). Optional channel/event_id\nfilter, limit 1..500. Reports source SHA256, native event IDs, raw link\nbytes and matching curve names/hashes. Unsupported link layouts fail\nexplicitly. Never opens FL or returns giant point arrays.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "channel": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "event_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "offset": {
+          "default": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "default": 100,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_automation_target_inspect",
+    "description": "Resolve a precise FL26.1 automation target through independent host readbacks.\n\ntarget requires kind and index (GLOBAL channel or zero-based mixer track).\nKinds: channel_volume, channel_pan, mixer_volume, mixer_pan, mixer_send\n(also destination), generator_parameter (also parameter), effect_parameter\n(also parameter and zero-based slot_index 0..9). Send destination 0..127\nmust already be enabled. Unresolved native event labels are rejected.\nReturns actual names, native full/short event labels, event ID, project\ncontext and revision. Review the label and parameter name before retargeting.\nThis only reads the host; it neither creates a clip nor moves a control.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "additionalProperties": true,
+          "type": "object"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_background_effect_inspect",
+    "description": "Inspect an empty slot on the already selected visible mixer track.\n\nReturns a revision binding native project identity, all mixer slot names,\nselection and fresh HWND geometry. Does not select, show or focus anything.\nThe private OLE route is experimental and requires a verified local runtime.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track",
+        "slot"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_background_effect_load",
+    "description": "Preview or load one valid .fst into an empty, already selected mixer slot.\n\nPass the exact native plugin name, inspection revision and main-window title.\nApply requires a NEW absolute JSON receipt, dispatches once, then checks all\nmixer slot identities in later native callbacks. Busy read callbacks may be\nretried; the drop never is. Does not change selection, mouse, keys or focus.\nUnknown callbacks or mismatches stay unverified; inspect before any recovery.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        },
+        "expected_plugin": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "expected_window_title": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "slot",
+        "path",
+        "expected_plugin",
+        "expected_revision",
+        "expected_window_title"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_batch",
+    "description": "Preflight then execute up to 256 typed operations. Defaults to dry run.\n\nEach step is {action, params}. Slots/channels/mixer tracks are zero-based.\nStops on first failure and reports applied count; no automatic rollback.\nUse fl_capabilities for actions and fl_native_call for documented API calls.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "steps": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "dry_run": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "steps"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_build_info",
+    "description": "Identify the loaded server version and production workflow capabilities.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_capabilities",
+    "description": "Discover available native signatures and typed bulk commands in the live controller.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_channel_configure",
+    "description": "Configure an inspected GLOBAL channel: gain, pan, pitch, mute or routing.\n\nVolume is normalized 0..1; pitch is semitones. Apply requires the unchanged\nchannel revision and a new absolute receipt. Readback runs in new callbacks.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "changes": {
+          "additionalProperties": false,
+          "properties": {
+            "volume_normalized": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "pan": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": -1,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "pitch_semitones": {
+              "anyOf": [
+                {
+                  "maximum": 48,
+                  "minimum": -48,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "muted": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "mixer_track": {
+              "anyOf": [
+                {
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "type": "object"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "channel",
+        "changes",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_clear_piano_roll",
+    "description": "Clear notes from the inspected roll; preserve markers and record recovery data.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "auto_trigger": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_clear_request_queue",
+    "description": "Acknowledge completed work. Refuse to discard unresolved requests/recovery data.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_connect",
+    "description": "Open a fresh dedicated MIDI session and verify the live controller handshake.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_connection_status",
+    "description": "Report endpoint availability separately from a verified live controller response.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_delete_notes",
+    "description": "Delete all matches by midi and time/time_ticks, preserving other notes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "auto_trigger": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "notes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_effect_add",
+    "description": "Add an effect to an empty mixer slot, then verify the actual plugin.\n\ntrack is zero-based; slot 0..9 corresponds to FL slots 1..10. Supply an\nexact Plugin database effect name or an absolute effect .fst path. Names\nprefer active-user favorites and reject ambiguity. Occupied slots are\nguarded; this does not grant permission to replace another effect.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "maximum": 9,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "slot"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_ensure_mixer_tracks",
+    "description": "Append missing mixer inserts in one Add multiple operation; preserve existing indices.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "last_insert": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "last_insert"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_find_assets",
+    "description": "Find exact paths for samples, .fst/.serumpreset presets and installed plugins.\n\nRead-only; FL need not be running. Query matches filenames without case\nsensitivity; an empty query lists assets. Search active FL user-data and\ninstalled stock folders, or provide absolute asset directories in roots.\nGenerator/effect identity comes from Plugin database directory structure.\nCheck scan_complete/truncated and narrow roots when incomplete. Duplicate\nnames remain separate paths; never choose a fuzzy plugin match to load.\nlimit is 1..100. Drive roots, symlinks and junction traversal are excluded.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "kind": {
+          "default": "all",
+          "enum": [
+            "all",
+            "sample",
+            "preset",
+            "plugin",
+            "generator",
+            "effect"
+          ],
+          "type": "string"
+        },
+        "roots": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "limit": {
+          "default": 30,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_all_channels",
+    "description": "List every Channel Rack entry with selection, mute and mixer routing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_all_mixer_tracks",
+    "description": "Inspect occupied mixer strips, or the whole mixer when include_empty is true.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "include_empty": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_channel_count",
+    "description": "Count Channel Rack entries globally, or within the current group.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "global_count": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_channel_info",
+    "description": "Inspect a Channel Rack entry; global indexing is the default.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_grid_bit",
+    "description": "Read one zero-based step of the current pattern.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "position": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "channel",
+        "position"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_mixer_track_count",
+    "description": "Read the host mixer capacity, including its master strip; -1 indicates failure.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_mixer_track_info",
+    "description": "Inspect a zero-based mixer strip, including native gain and dB readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_piano_roll_info",
+    "description": "Report protocol, paths and pending work without triggering FL.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_piano_roll_state",
+    "description": "Read a correlated score; Windows opens the selected channel's roll automatically.\n\nfresh=False explicitly reads cached state without opening FL or executing a script.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "fresh": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_plugin_color",
+    "description": "Read the host color assigned to an existing generator or effect.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_plugin_name",
+    "description": "Read the existing generator/effect name at the supplied location.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_plugin_param_count",
+    "description": "Count exposed controls of an existing plugin; -1 indicates failure.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_plugin_param_value",
+    "description": "Read one exposed plugin control, including its displayed value.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "param_index": {
+          "type": "integer"
+        },
+        "plugin_index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "param_index",
+        "plugin_index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_plugin_params",
+    "description": "Read a bounded set of exposed controls, normalized values and displayed text.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        },
+        "max_params": {
+          "default": 50,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_preset_count",
+    "description": "Read the preset count exposed by an existing generator or effect.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_selected_channel",
+    "description": "Inspect the selected Channel Rack entry; null means no selection.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_song_length",
+    "description": "Read the host timeline duration in ticks, seconds and milliseconds.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_step_sequence",
+    "description": "Read the requested number of current-pattern steps as boolean states.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "steps": {
+          "default": 16,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "channel"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "items": {
+            "type": "boolean"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_get_transport_status",
+    "description": "Read playback, recording, timeline position and song/pattern mode.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_instrument_add",
+    "description": "Add a generator as a new Channel Rack instrument and verify its identity.\n\nSupply an exact Plugin database name or an absolute generator .fst path.\nName resolution prefers the active user's Generator favorites, rejects\nambiguity, then searches installed entries. Optional channel_name and\nzero-based mixer_track name/route the new channel. Windows FL required.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "channel_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mixer_track": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_is_plugin_valid",
+    "description": "Test an existing plugin location. Slot -1 addresses a generator; 0..9 addresses an\neffect.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_midi_reference_search",
+    "description": "Find local .mid/.midi references by filename/path tokens or note fingerprints.\n\nRead-only; no FL, network, database or cache required. roots must be explicit\nabsolute directories; omission uses repository references/lead-midi only\nwhen present. Drive roots, symlinks/junctions and SMPTE/type-2 MIDI are\nexcluded. Check scan_complete, truncated and errors before treating the\nresults as a complete corpus search. Limits include 1 MiB/file, 32 MiB total,\n100000 events/file, 256 tracks, depth 16 and a 10-second scan budget.\n\nquery_notes is an optional list of exactly {pitch: 0..127, start_beats:\nnonnegative number, duration_beats: positive number}, maximum 1024 notes.\nAll times use quarter-note beats, independent of embedded tempo. Rankings\nexpose filename token coverage and histogram intersection for pitch class,\nonset phase and duration. Similarity is not a sound or musical-quality\nscore and does not compare melodic order. Unclosed note durations are\nexcluded; overlapping same-pitch notes pair FIFO per track/channel.\n\nReturns exact paths, SHA-256 hashes, per-track durations/note counts and\nfingerprints. A path identifies a reference to inspect/audition; it does\nnot import MIDI or modify the live project. Extracted reference tempos may\nbe placeholders and generic MIDI does not preserve all FL articulation.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "default": "",
+          "type": "string"
+        },
+        "roots": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "limit": {
+          "default": 20,
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "query_notes": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "max_files": {
+          "default": 250,
+          "maximum": 2000,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "idempotentHint": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mix_diagnose",
+    "description": "Diagnose measured rendered audio; propose changes without applying them.\n\nAbsolute local mono/stereo files only, 8..192 kHz, <=2 hours and <=4 GiB.\nRequires the audio extra and existing FFmpeg; timeout is 1..300 seconds\nper file. Reports real LUFS/true peak, full-scale sample counts and source\nhashes. Choose reference_path OR target_lufs (-70..0), never both.\nThe explicit peak ceiling is -24..0 dBTP. Optional gain proposals respect\nthat ceiling; predictions require audition and remeasurement. References\nare measured independently without time alignment. No FL calls, writes,\nautomatic processing or diagnosis from track names. No audible-quality,\nspectral, EQ or compression claim. dual_mono models stereo playback of mono.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "reference_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target_lufs": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "true_peak_ceiling_dbtp": {
+          "default": -1.0,
+          "type": "number"
+        },
+        "activity_dbfs": {
+          "default": -60.0,
+          "type": "number"
+        },
+        "timeout_seconds": {
+          "default": 120.0,
+          "type": "number"
+        },
+        "dual_mono": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "idempotentHint": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mix_profile",
+    "description": "Preflight/apply named plugin controls; require a new receipt file for writes.\n\nProfile controls: track, slot, parameter, plugin, name; either value (0..1)\nor target with unit and optional tolerance. Optional display verifies a\nknown enum label. Stopped transport required. Receipt includes restore_profile.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "profile"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mixer_controls_inspect",
+    "description": "Read a strip's native EQ, dB/Hz, effects enable, polarity and stereo swap.\n\nDoes not select the track or change focus. Returns a revision for guarded writes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mixer_controls_set",
+    "description": "Preflight/apply built-in EQ and mixer switches without desktop input.\n\nchanges accepts bands:[{band, gain_normalized?, frequency_normalized?,\nbandwidth_normalized?}] in 0..1, plus effects_enabled, reverse_polarity,\nswap_channels booleans. Band indices start at zero. Hz/dB readbacks are\nobservations, not input units. Requires stopped transport and exact name/revision.\nApply requires a new receipt_file. Two later reads verify requested controls.\nUncertain writes never retry or automatically restore; inspect the receipt.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "changes": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "expected_name",
+        "expected_revision",
+        "changes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mixer_meter_watch",
+    "description": "Sample native peaks on 1..32 exact mixer tracks for 0.1..10 seconds.\n\nZero-based tracks; optional exact expected_names must align with tracks.\nMinimum interval is 50 ms, plus controller/readback overhead. Uses\na sampling window after setup; setup and the last sample can add at\nmost four seconds. Actual observed duration is returned explicitly.\nReports observed left/right/maximum peaks and complete sample counts; errors or\nproject/session/track identity changes return incomplete partial evidence.\nNever starts playback, recording, or changes routing. Samples may miss\ntransients and are not LUFS, true peaks, waveform RMS or clipping proof.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "tracks": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "seconds": {
+          "default": 2.0,
+          "type": "number"
+        },
+        "interval_ms": {
+          "default": 100,
+          "type": "integer"
+        },
+        "expected_names": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "tracks"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "idempotentHint": false
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mixer_scene",
+    "description": "Preflight/apply a stopped-transport mix scene with names and readback.\n\nItems: track,expected_name, optional volume (normalized) OR volume_db,\npan (-1..1), stereo (-1..1). Requires a new receipt_file for apply.\nAutomation can override faders during playback; edit its curve separately.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mute_channel",
+    "description": "Set Channel Rack mute, or toggle when muted is null.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "muted": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_mute_track",
+    "description": "Set mixer mute explicitly, or toggle with muted=null. Returns the observed state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "muted": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_native_call",
+    "description": "Invoke one advertised FL native API function with positional args, no Python eval.\n\nAdvanced surface: caller must inspect the advertised signature and target indices.\nMutations require allow_write; typed batch operations provide stronger validation.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "function": {
+          "type": "string"
+        },
+        "args": {
+          "items": {},
+          "type": "array"
+        },
+        "allow_write": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "function",
+        "args"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_next_preset",
+    "description": "Advance the existing plugin preset once and acknowledge its identity.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_notes_transform",
+    "description": "Propose transposition/quantization offline, preserving all FL note expression.\n\nRequired ppq is explicit. notes uses fl_send_notes fields: midi, time/duration\nin quarter-note beats or exact time_ticks/length_ticks; velocity, pan,\nrelease, color, slide, porta, pitchofs, fcut, fres, muted, selected, group,\nrepeats are retained. Conflicting beat/tick aliases and unknown fields fail.\nVelocity, pan, release, fcut and fres use normalized 0..1 values.\nUp to 65536 notes; order and duplicates are preserved.\n\ngrid_ticks optionally quantizes onsets to multiples of that integer tick\nspacing from zero, without assuming a time signature. strength 0..1 blends\nfrom original to the nearest grid; quantize_lengths also quantizes lengths\nusing that grid/strength. Grid and blend ties round to the larger tick;\nbeat input conversion uses the shared nearest-even note protocol. Pitch or\ntiming overflow and zero quantized lengths fail, never clamp. No randomness.\n\nReturns proposed normalized notes, changed_count, content hashes and\napplied:false. Hashes describe ordered content plus PPQ, not live revisions.\nInspect the intended channel and fresh piano-roll state before explicitly\nusing the existing guarded note workflow. This never queues or applies notes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "ppq": {
+          "maximum": 96000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "transpose_semitones": {
+          "default": 0,
+          "maximum": 127,
+          "minimum": -127,
+          "type": "integer"
+        },
+        "grid_ticks": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "strength": {
+          "default": 1.0,
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        "quantize_lengths": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "notes",
+        "ppq"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "idempotentHint": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_piano_roll_prepare",
+    "description": "Prepare ComposeWithLLM for note editing and check that its bridge responds.\n\nOptionally target a global zero-based channel and guard its current name.\nOpens the piano roll, selects the exact installed ComposeWithLLM menu item\nand verifies a correlated read. This prepares the bridge without adding notes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expected_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_play",
+    "description": "Toggle playback and report the acknowledged play state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_playlist_file_edit",
+    "description": "Edit exact pattern/audio/automation placements into a NEW FL26 FLP.\n\nEach edit: operation, event_index, clip, expected_clip_sha256; optional\nposition_ticks and track (one-based). length_ticks and pattern, if provided,\nmust match the template; length changes and pattern substitution are rejected.\nAdd (FL26.1): operation='add', event_index, pattern, expected_pattern_name,\nposition_ticks, track, expected_length_ticks. Adds a full untrimmed pattern\nclip, including to an empty Playlist. Expected length is the actual whole\npattern length, not a requested resize; FL recomputes it when loading.\nOn tested FL26 getPatternLength returns STEPS: length_ticks=steps*PPQ/4.\nSave/reinspect after opening to verify FL's derived duration.\nClone requires position_ticks. All identities refer to the original source,\nso multiple clones of one template are supported. Existing audio/automation\nclips support clone/update/delete with position_ticks and track only;\noptional expected_channel_name guards the exact channel. Source offsets,\nclip length and opaque state stay unchanged. No trimming, stretching, new\naudio/automation channels or new pattern data. Repeat templates as needed.\nOpaque events/clip bytes are preserved. Output is not\nautomatically opened; original and unsaved live state remain unchanged.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        },
+        "expected_sha256": {
+          "type": "string"
+        },
+        "edits": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "dry_run": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "output",
+        "expected_sha256",
+        "edits"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_playlist_file_inspect",
+    "description": "Inspect exact saved FL26 Playlist clip identities, ticks, tracks and patterns.\n\nSave first to include current edits. Returns source/clip hashes needed by\nfl_playlist_file_edit. Each event_index scopes one saved Playlist event.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_adapter_catalog",
+    "description": "List packaged plugin adapter evidence, exact layouts and named control coverage.\n\nRead-only and offline. Query matches adapter/plugin/control names. Numeric\ncontrols without calibrated points/analytic curves say calibration_required:\nphysical units cannot be written. Numeric mappings require unit/tolerance;\ndisplay_unit may differ from semantic unit. Enum labels may declare an\nexact display string, including whitespace. Conditions reference enum labels.\nAn entry does not establish that this plugin/version is currently loaded.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "query": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_add",
+    "description": "Load an exact Plugin database effect name into an empty mixer slot.\n\nUses the same guarded file loading as fl_effect_add. Indices are zero-based.\nresult_row must remain 0; use fl_effect_add(path=...) to resolve duplicate names.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "result_row": {
+          "default": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track",
+        "slot",
+        "name"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_apply",
+    "description": "Preview/apply 1..256 exact indexed controls to a stopped generator/effect.\n\nEach change requires parameter, expected_name and value (normalized 0..1).\nOptional normalized_tolerance is a finite number 0..0.01 (default 0.00001),\ndeclared per change for known quantization. It is never widened automatically.\nOptional expected_display verifies an exact post-write string without\nguessing units, independently of normalized tolerance. Receipts record\nrequested/actual values, signed deltas, tolerances and display checks.\nUse a fresh fl_plugin_inspect revision and actual plugin\nname. Apply needs a NEW absolute .json receipt. All changes preflight,\ndispatch once, then need two later host readbacks. Partial/uncertain\nbatches are never retried or rolled back. No unit conversion or DSP-state\nguarantee: inspect literal displays and render/audition to verify sound.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "expected_plugin": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "changes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "index",
+        "expected_plugin",
+        "expected_revision",
+        "changes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_chain",
+    "description": "Load {track,slot,name,wet?} entries in one serialized Windows session.\n\nNames resolve exact Plugin database files. Target slots must be empty.\nA receipt file records each verified slot for explicit inspection and resumption.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_controls_inspect",
+    "description": "Inspect named controls only after exact plugin, full-layout and parameter-name binding.\n\nindex is a global channel for slot_index=-1, otherwise a mixer track and\neffect slot 0..9. Collects a complete revision-consistent named catalog\nbefore filtering/pagination; refuses unknown or changed layouts. Returns\nnative normalized values, literal displays, calibration metadata and a\nfresh complete-state revision and current condition availability. Host\ncaches may be stale after preset loads.\nIdentical names/layouts cannot prove a binary/build version; review evidence.\nNo parameter sweeps, probing or writes; no sound/DSP guarantee.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "maximum": 100000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "maximum": 9,
+          "minimum": -1,
+          "type": "integer"
+        },
+        "query": {
+          "default": "",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "maximum": 10000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "default": 100,
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_controls_set",
+    "description": "Preflight/apply named plugin controls through the guarded plugin batch workflow.\n\nEach distinct change is {control:key,value:physical_number_or_exact_enum_label}\nor {control:key,normalized:0..1}. Physical values require monotonic calibrated\npoints or analytic curves plus unit/tolerance and numeric display checks;\nno extrapolation. The current display must be finite and unit-compatible;\ntransition from Auto/INF using explicit normalized control, then inspect again.\nEnum labels map to their declared exact literal display.\nExplicit normalized writes do not claim physical-unit verification.\nConditions require matching fresh enum displays, including for normalized\nwrites. Change a condition selector separately, then inspect again before\nchanging its dependent controls; the same batch cannot contain both.\n\nRequires fresh controls inspection and exact native expected_plugin. The\ncomplete layout/parameter mapping must still match. Preview by default;\napply requires stopped transport and a NEW absolute JSON receipt. All\nchanges preflight before one batch and two later readbacks. No automatic\nretries/rollback, calibration sweeps, or sonic/DSP-state guarantee.\nName/layout matching cannot distinguish different builds with identical controls.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "maximum": 100000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "expected_plugin": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "changes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "slot_index": {
+          "default": -1,
+          "maximum": 9,
+          "minimum": -1,
+          "type": "integer"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "index",
+        "expected_plugin",
+        "expected_revision",
+        "changes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_inspect",
+    "description": "Inspect an exact generator/effect, exposed controls and a complete-state revision.\n\nindex is a GLOBAL channel when slot_index=-1, otherwise a mixer track\nwith a zero-based effect slot 0..9. Reports actual and user plugin names,\ntarget name, project session/generations, normalized host values and\nliteral displays. Query is a case-insensitive substring; offset/limit\npaginate matches, omitting blank padding. Limit 1..500, catalog <=10000.\nRevision covers all parameters, including those outside the returned page.\nNames are not unique instance IDs; host caches can be stale after preset loads.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "query": {
+          "default": "",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "default": 100,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_parameters",
+    "description": "Search exposed parameters, omitting blank VST padding. Slot 0 is FL Slot 1.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "query": {
+          "default": "",
+          "type": "string"
+        },
+        "offset": {
+          "default": 0,
+          "type": "integer"
+        },
+        "limit": {
+          "default": 100,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track",
+        "slot"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_remove",
+    "description": "Remove only the identity-checked effect from a mixer slot, then verify absence.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "expected_plugin": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "track",
+        "slot",
+        "expected_plugin"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_set_display_value",
+    "description": "Calibrate a continuous control to its displayed dB/ms/etc value while stopped.\n\nProbes the control briefly. Not for enumerations or non-monotonic displays.\nRequires exact plugin, parameter name and unit. Reports restoration on failure.\nDo not concurrently edit this control with another client.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "parameter": {
+          "type": "integer"
+        },
+        "expected_plugin": {
+          "type": "string"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "target": {
+          "type": "number"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "tolerance": {
+          "default": 0.01,
+          "type": "number"
+        }
+      },
+      "required": [
+        "track",
+        "slot",
+        "parameter",
+        "expected_plugin",
+        "expected_name",
+        "target",
+        "unit"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_set_many",
+    "description": "Set normalized parameters with plugin identity guard and before/after readback.\n\nEach change: {parameter: zero-based index, value: 0..1, expected_name: optional}.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "expected_plugin": {
+          "type": "string"
+        },
+        "changes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "track",
+        "slot",
+        "expected_plugin",
+        "changes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_preset_load",
+    "description": "Load an exact FL .fst preset into a new channel or a guarded existing target.\n\ntarget selects new_channel, channel (with global channel index), or mixer\n(with track and slot). Existing targets require a fresh expected_name.\nAll indices are zero-based; mixer slots are 0..9. This replaces the\ntarget's sound/state, retaining an existing channel's name and mixer route.\nSupports plugin .fst format 0x30; full mixer-track format 0x40 is rejected.\nUse Serum tools for native .SerumPreset formats.\nInspect current identities before loading; uncertain writes are not retried.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "target": {
+          "default": "new_channel",
+          "enum": [
+            "new_channel",
+            "channel",
+            "mixer"
+          ],
+          "type": "string"
+        },
+        "channel": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "track": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "slot": {
+          "anyOf": [
+            {
+              "maximum": 9,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expected_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_prev_preset",
+    "description": "Move the existing plugin preset back once and acknowledge its identity.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_production_inspect",
+    "description": "Read exact targets and a revision for guarded edits.\n\nChannel indices are GLOBAL, zero-based. Steps need the currently selected\none-based pattern and an explicit total_steps extent (1..1024). Project\nreports fractional BPM, shuffle (0..1), and recording PPQ.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "scope": {
+          "enum": [
+            "project",
+            "channel",
+            "steps"
+          ],
+          "type": "string"
+        },
+        "channel": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "pattern": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "total_steps": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "scope"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_file_inspect",
+    "description": "Inspect a saved FLP's patterns, notes, playlist and external sample references.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_info",
+    "description": "Discover the exact active FLP path by inspecting and cancelling Save As.\n\nReports the title, saved status and observed suggested path for unnamed projects.\nDoes not save or accept the dialog. Resolve existing modal dialogs before use.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_native_inspect",
+    "description": "Read the named FL window and project revision without mouse, keys or activation.\n\nReturns qualification and readiness. The window title identifies the active host\nproject but does not establish its absolute path or verify saved disk bytes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_open",
+    "description": "Open/reopen an exact saved FLP, checkpointing current edits to a NEW FLP first.\n\nPreflight by default. Use source SHA256 and fl_production_inspect project revision.\nApply needs a new absolute JSON receipt_file and recovery_path (.flp). Always\nsaves a recovery copy, including unnamed/dirty projects; never discards edits.\nVerifies new project generation, exact path, source hash, tempo and PPQ.\nStops on dialogs or uncertain completion; inspect the receipt before recovery.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "expected_sha256": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "recovery_path": {
+          "type": "string"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "expected_sha256",
+        "expected_revision",
+        "recovery_path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_package",
+    "description": "Package a SAVED project into a new folder with samples, MIDIs and hashes.\n\nDoes not save or mutate FL. Save once first for current edits. Copies only\nreferenced assets; retains original FLP plus a portable copy. Plugin\nbinaries/licenses are not included. Review missing/internal asset report.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "destination": {
+          "type": "string"
+        },
+        "path_variables": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "source",
+        "destination"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_save",
+    "description": "Save the current FLP once with verified exact path and file persistence.\n\nThe path is discovered automatically; expected_path adds an optional identity guard.\nUnnamed projects require fl_project_save_as. Returns file hash and stable timestamp.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_save_as",
+    "description": "Save the active project to an absolute .flp path and verify it became active.\n\nCreates parent folders. Existing destinations require overwrite=True and receive\na backup before saving. Returns the saved path, hash, timestamp and backup path.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_save_native",
+    "description": "Preview or save the active named project without desktop input.\n\nRequires the exact title/revision from fl_project_native_inspect and stopped\ntransport. Apply reserves a NEW absolute receipt_file, dispatches once, then\nchecks a dirty-to-clean transition with two later clean-state callbacks.\nAlready-clean projects return a no-op without dispatch. saved_current_host\nconfirms host state;\nthe absolute project path and filesystem persistence remain unverified.\nQualification remains host_state_only; no destination or filesystem claim is made.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "type": "string"
+        },
+        "expected_window_title": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "expected_revision",
+        "expected_window_title"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_settings",
+    "description": "Preflight or set exact BPM, and shuffle where FL exposes its native API.\n\nInspect project first. Apply needs stopped transport, the unchanged\nrevision and a NEW absolute receipt_file. A null inspected shuffle means\nunavailable on this build; its writes are rejected. PPQ/meter edits are not enabled.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "changes": {
+          "additionalProperties": false,
+          "properties": {
+            "tempo_bpm": {
+              "anyOf": [
+                {
+                  "maximum": 522,
+                  "minimum": 10,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            },
+            "shuffle": {
+              "anyOf": [
+                {
+                  "maximum": 1,
+                  "minimum": 0,
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null
+            }
+          },
+          "type": "object"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "changes",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_project_snapshot",
+    "description": "Read every channel, all mixer inserts, effect slots, routes and transport state.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_receipt",
+    "description": "Inspect a timed-out command's receipt (last 128 requests, until controller reload).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_id"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_record",
+    "description": "Toggle recording; inspect the returned state before sending another toggle.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_arm",
+    "description": "Set an exact mixer track's desired arm state; never starts recording.\n\nUse the target track's revision from fl_recording_inspect. Playback must be\nstopped and recording off. Preview by default. Apply requires a NEW absolute\nJSON receipt_file, including when the desired state is already satisfied.\nAlready-satisfied state dispatches no toggle. Otherwise dispatches FL's native\narm toggle ONCE, then independently verifies state in later callbacks.\n\nMissing arm/read capability fails closed. Timeout, modal dialog, identity change\nor uncertain completion retains a receipt; inspect before explicit recovery.\nNo automatic retry or restore. Cooperating clients share the GUI lock; user/legacy\nactions may interleave. Arming does not prove a valid input or recorded take.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "armed": {
+          "type": "boolean"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "expected_name",
+        "expected_revision",
+        "armed"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_configure_file",
+    "description": "Configure a NEW exact WAV filename through FL's owned recording dialog.\n\nUses the per-track revision from fl_recording_inspect. Default preflight\nsends no GUI input; apply requires a NEW absolute JSON receipt. Playback\nand the record latch must be stopped. Supports the qualified 1089x677\nWide mixer at 96 DPI with inserts 1..16 visible; unknown layouts fail closed.\nFile selection implicitly arms this track. Success requires two native\npath/arm readbacks; it does not start recording or verify input/latency.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "recording_file": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "expected_name",
+        "expected_revision",
+        "recording_file"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_inspect",
+    "description": "Read recording metadata and fresh per-track revisions without recording.\n\nSupply exact zero-based tracks to inspect an unarmed target. Without tracks,\nscans mixer tracks and returns compact armed-track entries.\nEach returned track has a revision accepted by fl_recording_arm.\n\nNative filenames are reported/proposed paths which can change with time; their\nexistence is not checked and they are excluded from the arm revision. They do\nnot prove a recorded take or configured input. Reports start-on-input when\nadvertised. Input device/channel, monitoring,\nbuffer size, recording latency and PDC remain explicitly unknown. Missing core\nread capabilities fail closed; unavailable optional metadata is labeled.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "tracks": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_start",
+    "description": "Preview/start a bounded 1..600 second native mixer recording into a NEW exact WAV.\n\nFirst use fl_recording_configure_file for the filename, configure input/pickup\nin FL, and arm only\nthe target with fl_recording_arm. Inspect its fresh per-track recording revision.\nPlayback and record latch must be off; precount and start-on-input must be off.\nThe native catalog has no input setters. Caller source descriptions remain\nexplicitly unverified. Use a NEW job directory separate from the WAV location.\n\nApply launches a persistent worker, returning queued, not a completed take.\nIt owns the DAW lease, revalidates everything, starts once and schedules Stop.\nPoll fl_recording_status or request an early stop with fl_recording_stop.\nVerified output requires stopped transport, a decoded stable WAV and requested\nformat/non-silence checks. Playlist placement/latency remain unverified.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "expected_name": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "recording_file": {
+          "type": "string"
+        },
+        "directory": {
+          "type": "string"
+        },
+        "duration_seconds": {
+          "type": "number"
+        },
+        "source_kind": {
+          "enum": [
+            "internal",
+            "microphone"
+          ],
+          "type": "string"
+        },
+        "source_description": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "expected_sample_rate": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expected_channels": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "minimum_audio_seconds": {
+          "default": 0.1,
+          "type": "number"
+        },
+        "require_non_silent": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "track",
+        "expected_name",
+        "expected_revision",
+        "recording_file",
+        "directory",
+        "duration_seconds",
+        "source_kind",
+        "source_description"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_status",
+    "description": "Read persistent recording status and take evidence without touching FL.\n\nqueued/recording are not completed takes. verified/stopped_early with\nrecorded_take_verified=true includes decoded audio/hash evidence. Stale worker\nheartbeat or needs_inspection means transport may still be active; inspect\nFL explicitly. Never replay a possibly delivered record/start/stop command.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_recording_stop",
+    "description": "Request that the job's owned worker stop recording early; never toggles FL directly.\n\nA saved request is not proof recording stopped. Poll fl_recording_status for\ntransport_stopped_verified and decoded take evidence. Repeated requests are\nidempotent; a dead worker requires explicit host inspection/recovery.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_render_cancel",
+    "description": "Cancel the exact job only after independently observing its owned Abort control.\n\nPreserves the project and partial outputs, reporting them as incomplete.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_render_start",
+    "description": "Start a native WAV/master/stem render in a NEW directory; preview by default.\n\nSaves current edits to directory/project.flp, becoming the active project.\nNeeds the project revision from fl_production_inspect. Options: mode\nfull_song|pattern; tail leave|cut|wrap; bit_depth FLOAT|PCM_24|PCM_16;\nchannels stereo|mono|left|right; resampling '16'|'24'|'32'|'64'|'128'|'256'|'512';\nbooleans hq_plugins, disable_max_polyphony, dithering, playlist_markers,\nloop_markers, note_markers, tempo_metadata, split_mixer_tracks, trim_pdc,\ninsert_effects, master_effects. Dither only for PCM_16. Sample rate uses FL\naudio settings; expected_sample_rate and expected_min_seconds verify output.\nFL26 96 DPI layout only. Accepted jobs return success=true, verified=false;\npoll fl_render_status until status=verified and verified=true for output proof.\nNative split preserves sidechains; stems bypass Master FX, Master includes them.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "options": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "expected_sample_rate": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "expected_min_seconds": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "directory",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_render_status",
+    "description": "Observe a render job; verify WAVs, duration, levels and stem alignment after completion.\n\nReturns rendering until the owned dialog closes; verified requires decoded,\nstable WAVs matching options, unchanged saved project and some non-silent audio.\nRunning/verifying observations return success=true, verified=false. Only\nstatus=verified has verified=true. Failed/cancelled jobs return success=false.\nJob receipts persist across MCP reconnects. Never retries Start.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_route_channel_to_mixer",
+    "description": "Assign a global Channel Rack entry to a zero-based mixer strip.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel_index": {
+          "type": "integer"
+        },
+        "mixer_track": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "channel_index",
+        "mixer_track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_routing_inspect",
+    "description": "Inspect all mixer routes (including zero-level sidechains) with a fresh revision.\n\nReturns exact track names, active routes, channel destinations, project identity\nand transport. This is a read-only snapshot; use its revision for fl_routing_scene.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_routing_scene",
+    "description": "Preview/apply guarded sends, buses and sidechains; stopped transport required.\n\nEach item: source, destination, expected_source, expected_destination, enabled.\nEnabled routes REQUIRE level (0..1); level=0 makes a silent sidechain route.\nDisabled routes omit level. Track indices are zero-based; Master is destination 0.\nEdits affect only listed routes: explicitly disable a source's Master route when\nrouting it exclusively through a bus. Receiving plugin sidechain selection is\nseparate. Feedback is rejected, including cycles of zero-level routes.\n\nApply requires the fresh fl_routing_inspect revision and a NEW absolute JSON\nreceipt_file. One typed batch removes edges before adding edges; two later\ncallbacks verify the full graph and project/track identities. Receipts preserve\npartial/uncertain outcomes and restore_scene; no automatic retry or restore.\nThe shared GUI lock coordinates cooperating clients; it cannot lock FL's UI.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "items",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_sample_add",
+    "description": "Add an audio file as a new Channel Rack sampler, optionally name/route it.\n\npath must be an exact absolute sample path from fl_find_assets or the user.\nmixer_track is a zero-based insert. OLE delivery and native readback verify\nthe new sampler channel, its name/type and routing; independent sample\nsource-path readback is unavailable. Requires running FL on Windows; do not retry\nan uncertain result because the channel may already have been created.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mixer_track": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_select_channel",
+    "description": "Select or deselect one global Channel Rack index.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "select": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_select_one_channel",
+    "description": "Make one global Channel Rack entry the exclusive selection.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_send_chord",
+    "description": "Write a chord through the same verified note transaction.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "midi_notes": {
+          "items": {
+            "type": "integer"
+          },
+          "type": "array"
+        },
+        "time": {
+          "default": 0,
+          "type": "number"
+        },
+        "duration": {
+          "default": 1,
+          "type": "number"
+        },
+        "velocity": {
+          "default": 0.8,
+          "type": "number"
+        },
+        "auto_trigger": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "midi_notes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_send_notes",
+    "description": "Write notes to the selected channel with validation, revisions and readback.\n\nOn Windows the target roll and ComposeWithLLM are opened automatically.\nmidi is 0..127 (60 displays C5). Use time/duration in quarter notes, or\nexact time_ticks/length_ticks. Supports velocity, pan, release, color,\nslide, porta, pitchofs, fcut, fres, muted, selected, group and repeats.\nmode is add or replace. auto_trigger=False prepares one request after\nfresh inspection; run fl_trigger_script within 60 seconds to execute.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "notes": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "mode": {
+          "default": "add",
+          "type": "string"
+        },
+        "auto_trigger": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "notes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_analyze_audio",
+    "description": "Measure WAV/audio levels, activity, reliable pitch and harmonics, optionally compare.\n\nNo FL edits. Pitch may be unavailable for chords, noise and fast sweeps.\nMeasurements are not a musical quality or perceptual similarity score.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "reference_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_apply",
+    "description": "Apply named Serum controls in one transaction with settled readback and rollback.\n\nExample changes: {\"env1.decay_ms\":300,\"osc_a.fine_cents\":-32,\"voice.mono\":true}.\nRequires stopped playback. Validate every key before writing; dry_run defaults true.\nRouting/polarity/FX topology come from a preset, not this live parameter adapter.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "changes": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "dry_run": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "channel",
+        "changes"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_build_preset",
+    "description": "Build a native Serum 2.1.2 preset directly; no GUI/save dialog or FL mutation.\n\nRecipes: kick, kick_long, 808, lead, pad. Discover settings with fl_serum_recipes.\nPreserve modulation/FX topology from our verified templates. Never overwrites.\nFile validation does not mean the preset has been loaded or auditioned.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "recipe": {
+          "type": "string"
+        },
+        "output_path": {
+          "type": "string"
+        },
+        "settings": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "recipe",
+        "output_path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_edit_preset",
+    "description": "Edit mapped physical controls in a saved Serum preset, preserving other DSP fields.\n\nCreates a new file, never overwrites. Useful when FL's live cache is stale.\nSame settings as recipe builder; pitch keys require verified Env2-to-A pitch route.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "source_path": {
+          "type": "string"
+        },
+        "output_path": {
+          "type": "string"
+        },
+        "settings": {
+          "additionalProperties": true,
+          "type": "object"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "source_path",
+        "output_path",
+        "settings"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_inspect",
+    "description": "Read 43 named Serum controls in compact groups; validate live parameter identities.\n\nUses the global channel index. Returns supported keys, units, ranges and displays.\nNo edits. Unknown FX slots and modulation destinations are not guessed.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "channel"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_inspect_preset",
+    "description": "Read native Serum 2.1.2 preset envelopes, modulation, oscillator and FX settings.\n\nVerifies the container/checksum/version. Absent fields mean defaults, not zero.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_load_preset",
+    "description": "Load Serum 2.1.2 preset through a guarded 1200x771 Windows editor and verify controls.\n\nReplaces the chosen channel's current preset. Save valuable current edits first.\nRequires stopped transport. Unknown geometry fails; FX/routing lack native readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel",
+        "path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_probe",
+    "description": "Record one temporary Serum note via WASAPI, send note-off, and measure the WAV.\n\nRequires stopped transport and confirmed Serum channel. Never writes piano notes\nor overwrites audio. Includes other system audio: keep other apps quiet.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "output_path": {
+          "type": "string"
+        },
+        "note": {
+          "default": 32,
+          "type": "integer"
+        },
+        "velocity": {
+          "default": 100,
+          "type": "integer"
+        },
+        "hold_seconds": {
+          "default": 0.6,
+          "type": "number"
+        },
+        "reference_path": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "channel",
+        "output_path"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_serum_recipes",
+    "description": "Discover kick/808/lead/pad recipes, editable physical settings and audition notes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_session_inspect",
+    "description": "Observe controller, current project/revision, transport and installed dependencies.\n\nDoes not open Save As, move focus, save or modify the project. Ready means\nready for workflow-specific preflight, not permission or guaranteed success.\nDependency presence is separate from runtime verification.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_channel_color",
+    "description": "Set a Channel Rack label color from integer red/green/blue values in 0..255.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "red": {
+          "type": "integer"
+        },
+        "green": {
+          "type": "integer"
+        },
+        "blue": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index",
+        "red",
+        "green",
+        "blue"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_channel_name",
+    "description": "Change the label of a global Channel Rack entry.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "name"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_channel_pan",
+    "description": "Set Channel Rack balance in -1..1, with 0 centered.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "pan": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "index",
+        "pan"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_channel_volume",
+    "description": "Set normalized Channel Rack gain in 0..1.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "volume": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "index",
+        "volume"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_grid_bit",
+    "description": "Enable or disable one zero-based step of the current pattern.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "position": {
+          "type": "integer"
+        },
+        "value": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "channel",
+        "position",
+        "value"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_loop_mode",
+    "description": "Choose song or pattern playback without keyboard input.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_playback_speed",
+    "description": "Set a finite playback multiplier between 0.25 and 4.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "speed": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "speed"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_plugin_param_value",
+    "description": "Set one exposed control in 0..1 and read it back. Prefer calibrated named controls for\nphysical units.\n\nPlugin locations use zero-based indices; use_global_index selects global Channel Rack\nindexing.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "param_index": {
+          "type": "integer"
+        },
+        "value": {
+          "type": "number"
+        },
+        "plugin_index": {
+          "type": "integer"
+        },
+        "slot_index": {
+          "default": -1,
+          "type": "integer"
+        },
+        "use_global_index": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "param_index",
+        "value",
+        "plugin_index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_song_position",
+    "description": "Seek using mode -1 (normalized), 0 (milliseconds), 1 (seconds) or 2 (ticks).",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "type": "number"
+        },
+        "mode": {
+          "default": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "position"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_step_sequence",
+    "description": "Write boolean steps to the current pattern and report the affected span.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "pattern": {
+          "items": {
+            "type": "boolean"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "channel",
+        "pattern"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_stereo_separation",
+    "description": "Set mixer stereo separation in -1..1 using the native control.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "separation": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "track",
+        "separation"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_track_color",
+    "description": "Assign an RGB mixer label color using integer components in 0..255.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "red": {
+          "type": "integer"
+        },
+        "green": {
+          "type": "integer"
+        },
+        "blue": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track",
+        "red",
+        "green",
+        "blue"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_track_name",
+    "description": "Assign a mixer strip label and return the host result.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "track",
+        "name"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_track_pan",
+    "description": "Set mixer balance in -1..1 (left to right), with 0 centered.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "pan": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "track",
+        "pan"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_set_track_volume",
+    "description": "Set normalized mixer gain in 0..1.25; unity is 0.8. Readback includes dB.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "volume": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "track",
+        "volume"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_solo_channel",
+    "description": "Set Channel Rack solo, or toggle when solo is null.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "solo": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_solo_track",
+    "description": "Set/toggle solo. Mode 1 includes sources, 2 sends, 3 both, and 4 only this track.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "solo": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "mode": {
+          "default": 3,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_step_sequence_edit",
+    "description": "Replace exactly total_steps (1..1024) on a GLOBAL channel/selected pattern.\n\nShort sequences are padded with false, clearing unused steps WITHIN the\nexplicit extent; steps beyond that extent are preserved. Inspect the same\ntarget/extent first. Apply needs a fresh revision and a new absolute receipt.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "pattern": {
+          "type": "integer"
+        },
+        "total_steps": {
+          "type": "integer"
+        },
+        "sequence": {
+          "items": {
+            "type": "boolean"
+          },
+          "type": "array"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "channel",
+        "pattern",
+        "total_steps",
+        "sequence",
+        "expected_revision"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_stop",
+    "description": "Stop playback and return the controller acknowledgement.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_trigger_note",
+    "description": "Send a live MIDI note (0..127); velocity 0 releases it. This does not write pattern\nnotes.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "type": "integer"
+        },
+        "note": {
+          "type": "integer"
+        },
+        "velocity": {
+          "default": 100,
+          "type": "integer"
+        },
+        "midi_channel": {
+          "default": -1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "channel",
+        "note"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "properties": {
+        "result": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "result"
+      ],
+      "type": "object",
+      "x-fastmcp-wrap-result": true
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_trigger_script",
+    "description": "Execute a prepared request, or refresh an empty queue; verify the matching response.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_ui_action",
+    "description": "Preflight or dispatch ONE guarded FL GUI action for a gap in semantic tools.\n\nPrefer native FL tools. Select exactly one enabled actionable UI element; for\nowner-drawn controls inspect with screenshot and use physical pixels relative\nto the target window's top-left. Actions: key, type, click, drag, scroll.\nKey/type without selector require the target to own keyboard focus. All\napplies need stopped transport, fresh observation and a NEW absolute .json\nreceipt_file. No global shortcuts or arbitrary helper calls are exposed.\n\nA dispatch always remains unverified, even when the helper succeeds. Supply\nan independent parameter/project/audio verification_plan, then carry it out.\nsuccess=true with success_scope=input_delivery confirms delivered input only;\nverified and musical_state_verified stay false until independent checks.\nInspect after errors; never replay. UIA and screenshots cannot prove music.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "window_handle": {
+          "type": "string"
+        },
+        "expected_revision": {
+          "type": "string"
+        },
+        "action": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "key",
+                  "type": "string"
+                },
+                "key": {
+                  "enum": [
+                    "enter",
+                    "tab",
+                    "escape",
+                    "up",
+                    "down",
+                    "left",
+                    "right",
+                    "home",
+                    "end",
+                    "pageup",
+                    "pagedown",
+                    "backspace",
+                    "delete",
+                    "space",
+                    "f2",
+                    "f3",
+                    "f4",
+                    "f5",
+                    "f6",
+                    "f7",
+                    "f8",
+                    "f9",
+                    "f10"
+                  ],
+                  "type": "string"
+                },
+                "shift": {
+                  "default": false,
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "kind",
+                "key"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "type",
+                  "type": "string"
+                },
+                "text": {
+                  "maxLength": 4096,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "selector": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "description": "Exact observed attributes; no indexes, fuzzy matching or stale element ids.",
+                      "properties": {
+                        "name": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "control_type": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "automation_id": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "class_name": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "clear_first": {
+                  "default": false,
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "kind",
+                "text"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "click",
+                  "type": "string"
+                },
+                "selector": {
+                  "anyOf": [
+                    {
+                      "additionalProperties": false,
+                      "description": "Exact observed attributes; no indexes, fuzzy matching or stale element ids.",
+                      "properties": {
+                        "name": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "control_type": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "automation_id": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        },
+                        "class_name": {
+                          "anyOf": [
+                            {
+                              "maxLength": 4096,
+                              "minLength": 1,
+                              "type": "string"
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ],
+                          "default": null
+                        }
+                      },
+                      "type": "object"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "x": {
+                  "anyOf": [
+                    {
+                      "maximum": 32767,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "y": {
+                  "anyOf": [
+                    {
+                      "maximum": 32767,
+                      "minimum": 0,
+                      "type": "integer"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "default": null
+                },
+                "button": {
+                  "default": "left",
+                  "enum": [
+                    "left",
+                    "right"
+                  ],
+                  "type": "string"
+                },
+                "double": {
+                  "default": false,
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "drag",
+                  "type": "string"
+                },
+                "x": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "y": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "end_x": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "end_y": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "kind",
+                "x",
+                "y",
+                "end_x",
+                "end_y"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "scroll",
+                  "type": "string"
+                },
+                "x": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "y": {
+                  "maximum": 32767,
+                  "minimum": 0,
+                  "type": "integer"
+                },
+                "direction": {
+                  "enum": [
+                    "up",
+                    "down",
+                    "left",
+                    "right"
+                  ],
+                  "type": "string"
+                },
+                "amount": {
+                  "default": 1,
+                  "maximum": 10,
+                  "minimum": 1,
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "kind",
+                "x",
+                "y",
+                "direction"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "verification_plan": {
+          "type": "string"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "window_handle",
+        "expected_revision",
+        "action",
+        "verification_plan"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_ui_inspect",
+    "description": "Observe FL-owned windows and UIA controls; optional image for your native vision.\n\nRead-only, including during playback. Defaults to the unique FL main HWND;\nchoose a child/plugin/dialog HWND from the returned windows. The 60-second\nrevision is specific to that HWND and is consumed by one apply. Screenshot\nis mandatory before coordinate fallback actions. Those actions recapture and\nrequire an identical image; animated windows may refuse. include_ocr uses\nlocal Windows OCR on the same capture and returns bounded text/word boxes\nin window-relative pixels. OCR alone returns no image and does not enable\ncoordinate actions or prove a semantic target. No model is called.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "window_handle": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "include_screenshot": {
+          "default": false,
+          "type": "boolean"
+        },
+        "max_depth": {
+          "default": 6,
+          "maximum": 12,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "include_ocr": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_workflow_catalog",
+    "description": "Discover production coverage, backends, read-tool policy and verification limits.\n\nOffline catalog, not evidence the live DAW/dependencies are ready. Unknown\ntools default to writes; UI/file delivery alone never proves a musical result.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_write_pattern_bank",
+    "description": "Append named patterns with exact note readback and a durable receipt.\n\nStop playback and supply the fresh channel index/name. Windows opens the\ntarget piano roll and selects ComposeWithLLM automatically for each request.\nItems contain name and notes. Existing patterns and instrument preset are preserved.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "channel": {
+          "type": "integer"
+        },
+        "expected_channel": {
+          "type": "string"
+        },
+        "receipt_file": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "items",
+        "channel",
+        "expected_channel",
+        "receipt_file"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  }
+]

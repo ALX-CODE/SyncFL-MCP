@@ -1,0 +1,70 @@
+name: SyncFL checks
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rust-tempo:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Rust 1.96.0
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+      - name: Check formatting, lint and test the Rust tempo core
+        run: |
+          cargo +1.96.0 fmt --manifest-path native/audio_tempo/Cargo.toml -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo +1.96.0 clippy --locked --manifest-path native/audio_tempo/Cargo.toml --all-targets -- -D warnings
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo +1.96.0 test --locked --release --manifest-path native/audio_tempo/Cargo.toml
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+  native-midi:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build native MIDI transport with warnings as errors
+        run: |
+          cmake -S native/midi_transport -B build/midi_transport -A x64
+          cmake --build build/midi_transport --config Release
+      - name: Verify native ABI, CLI and binary paths
+        run: ctest --test-dir build/midi_transport -C Release --output-on-failure
+  test:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Install locked Python ${{ matrix.python }} environment
+        run: uv sync --locked --python ${{ matrix.python }} --extra serum --extra audio --extra dev
+      - name: Install the optional CLI from this checkout
+        run: uv pip install --python .venv/Scripts/python.exe --no-deps --editable ./agent-harness
+      - name: Test without FL Studio or MIDI hardware
+        run: uv run --no-sync python -m pytest tests agent-harness/cli_anything/flstudio/tests -q
+      - name: Check public documentation and generated tool reference
+        run: |
+          uv run --no-sync python scripts/generate_tool_docs.py --check
+          uv run --no-sync python scripts/check_public_docs.py
+      - name: Validate public source export
+        run: uv run --no-sync python scripts/export_public_release.py --output "${{ runner.temp }}/fl-public-source"
+      - name: Compile host and installer scripts
+        run: uv run --no-sync python -m compileall -q src scripts fl_controller
+      - name: Parse laptop PowerShell installer
+        shell: pwsh
+        run: |
+          $parseErrors = $null
+          $tokens = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "$PWD/scripts/setup_laptop.ps1", [ref]$tokens, [ref]$parseErrors) | Out-Null
+          if ($parseErrors.Count) { throw ($parseErrors | Out-String) }

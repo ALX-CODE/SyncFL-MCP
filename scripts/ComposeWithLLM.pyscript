@@ -1,0 +1,148 @@
+"""Verified note transactions. Select this script once before using Ctrl+Alt+Y."""
+import json
+import os
+import time
+
+import flpianoroll as flp
+
+
+def get_script_dir():
+    path = globals().get("__file__", "")
+    if path and os.path.isfile(path):
+        return os.path.dirname(os.path.abspath(path))
+    override = os.environ.get("FL_USER_DATA_FOLDER")
+    if override:
+        return os.path.join(override, "FL Studio", "Settings", "Piano roll scripts")
+    base = os.path.expanduser("~/Documents/MUSIC SOFTWARE FOLDERS/Image-Line")
+    if not os.path.isdir(base):
+        base = os.path.expanduser("~/Documents/Image-Line")
+    return os.path.join(base, "FL Studio", "Settings", "Piano roll scripts")
+
+
+SCRIPT_DIR = get_script_dir()
+REQUEST_FILE = os.path.join(SCRIPT_DIR, "mcp_request.json")
+RESPONSE_FILE = os.path.join(SCRIPT_DIR, "mcp_response.json")
+STATE_FILE = os.path.join(SCRIPT_DIR, "piano_roll_state.json")
+contract = {}
+# Reload the pure companion each invocation; embedded imports can remain cached.
+with open(os.path.join(SCRIPT_DIR, "mcp_note_protocol.py"), encoding="utf-8") as source:
+    exec(compile(source.read(), "mcp_note_protocol.py", "exec"), contract)
+
+
+def write_json(path, data):
+    # Embedded FL Python does not support os.replace. Host requires complete matching JSON.
+    with open(path, "w", encoding="utf-8") as stream:
+        json.dump(data, stream, allow_nan=False)
+
+
+def raw_notes():
+    return [contract["note_data"](flp.score.getNote(i)) for i in range(flp.score.noteCount)]
+
+
+def snapshot(request_id=None):
+    raw = raw_notes()
+    ppq = flp.score.PPQ
+    notes = [dict(n, midi=n["number"], time_ticks=n["time"], length_ticks=n["length"],
+                  time=n["time"] / ppq, duration=n["length"] / ppq) for n in raw]
+    return {"protocol": 3, "id": request_id, "ppq": ppq, "noteCount": len(raw),
+            "notes": notes, "revision": contract["revision"](raw, ppq),
+            "exported_at": time.time()}
+
+
+def replace_score(notes):
+    # Preserve markers; clones preserve attributes outside the editable contract too.
+    for i in range(flp.score.noteCount - 1, -1, -1):
+        flp.score.deleteNote(i)
+    for note in notes:
+        flp.score.addNote(note.clone())
+
+
+def apply(form=None):
+    request_id = None
+    response = {"protocol": 3, "success": False, "status": "error", "outcome": "not_applied"}
+    before = None
+    changed = False
+    try:
+        with open(REQUEST_FILE, encoding="utf-8") as stream:
+            envelope = json.load(stream)
+        # Reject legacy writes so stale running hosts cannot bypass the new contract.
+        if not isinstance(envelope, dict) or envelope.get("protocol") != 3:
+            raise ValueError("Piano bridge upgrade required: use a protocol-3 host")
+        request_id = envelope.get("id")
+        if (not isinstance(request_id, str) or len(request_id) != 32
+                or any(c not in "0123456789abcdef" for c in request_id)):
+            raise ValueError("Invalid request ID")
+        response["id"] = request_id
+        response["request_hash"] = contract["request_digest"](envelope)
+        try:
+            archived = os.path.join(SCRIPT_DIR, "mcp-receipts", request_id + ".json")
+            with open(archived if os.path.isfile(archived) else RESPONSE_FILE, encoding="utf-8") as stream:
+                previous = json.load(stream)
+        except FileNotFoundError:
+            previous = {}
+        except (OSError, ValueError) as receipt_error:
+            response["outcome"] = "unknown"
+            raise RuntimeError("Unreadable prior receipt; inspect before continuing") from receipt_error
+        if previous.get("id") == request_id:
+            # Never replay a request after lost acknowledgement or interrupted execution.
+            if previous.get("request_hash") != response["request_hash"]:
+                response["outcome"] = "unknown"
+                raise ValueError("Request ID reused with different content")
+            write_json(RESPONSE_FILE, previous)
+            return
+        if envelope.get("expires_at", 0) < time.time():
+            raise ValueError("Request expired before execution")
+        ppq = flp.score.PPQ
+        if envelope.get("ppq", ppq) != ppq:
+            raise ValueError("Project PPQ changed")
+        plan = contract["normalize_requests"](envelope.get("requests"), ppq)
+        initial = snapshot(request_id)
+        if plan and envelope.get("expected_revision") != initial["revision"]:
+            raise ValueError("Score changed since inspection; no notes edited")
+        if plan:
+            before = [flp.score.getNote(i).clone() for i in range(flp.score.noteCount)]
+            desired = [n.clone() for n in before]
+            for item in plan:
+                if item["action"] == "clear":
+                    desired = []
+                elif item["action"] == "delete_notes":
+                    matches = {(n["midi"], n["time_ticks"]) for n in item["notes"]}
+                    desired = [n for n in desired if (n.number, n.time) not in matches]
+                else:
+                    for data in item["notes"]:
+                        note = flp.Note()
+                        for key, value in data.items():
+                            attr = {"midi": "number", "time_ticks": "time",
+                                    "length_ticks": "length"}.get(key, key)
+                            setattr(note, attr, value)
+                        desired.append(note)
+            expected = [contract["note_data"](n) for n in desired]
+            # Persist recovery data BEFORE the first destructive operation.
+            response.update(status="applying", outcome="unknown", before=initial)
+            write_json(RESPONSE_FILE, response)
+            changed = True
+            replace_score(desired)
+            if contract["canonical"](raw_notes()) != contract["canonical"](expected):
+                raise RuntimeError("Note readback mismatch")
+        state = snapshot(request_id)
+        write_json(STATE_FILE, state)
+        response.update(success=True, status="success", outcome="verified", state=state)
+    except Exception as exc:
+        response.update(success=False, status="error", error=str(exc))
+        if changed and before is not None:
+            try:
+                replace_score(before)
+                if contract["canonical"](raw_notes()) != contract["canonical"](
+                        [contract["note_data"](n) for n in before]):
+                    raise RuntimeError("Restoration readback mismatch")
+                response["outcome"] = "restored"
+            except Exception as restore_error:
+                response.update(outcome="unknown", restoration_error=str(restore_error))
+        try:
+            response["state"] = snapshot(request_id)
+            write_json(STATE_FILE, response["state"])
+        except Exception as state_error:
+            response["state_error"] = str(state_error)
+    response["id"] = request_id
+    write_json(RESPONSE_FILE, response)
+    # Host owns acknowledgement/queue removal under its lock. Unresolved work stays visible.

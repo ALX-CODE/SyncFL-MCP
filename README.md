@@ -1,0 +1,133 @@
+<div align="center">
+
+![SyncFL logo](docs/assets/syncfl-logo.png)
+
+**143 tools. Precision plugin control. Music production from one conversation.**
+
+Compose · Arrange · Mix · Design sounds · Automate · Analyze
+
+[![Tests](https://github.com/ALX-CODE/SyncFL-MCP/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/ALX-CODE/SyncFL-MCP/actions/workflows/tests.yml)
+[![Python 3.13 recommended](https://img.shields.io/badge/Python-3.13_recommended-3776AB)](docs/GETTING-STARTED.md)
+[![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
+[![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
+
+[Get started](docs/GETTING-STARTED.md) · [Capabilities](docs/CAPABILITIES.md) · [All 143 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+
+</div>
+
+**SyncFL** (**SyncFL-MCP**) brings live session control, composition, arrangement, mixing, sound design, automation, audio analysis and project packaging into one local [Model Context Protocol](https://modelcontextprotocol.io/) server. Give a compatible AI assistant the tools to inspect your session, shape a synth, adjust a vocal chain, route a mix and work with your project files.
+
+| **143** MCP tools | **1,921** named plugin controls | **802** qualified mappings | **6,496** calibration checks |
+|:---:|:---:|:---:|:---:|
+| Documented schemas | Across 11 profiles | Numeric units and menu values | Independent host-display holdouts |
+
+**As of October 12, 2026, following a broad source-based review, we believe SyncFL is one of the most comprehensive FL Studio MCP toolkits available.** The review screened 157 repository trees from 179 public candidates, with deeper examination of 23 projects. [Read the comparison, evidence and remaining gaps →](docs/COMPARISON-2026-10-12.md)
+
+Ask for a musical change, inspect the actual project, preview an exact operation, and check what FL accepted. Guarded workflows use fresh identities, revisions, receipts and later readback so an assistant can explain what changed and what remains uncertain.
+
+**Windows is the primary tested platform. Background mode is the default.** Supported native controls work without synthetic keyboard/mouse input. Some piano-roll, loading and rendering workflows still require explicit interactive mode. This is a local integration, not a headless FL engine or a substitute for listening.
+
+## What you can do
+
+| Workflow | What the server provides |
+|---|---|
+| **Inspect a session** | Live transport, channels, mixer, plugins, native capabilities and workflow prerequisites |
+| **Compose and arrange** | Persistent notes through the piano bridge, pattern banks, step sequences, note transforms and saved-FLP clip editing |
+| **Mix with exact targets** | Guarded mixer scenes, built-in EQ and strip switches, sends, buses, sidechains, plugin parameter batches and bounded peak-meter observations |
+| **Control familiar plugins** | 11 named profiles, 1,921 named controls and 802 qualified numeric/menu mappings; explicit normalized access where calibration is withheld |
+| **Design Serum sounds** | Live mapped controls, native preset inspection/editing, kick/808/lead/pad builders and measured audio probes |
+| **Work with audio** | Rust tempo analysis, ranked musical-key estimates, WAV inspection/editing, integrated loudness and true peaks, reference-level comparisons and evidence-based gain proposals |
+| **Manage projects** | Saved-FLP inspection, automation edits, source-preserving project packages, guarded open/save and recording/render jobs |
+
+The [capability matrix](docs/CAPABILITIES.md) explains input requirements and limits. The [generated reference](docs/reference/TOOLS.md) documents every registered tool and its parameters.
+
+## Get connected
+
+Use a checkout of the current **`main`** branch or an extracted source release. Install [uv](https://docs.astral.sh/uv/getting-started/installation/), launch FL once to create its user-data folder, then finish active bridge work before installing:
+
+```powershell
+# From the repository root. -SkipCodex leaves client configuration to you.
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup_laptop.ps1 -SkipCodex
+```
+
+1. In FL's MIDI settings, enable **ALX FL Bridge (FL Studio)** and select **FL Studio MCP Controller**.
+2. Connect your MCP client to this checkout's Python, using `-m fl_studio_mcp.server` and the repository as its working directory.
+3. Reload the FL controller after an upgrade and reconnect your MCP client.
+4. Ask the assistant to call `fl_build_info`, `fl_connection_status`, then `fl_session_inspect` before editing.
+
+The default bridge requires compatible **Windows MIDI Services loopback support** and Microsoft's x64 VC++ runtime. It needs no loopMIDI process, custom resident broker, driver installation or elevation. Existing MIDI ports remain an explicit alternative. Start the server before FL after a reboot so endpoints exist when FL scans them.
+
+**[Full setup →](docs/GETTING-STARTED.md)** includes client configuration, custom FL folders and verification. **[Troubleshooting →](docs/TROUBLESHOOTING.md)** covers missing endpoints, stale controllers and refused operations.
+
+## A useful first session
+
+- “Inspect this project and list the channels, mixer routing and loaded effects. Don't change anything yet.”
+- “Preview a mixer scene that lowers these named backing-vocal tracks by 2 dB. Show the exact targets before applying it.”
+- “Inspect the Pro-Q instance on this track and show its available named controls and units.”
+- “Compare these two rendered WAVs for loudness and true peak. Explain the measurements before proposing gain changes.”
+- “Analyze this WAV's key and show the five strongest major/minor candidates before adjusting any tuning.”
+- “Create a transposed copy of these notes, preserving timing and expression, and show the proposed result.”
+
+These are task examples, not guarantees that an arbitrary assistant will infer your intended sound. The [workflow guide](docs/WORKFLOWS.md) shows inspect → preview → apply → verify sequences.
+
+Key analysis also works as a [standalone NumPy module](docs/KEY-ANALYSIS.md), with no FL Studio connection, FFmpeg or desktop input. Estimates describe a whole recording; relative confidence is not a calibrated probability.
+
+[`fl_audio_bpm`](docs/TEMPO-ANALYSIS.md) uses an original Rust core with no third-party crates. It reports tempo candidates and half/double-time relationships, and leaves your project tempo untouched.
+
+## Plugin precision
+
+| Coverage | Profiles |
+|---|---|
+| Qualified numeric/menu controls; other controls remain normalized-only | MetaTune; FabFilter Pro-Q 4, Pro-C 3, Pro-DS, Pro-L 2, Pro-R 2 and Saturn 2; soothe2; Tube-Tech CL 1B mk II |
+| Named normalized controls; physical calibration withheld | Auto-Tune Pro; Decapitator |
+| Separate Serum integration | Serum 2 live controls, native preset tools and audio probing |
+
+Mappings bind to the **exact exposed parameter layout**. Changed layouts are refused. Nine profiles retain 379 numeric and 423 menu mappings after 6,496 independent host-display holdout checks. Counts include repeated band controls; they do not mean every control is calibrated. Host readback does not certify audible DSP behavior.
+
+[Plugin units, conditions and limitations →](docs/PLUGIN-CONTROL-GUIDE.md)
+
+## Background and interactive operation
+
+`FL_MCP_INTERACTION_POLICY=background` is the default. Keyboard/mouse delivery, activation and focus-dependent calls are blocked before dispatch. There is no automatic fallback to interactive mode.
+
+| Route | Current behavior |
+|---|---|
+| Native transport, supported channel/mixer/routing/plugin controls | Background, with operation-specific validation |
+| File inspection, MIDI transforms, audio analysis and saved-FLP editing | Offline; no live desktop input |
+| Save the current named project | Background host-state verification; no general disk-path/byte guarantee |
+| Piano-script activation, general loading, Open/Save As, GUI export | Explicit interactive mode and the documented Windows layout |
+| Selected-track background effect loading | Experimental; an empty slot only, not generally reliable |
+| Native FL SDK note bridge | Research prototype; note writes disabled |
+
+Some background inspection still needs a visible matching window. Full background piano editing, general import and rendering are unfinished. The [architecture](docs/ARCHITECTURE.md) explains these boundaries.
+
+## Built to be inspectable
+
+- **Exact targets:** global channel indices, expected names, layout checks and fresh revisions.
+- **Preview first:** newer guarded APIs preflight before a caller explicitly applies changes.
+- **Evidence after writes:** later readbacks and retained receipts; uncertain mutations are not automatically replayed.
+- **Preserved sources:** saved-project and audio editors create new files rather than silently replacing inputs.
+- **Local transport:** MCP stdio, local request/response files and a MIDI wakeup. Windows output uses SyncFL's bundled C++20 transport; no cloud account is required by this server.
+
+Legacy low-level tools have different guarantees. A batch is not a universal rollback transaction. Your chosen AI client has its own data handling. See [security and privacy](SECURITY.md).
+
+## Development and validation
+
+```powershell
+uv sync --locked --python 3.13 --extra serum --extra audio --extra dev
+uv run --no-sync python -m pytest tests -q
+uv run --no-sync python scripts/generate_tool_docs.py --check
+uv run --no-sync python scripts/check_public_docs.py
+```
+
+The October 12 background-control pass passed **2,317 tests on Python 3.13** (two skips), **16 live native change/restore cases**, and a fresh-server EQ/switch apply with exact restoration. The C++ MIDI transport separately passed **43 native cases and 11 CTest checks**, plus live FL handshakes and an installed-wheel check with Mido/RtMidi imports blocked. The earlier source-replacement run passed **2,290 tests on Python 3.14** (six skips). [Windows CI](https://github.com/ALX-CODE/SyncFL-MCP/actions/workflows/tests.yml) runs the locked suite on **Python 3.12, 3.13 and 3.14** and builds the native transport; **3.13 is the recommended installer baseline**. Windows users no longer need to compile RtMidi. Python 3.15 is not yet qualified with the pinned optional dependencies. These are dated results, not proof of every host/plugin combination. CI needs no FL or commercial plugin licenses. Live observations and startup-focus limitations are documented separately in [validation](docs/VALIDATION.md).
+
+[Contributing](CONTRIBUTING.md) · [Architecture](docs/ARCHITECTURE.md) · [Configuration](docs/CONFIGURATION.md) · [Changelog](CHANGELOG.md) · [Roadmap](docs/ROADMAP.md)
+
+## Credits and publication
+
+**SyncFL** (repository: **SyncFL-MCP**) is developed and maintained by **[ALX-CODE](https://github.com/ALX-CODE)** and **[nobibasedd](https://github.com/nobibasedd)**. See [contributors](CONTRIBUTORS.md), [source provenance](docs/SOURCE-PROVENANCE.md), [license](LICENSE) and [third-party notices](NOTICE.md).
+
+Source code is **MIT**. FL Studio and commercial plugins require their own installations and licenses. This is an independent project, not an Image-Line or plugin-vendor product.
+
+The SyncFL repository starts with clean history and excludes private production material. Keep song projects, reference libraries and commercial media outside this repository. Follow the [public release guide](docs/PUBLIC-RELEASE.md) when preparing source snapshots; never merge private development history into this repository.

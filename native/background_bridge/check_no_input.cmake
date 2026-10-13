@@ -1,0 +1,20 @@
+# Check both imports and original source. The hook mechanism itself is allowed;
+# process-global hooks, physical input, focus/activation and cursor writes are not.
+set(forbidden "SendInput|keybd_event|mouse_event|SetCursorPos|SetPhysicalCursorPos|SetFocus|SetForegroundWindow|SetActiveWindow|ShowWindow|BringWindowToTop|SwitchToThisWindow|SetCapture|SetWindowPos|AttachThreadInput|BlockInput|RegisterHotKey|DoDragDrop")
+foreach(binary IN ITEMS "${CLIENT}" "${HOOK}")
+  execute_process(COMMAND "${DUMPBIN}" /nologo /imports "${binary}"
+    RESULT_VARIABLE result OUTPUT_VARIABLE imports ERROR_VARIABLE errors)
+  if(NOT result EQUAL 0)
+    message(FATAL_ERROR "Import inspection failed: ${errors}")
+  endif()
+  if(imports MATCHES "(${forbidden})")
+    message(FATAL_ERROR "Input or focus API imported by ${binary}: ${CMAKE_MATCH_0}")
+  endif()
+endforeach()
+foreach(source IN ITEMS client.cpp hook.cpp main.cpp protocol.hpp data_object.hpp)
+  file(READ "${SOURCE_DIR}/${source}" contents)
+  if(contents MATCHES "(${forbidden})[ \t\r\n]*\\(")
+    message(FATAL_ERROR "Input or focus call in ${source}: ${CMAKE_MATCH_0}")
+  endif()
+endforeach()
+message(STATUS "Bridge and hook import/source checks found no input or focus mutation APIs")

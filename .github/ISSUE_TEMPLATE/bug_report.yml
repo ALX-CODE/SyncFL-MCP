@@ -1,0 +1,37 @@
+name: Bug report
+description: Report a reproducible behavior or verification failure.
+title: "[Bug] "
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, FL build, Python/server commit, MCP client, input mode and relevant plugin version.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Exact tool and redacted arguments; use a disposable project and self-created content.
+    validations:
+      required: true
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and observed behavior
+      description: State whether this was a preview, preflight failure, applied change or unknown outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence
+      description: Relevant error, doctor output or receipt excerpt. No secrets, personal paths, license material or commercial media.
+  - type: checkboxes
+    id: checked
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked the troubleshooting guide and removed private or unlicensed material.
+          required: true

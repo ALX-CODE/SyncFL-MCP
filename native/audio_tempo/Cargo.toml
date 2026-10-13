@@ -1,0 +1,30 @@
+[package]
+name = "syncfl-tempo"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.81"
+license = "MIT"
+description = "Bounded, offline WAV tempo estimation for SyncFL"
+publish = false
+
+[lib]
+name = "syncfl_tempo"
+
+[[bin]]
+name = "syncfl-tempo"
+path = "src/main.rs"
+
+[dependencies]
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+debug = false
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[lints.clippy]
+all = "warn"

@@ -1,0 +1,23 @@
+name: Feature proposal
+description: Suggest a concrete production workflow or improvement.
+title: "[Feature] "
+body:
+  - type: textarea
+    id: task
+    attributes:
+      label: Musical or engineering task
+      description: What are you trying to achieve, and what is the current workaround?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Include expected inputs, output evidence and whether the workflow must avoid desktop input.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification and compatibility
+      description: How could this be tested? Mention FL/plugin versions and relevant documented APIs.

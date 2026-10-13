@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "architecture": "x64",
+  "abi_version": 65536,
+  "helper_version": "0.1.0",
+  "files": {
+    "syncfl_midi_transport.dll": {
+      "sha256": "0309fa8e67e267d0568357184da734fd27a2dc30d68bb7cc0a6002fff70c51a7",
+      "size": 185344
+    },
+    "syncfl-midi.exe": {
+      "sha256": "c1a268e7af2f7cd7317f19476b03deedbcecf250251d350b79772c4df18db766",
+      "size": 193024
+    }
+  }
+}

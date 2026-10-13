@@ -1,0 +1,18 @@
+* text=auto
+*.flp binary
+*.mid binary
+*.wav binary
+*.mp3 binary
+*.SerumPreset binary
+# Hash manifests must survive Windows checkout without line-ending conversion.
+projects/remake/*.json -text whitespace=cr-at-eol
+projects/remake/README.md -text whitespace=cr-at-eol
+references/lead-midi/original-15/index.json -text whitespace=cr-at-eol
+references/lead-midi/original-15/PATTERNS.md -text whitespace=cr-at-eol
+# Portable native payloads and their hash-pinned documentation must keep exact bytes.
+native/midi_bridge/runtime/* -text whitespace=cr-at-eol
+native/background_bridge/runtime/* -text whitespace=cr-at-eol
+native/midi_transport/runtime/* -text whitespace=cr-at-eol
+native/audio_tempo/runtime/** -text whitespace=cr-at-eol
+# Retain upstream license formatting byte-for-byte, including trailing spaces.
+native/audio_tempo/runtime/third_party/** -text -whitespace

@@ -1,0 +1,34 @@
+.venv/
+.claude/
+fl_controller/__pycache__/
+src/fl_studio_mcp/__pycache__/
+src/fl_studio_mcp/tools/__pycache__
+src/fl_studio_mcp/utils/__pycache__
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+.env
+.env.*
+!.env.example
+# Session captures and machine-specific receipts stay local.
+audit-*/
+release-artifacts/
+*.log
+*.lock.tmp
+# Private production experiments stay outside the distributable source.
+/scripts/build_plugin_chain.py
+/scripts/build_support_pass2.py
+/scripts/build_template_batch.py
+/scripts/build_vocal_pass2.py
+/scripts/check_mcp.py
+/scripts/check_signal_flow.py
+/scripts/configure_starting_mix.py
+/scripts/inspect_mix_parameters.py
+/scripts/inspect_picker.py
+/scripts/inspect_reference_presets.py
+/scripts/verify_portable_playback.py
+/scripts/verify_template.py

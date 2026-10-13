@@ -1,0 +1,574 @@
+{
+  "date": "2026-10-12",
+  "scope": "Host parameter/display verification in muted disposable FL Studio 2026 lab; not listening or DSP certification",
+  "profiles": [
+    {
+      "id": "auto_tune_pro",
+      "title": "Auto-Tune Pro",
+      "layout_sha256": "78d199e6f9c138292ff69ee33a24e0ac47cf2c3323c0363cb0b6c9e88e63a024",
+      "stable_calibration": false,
+      "holdout_checks": 0,
+      "passed_checks": 0,
+      "qualified_controls": 0,
+      "withheld_controls": 23,
+      "counts": {
+        "numeric": 0,
+        "enum": 0,
+        "normalized": 92
+      },
+      "downgraded": [
+        "scale",
+        "key",
+        "detune",
+        "retune_speed",
+        "vibrato_shape",
+        "vibrato_pitch",
+        "vibrato_rate",
+        "input_type",
+        "ignore_vibrato",
+        "v_onset_delay",
+        "vibrato_amplitude",
+        "vibrato_formant",
+        "vibrato_variation",
+        "v_onset_rate",
+        "midi_octaves",
+        "humanize",
+        "natural_vibrato",
+        "formant_correction",
+        "throat_length",
+        "transpose",
+        "master_bypass",
+        "flex_tune",
+        "modern_scale"
+      ],
+      "restricted": []
+    },
+    {
+      "id": "decapitator",
+      "title": "Decapitator",
+      "layout_sha256": "880f20a5584dc14325756dcea80b3eef2b8fec602d9aa7e981f92b7a8cb74234",
+      "stable_calibration": false,
+      "holdout_checks": 0,
+      "passed_checks": 0,
+      "qualified_controls": 0,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 0,
+        "enum": 0,
+        "normalized": 12
+      },
+      "downgraded": [],
+      "restricted": []
+    },
+    {
+      "id": "fabfilter_pro_c3",
+      "title": "Pro-C 3",
+      "layout_sha256": "98581325030e6f80a0133b932bf788f8e4d082223a389411f105f6602c3c61ac",
+      "stable_calibration": true,
+      "holdout_checks": 513,
+      "passed_checks": 501,
+      "qualified_controls": 67,
+      "withheld_controls": 20,
+      "counts": {
+        "numeric": 34,
+        "enum": 33,
+        "normalized": 27
+      },
+      "holdout_sha256": "3c62e30f5849b1f3c27fa229d7ba5d1415bdf3e322f8d5dc4c3bbec87058f347",
+      "downgraded": [
+        "style",
+        "ratio",
+        "side_chain_eq_band_1_shape",
+        "side_chain_eq_band_1_slope",
+        "side_chain_eq_band_1_speakers",
+        "side_chain_eq_band_2_shape",
+        "side_chain_eq_band_2_slope",
+        "side_chain_eq_band_2_speakers",
+        "side_chain_eq_band_3_shape",
+        "side_chain_eq_band_3_slope",
+        "side_chain_eq_band_3_speakers",
+        "side_chain_eq_band_4_shape",
+        "side_chain_eq_band_4_slope",
+        "side_chain_eq_band_4_speakers",
+        "side_chain_eq_band_5_shape",
+        "side_chain_eq_band_5_slope",
+        "side_chain_eq_band_5_speakers",
+        "side_chain_eq_band_6_shape",
+        "side_chain_eq_band_6_slope",
+        "side_chain_eq_band_6_speakers"
+      ],
+      "restricted": [
+        {
+          "control": "wet_gain",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "dry_gain",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "input_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "output_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        }
+      ]
+    },
+    {
+      "id": "fabfilter_pro_ds",
+      "title": "Pro-DS",
+      "layout_sha256": "7f4be16e9990d35fa991364472831b0a911d3288ac7f5de7c0dd7fc14e187c84",
+      "stable_calibration": true,
+      "holdout_checks": 78,
+      "passed_checks": 71,
+      "qualified_controls": 15,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 8,
+        "enum": 7,
+        "normalized": 4
+      },
+      "holdout_sha256": "e8bd2c0cf5dcf12223b06af64b9493dbdfdb8600edce14a2b243bbd8492343dd",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "threshold",
+          "minimum": -45.51324,
+          "maximum": -12.029789999999997,
+          "retained_checks": 4
+        },
+        {
+          "control": "input_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "output_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        }
+      ]
+    },
+    {
+      "id": "fabfilter_pro_l2",
+      "title": "Pro-L 2",
+      "layout_sha256": "ec63f2c6c93184433f256f5402bb0d339a728ddf0d59b3149a2e4441e9c184ac",
+      "stable_calibration": true,
+      "holdout_checks": 62,
+      "passed_checks": 62,
+      "qualified_controls": 13,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 5,
+        "enum": 8,
+        "normalized": 4
+      },
+      "holdout_sha256": "17d7c20ab093c06bbaf6f5672df59d9db6bf3a94b81e7aaa5c1de67a2495c7f1",
+      "downgraded": [],
+      "restricted": []
+    },
+    {
+      "id": "fabfilter_pro_q4",
+      "title": "Pro-Q 4",
+      "layout_sha256": "327fe92875bd8cd900c9fe236b88c5c0ebe8b7829d6f1aa02494fed77cf18784",
+      "stable_calibration": true,
+      "holdout_checks": 3960,
+      "passed_checks": 3912,
+      "qualified_controls": 432,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 192,
+        "enum": 240,
+        "normalized": 82
+      },
+      "holdout_sha256": "57ea8841dd6a17f9a8bbb45b69f622faf1e4fa0d805e8f4f1241cefc394e3dfe",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "band_1_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_2_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_3_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_4_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_5_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_6_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_7_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_8_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_9_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_10_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_11_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_12_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_13_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_14_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_15_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_16_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_17_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_18_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_19_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_20_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_21_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_22_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_23_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        },
+        {
+          "control": "band_24_threshold",
+          "minimum": -24.394299999999998,
+          "maximum": -2.9013000000000018,
+          "retained_checks": 4
+        }
+      ]
+    },
+    {
+      "id": "fabfilter_pro_r2",
+      "title": "Pro-R 2",
+      "layout_sha256": "679a6c97f8d66f23398e406bd4ad9c188fc04b7ed3196d9e6cd8483c3a73b084",
+      "stable_calibration": true,
+      "holdout_checks": 775,
+      "passed_checks": 750,
+      "qualified_controls": 116,
+      "withheld_controls": 3,
+      "counts": {
+        "numeric": 46,
+        "enum": 70,
+        "normalized": 22
+      },
+      "holdout_sha256": "66458f3ad3c5e2afb3cb0f21bec2c63b27d4cbc6f97371b838b4bbb7c3328fca",
+      "downgraded": [
+        "lfe_level",
+        "center_level",
+        "top_level"
+      ],
+      "restricted": [
+        {
+          "control": "input_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "output_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        }
+      ]
+    },
+    {
+      "id": "fabfilter_saturn2",
+      "title": "Saturn 2",
+      "layout_sha256": "2ca6985dbfa0519d19f44873674b57d631e0c6e997a38eb02071ce8ee9d08f14",
+      "stable_calibration": true,
+      "holdout_checks": 742,
+      "passed_checks": 730,
+      "qualified_controls": 90,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 62,
+        "enum": 28,
+        "normalized": 860
+      },
+      "holdout_sha256": "939b2e14be48af40f6433b03d6ecc32eda531542c101ba519f1ae2edef09b5d4",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "band_1_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "band_2_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "band_3_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "band_4_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "band_5_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        },
+        {
+          "control": "band_6_level",
+          "minimum": -18.61425,
+          "maximum": 34.81425,
+          "retained_checks": 6
+        }
+      ]
+    },
+    {
+      "id": "metatune",
+      "title": "MetaTune",
+      "layout_sha256": "8da9afbc503e68bf5243c3393efbb1ea2b2dbbebea3ac05983ae50b8adb57064",
+      "stable_calibration": true,
+      "holdout_checks": 78,
+      "passed_checks": 75,
+      "qualified_controls": 20,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 6,
+        "enum": 14,
+        "normalized": 1
+      },
+      "holdout_sha256": "b14f9769c80775126637a0505c590dbb569f57f799b599b9fb630da4f7ae1fdb",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "reference",
+          "minimum": 416.11255946386467,
+          "maximum": 461.50510490315395,
+          "retained_checks": 7
+        },
+        {
+          "control": "speed",
+          "minimum": -2.7824,
+          "maximum": 65.444,
+          "retained_checks": 6
+        }
+      ]
+    },
+    {
+      "id": "soothe2",
+      "title": "soothe2",
+      "layout_sha256": "752ca3ea540c3b3642c1388295c7f7240488aaa1e9893a08ffc454bba89f6e59",
+      "stable_calibration": true,
+      "holdout_checks": 225,
+      "passed_checks": 207,
+      "qualified_controls": 38,
+      "withheld_controls": 0,
+      "counts": {
+        "numeric": 21,
+        "enum": 17,
+        "normalized": 14
+      },
+      "holdout_sha256": "2e93d6d35d37886bb2c418a806e4a143b728e8d1470588571f594ea3065ab30b",
+      "downgraded": [],
+      "restricted": [
+        {
+          "control": "low_cut_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        },
+        {
+          "control": "band1_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        },
+        {
+          "control": "band2_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        },
+        {
+          "control": "band3_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        },
+        {
+          "control": "band4_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        },
+        {
+          "control": "high_cut_freq",
+          "minimum": 22.72,
+          "maximum": 358.52,
+          "retained_checks": 4
+        }
+      ]
+    },
+    {
+      "id": "tube_tech_cl1b_mkii",
+      "title": "Tube-Tech CL 1B mk II",
+      "layout_sha256": "a919fe71950bec0269dfe656c9b0209f314b9cca965f6a0b20ab0cb707dd8653",
+      "stable_calibration": true,
+      "holdout_checks": 63,
+      "passed_checks": 51,
+      "qualified_controls": 11,
+      "withheld_controls": 1,
+      "counts": {
+        "numeric": 5,
+        "enum": 6,
+        "normalized": 1
+      },
+      "holdout_sha256": "49d1139d7ff2308dc896a99dbab5b372029f1f6f17f71bf488ed58c1f8ce8f1d",
+      "downgraded": [
+        "output_volume"
+      ],
+      "restricted": [
+        {
+          "control": "ratio",
+          "minimum": 2.584,
+          "maximum": 9.864,
+          "retained_checks": 7
+        },
+        {
+          "control": "threshold",
+          "minimum": -27.3072,
+          "maximum": 1.1211,
+          "retained_checks": 4
+        },
+        {
+          "control": "attack",
+          "minimum": 0.73,
+          "maximum": 9.83,
+          "retained_checks": 7
+        },
+        {
+          "control": "release",
+          "minimum": 0.73,
+          "maximum": 9.83,
+          "retained_checks": 7
+        },
+        {
+          "control": "parallel_compression",
+          "minimum": 7.3,
+          "maximum": 98.3,
+          "retained_checks": 7
+        }
+      ]
+    }
+  ],
+  "registry_sha256": "43aea3a5dab5ae36967bb5cca469c890653dc31cc15e93053434c0309b14f3d6"
+}

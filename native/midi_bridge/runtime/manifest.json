@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "architecture": "x64",
+  "helper_version": "0.1.0",
+  "sdk_version": "0.99.92-preview.11",
+  "sdk_source": "https://github.com/microsoft/MIDI/releases/download/inbox-preview-11/Windows.Devices.Midi2.0.99.92-preview.11.nupkg",
+  "sdk_package_sha256": "13afc6e6da2adac309ab8c174352f46f1c0ebe2d79e65475bd6274defb73df74",
+  "output_name": "ALX FL Bridge (Send)",
+  "input_name": "ALX FL Bridge (FL Studio)",
+  "files": {
+    "alx-midi-service.exe": {
+      "sha256": "ca1e0e2441cb0b7f4575015bc0d486837bdd2a90f945ea27ab1904bde2c920a0",
+      "size": 334336
+    },
+    "Windows.Devices.Midi2.dll": {
+      "sha256": "db3544cac751f174da338fb43e754974a067432ce30ece9845cfcf3b3daa4cdc",
+      "size": 6892872
+    },
+    "Windows.Devices.Midi2.pri": {
+      "sha256": "d04a030d84c77c6be8c0f2018a6d70fcd142ab5c940644b74223523f975da9fa",
+      "size": 712
+    },
+    "README.md": {
+      "sha256": "51805e0d2270ebd35ca4b07c0f49e44ba3658a32b65af7f7eb2eb816fe83eaca",
+      "size": 4687
+    },
+    "THIRD-PARTY-NOTICES.md": {
+      "sha256": "0829401624f63dd042a7b06efdb9b6bf85964c4f6827217fb3827b2ff83d7fee",
+      "size": 1315
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "reviewed_binary_files": {
+    "docs/assets/syncfl-logo.png": {
+      "sha256": "3ebf19a1aad7185be6051d88d68a4bbf8666e5ba099977af427c894927024f88",
+      "reason": "SyncFL branding PNG supplied by the project maintainer; copied unchanged."
+    },
+    "src/fl_studio_mcp/data/serum/kick.SerumPreset": {
+      "sha256": "781c2040647572fbec04361c3885c8471e4c85882a8ceaf7446b85296bb56db3",
+      "reason": "Project-authored synth settings; relative stock wavetable references, no embedded audio."
+    },
+    "src/fl_studio_mcp/data/serum/kick_long.SerumPreset": {
+      "sha256": "fe7d73388a94cf2f61f0d456151f0bd745e494aba4dead0cd15a8b94925e0c8a",
+      "reason": "Project-authored synth settings; relative stock wavetable references, no embedded audio."
+    },
+    "src/fl_studio_mcp/data/serum/pad.SerumPreset": {
+      "sha256": "9b678cf80d546380a434beebc8a4a8a3931d506bdc059678b2f48113e5a5dc38",
+      "reason": "Project-authored synth settings; relative stock wavetable references, no embedded audio."
+    }
+  },
+  "include_directories": ["src", "fl_controller", "tests", "native", "agent-harness", ".github"],
+  "include_files": [
+    "README.md", "LICENSE", "NOTICE.md", "CONTRIBUTORS.md", "CONTRIBUTING.md",
+    "CODE_OF_CONDUCT.md", "SECURITY.md", "CHANGELOG.md", "SERUM-WORKFLOW.md",
+    ".gitattributes", ".gitignore", ".editorconfig", "pyproject.toml", "uv.lock",
+    "install.ps1", "install.sh", "public-release.json",
+    "docs/README.md", "docs/GETTING-STARTED.md", "docs/CONFIGURATION.md",
+    "docs/CAPABILITIES.md", "docs/WORKFLOWS.md", "docs/ARCHITECTURE.md",
+    "docs/COMPARISON-2026-10-12.md", "docs/comparison-2026-10-12.json",
+    "docs/TROUBLESHOOTING.md", "docs/DEVELOPMENT.md", "docs/VALIDATION.md",
+    "docs/ROADMAP.md", "docs/PUBLIC-RELEASE.md", "docs/INSTALLERS.md",
+    "docs/PLUGIN-CONTROL-GUIDE.md", "docs/NATIVE-SAVE-CONTRACT.md", "docs/KEY-ANALYSIS.md",
+    "docs/TEMPO-ANALYSIS.md",
+    "docs/BACKGROUND-CONTROL-AUDIT.md", "docs/plugin-calibration-evidence.json",
+    "docs/reference/TOOLS.md", "docs/reference/tools.json", "docs/assets/syncfl-logo.png", "docs/assets/README.md",
+    "scripts/ComposeWithLLM.pyscript", "scripts/build_native_catalog.py",
+    "scripts/deploy_piano_bridge.py", "scripts/doctor.py", "scripts/install_fl_integration.py",
+    "scripts/install_mcp_for_claude.ps1", "scripts/install_mcp_for_claude.sh",
+    "scripts/package_project.py", "scripts/register_codex.py", "scripts/setup.sh",
+    "scripts/setup_laptop.ps1", "scripts/verify_mcp_runtime.py", "scripts/verify_project_bundle.py",
+    "scripts/write_pattern_bank.py", "scripts/generate_tool_docs.py",
+    "scripts/check_public_docs.py", "scripts/export_public_release.py", "scripts/register_claude.py",
+    "docs/SOURCE-PROVENANCE.md"
+  ]
+}

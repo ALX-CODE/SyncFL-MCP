@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-13 — reliable production discovery and blank-project loading
+
+- Advertise 32 core production APIs with complete schemas in every fresh session,
+  alongside four discovery helpers. Sound/plugin loading, notes, arrangement,
+  mixing and saving no longer require rediscovering hidden tool names.
+- Correct the startup and build descriptions: render status is available;
+  backend render start/cancel remains unimplemented. A failed operation must not
+  be generalized into lack of all backend capabilities or silently replaced with
+  an offline synthesized song.
+- Load projects through FL's desktop drop target instead of its Playlist. Wait
+  for panel layout and verify the exact native target before dispatching once.
+- Force a guarded native save when initializing a named blank project: metadata
+  changes can leave FL's changed flag clean. Older controllers are rejected before
+  creating files. Verify the saved FL26 bytes, empty pattern and live identities.
+- Live FL26 evidence: desktop load increased the project generation and changed
+  the title; the updated controller saved a clean-flag project as FL 26.1.4.5589
+  with one empty `Main` pattern. Full blank-project orchestration is also covered
+  by regression tests; these checks do not establish musical quality.
+
 ## Unreleased — public presentation
 
 - Added `fl_project_create` for clean unnamed Empty projects: create the named FLP from the installed template, load it through the backend, initialize Pattern 1, and native-save with file verification. Startup guidance and discovery direct assistants here before loading sounds, instead of requesting a manual first save. Existing or modified projects are preserved. Workflow revision 16 exposes 147 contracts. The new sequence has regression coverage; live end-to-end qualification remains pending.

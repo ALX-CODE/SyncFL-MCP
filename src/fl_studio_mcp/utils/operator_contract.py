@@ -329,7 +329,7 @@ def workflow_catalog():
     return dict(
         success=True,
         schema_version=1,
-        workflow_revision=16,
+        workflow_revision=17,
         workflows=WORKFLOWS,
         read_tools={name: {} for name in sorted(READ_TOOLS)},
         policy=dict(

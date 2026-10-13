@@ -45,7 +45,7 @@ GT_GLOBAL = 8
 def _explicit_panel_command(action, params):
     """FL can expose an addressed panel without synthesizing desktop input.
 
-    Keep focus-routed UI commands gated. These two forms name an exact panel
+    Keep focus-routed UI commands gated. These forms name an exact panel
     or piano-roll event editor instead of operating on whichever control owns
     keyboard focus. Backend callers must still inspect the resulting target.
     """
@@ -54,7 +54,7 @@ def _explicit_panel_command(action, params):
     args = params.get("args")
     if not isinstance(args, list):
         return False
-    if params.get("function") == "ui.showWindow":
+    if params.get("function") in {"ui.showWindow", "ui.hideWindow"}:
         return len(args) == 1 and type(args[0]) is int and 0 <= args[0] <= 4
     if params.get("function") == "ui.openEventEditor":
         return (len(args) == 3 and type(args[0]) is int and 0 <= args[0] <= 0x7fffffff

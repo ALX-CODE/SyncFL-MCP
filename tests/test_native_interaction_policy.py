@@ -40,8 +40,9 @@ def test_native_observations_and_nonfocus_setters_remain_background_operations(f
 
 
 @pytest.mark.parametrize("function,args", [
-    ("ui.showWindow", [0]), ("ui.showWindow", [1]), ("ui.showWindow", [3]),
-    ("ui.showWindow", [4]), ("ui.openEventEditor", [65536, 1, False]),
+    *((function, [panel]) for function in ("ui.showWindow", "ui.hideWindow")
+      for panel in range(5)),
+    ("ui.openEventEditor", [65536, 1, False]),
 ])
 def test_addressed_panels_are_background_operations(function, args):
     check_native_command("native.call", dict(function=function, args=args, allow_write=True))
@@ -49,6 +50,7 @@ def test_addressed_panels_are_background_operations(function, args):
 
 @pytest.mark.parametrize("function,args", [
     ("ui.showWindow", [True]), ("ui.showWindow", [5]), ("ui.showWindow", [0, 1]),
+    ("ui.hideWindow", [True]), ("ui.hideWindow", [5]), ("ui.hideWindow", [0, 1]),
     ("ui.openEventEditor", [0, 0, False]), ("ui.openEventEditor", [0, 1, True]),
     ("ui.openEventEditor", [-1, 1, False]), ("ui.openEventEditor", [0, 1]),
 ])

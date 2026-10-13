@@ -1,11 +1,12 @@
 # Tool discovery
 
-SyncFL defaults to six advertised entry tools instead of injecting all underlying
-schemas into every new conversation. The complete toolset remains callable.
-The initial instructions and discovery tool descriptions advertise the capabilities
-behind that interface: sound/sample/instrument/synth/VST/preset loading, composition,
-mixing, arrangement, automation, recording, rendering and audio analysis. Clients
-that omit server instructions can still find them in `fl_discover`'s description.
+SyncFL advertises 32 core production APIs with their complete schemas in every
+new session, plus four discovery helpers. Loading sounds, samples, instruments,
+synths, VST plugins and FST presets, writing notes, arranging, mixing, routing,
+playing and saving are directly available. These do not depend on remembered
+tool names or an initial search. The remaining specialist tools stay callable
+and discoverable. Render status is available; starting/cancelling a render is
+not implemented in this backend build.
 
 | Entry tool | Purpose |
 |---|---|
@@ -16,9 +17,8 @@ that omit server instructions can still find them in `fl_discover`'s description
 | `fl_workflows` | List a compact workflow/domain index, or inspect one workflow |
 | `fl_call` | Execute one original tool with its original arguments and guards |
 
-For example, discover `lower the backing vocals by 2 dB`, describe
-`fl_production_inspect` and `fl_mixer_scene`, then execute the needed inspections
-through `fl_call`. Build the scene from those fresh observations. Schemas, target
+For example, call `fl_production_inspect` and `fl_mixer_scene` directly to lower
+backing vocals by 2 dB. Build the scene from those fresh observations. Schemas, target
 indices, units, defaults and preflight requirements come from the underlying
 tools; the router neither invents arguments nor decides whether a write is authorized.
 
@@ -70,8 +70,8 @@ summary. Large plugin catalogs still require the tools' own filters and paginati
 ## Full mode and activation
 
 Set `FL_MCP_TOOL_MODE=full` in the server environment and reconnect to expose the
-complete original schema list. Use `discovery` (the default) to restore six entry
-tools. Schema visibility never grants desktop input. Existing processes and
+complete original schema list. Use `discovery` (the default) for core production
+APIs plus bounded discovery. Schema visibility never grants desktop input. Existing processes and
 conversations keep their loaded catalogs until the
 client reconnects; source/config changes cannot remove old context retroactively.
 
@@ -93,3 +93,11 @@ Retrieval fixtures cover audited musical requests, exact-name access to every
 underlying tool, schema equality, bounds, errors and busy/cancelled execution.
 They are deterministic integration checks, not an end-to-end musical-quality or
 model-selection benchmark. The source catalog remains the authoritative reference.
+
+The previous six-tool facade hid every production action behind a search. This
+hybrid keeps the common workflow visible while bounding specialist context. It
+uses the same principle as FastMCP's
+[always-visible tools](https://github.com/PrefectHQ/fastmcp/blob/main/docs/v3/servers/transforms/tool-search.mdx).
+Tests create independent fresh clients and compare every core schema to its
+original registration. A separate canary checks direct and proxied calls retain
+the same lease, errors and single-dispatch behavior.

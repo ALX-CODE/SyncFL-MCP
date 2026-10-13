@@ -27,6 +27,8 @@ classifiers = [
 
 dependencies = [
     "fastmcp>=3.4.7,<4",
+    # Security floor applies to pip installs as well as the locked uv environment.
+    "cryptography>=50.0.2",
     "mido>=1.3.0",
     "python-rtmidi>=1.5.0; sys_platform != 'win32'",
     "pynput>=1.7",
@@ -60,12 +62,6 @@ packages = ["src/fl_studio_mcp"]
 "native/background_bridge/runtime" = "fl_studio_mcp/_native/background_bridge"
 "native/midi_transport/runtime" = "fl_studio_mcp/_native/midi_transport"
 "native/audio_tempo/runtime" = "fl_studio_mcp/_native/audio_tempo"
-
-[tool.uv]
-# cryptography >=49 ships macOS wheels for arm64 only; on Intel Macs it falls
-# back to a source build (needs Rust + OpenSSL). 48.x still has universal2
-# wheels and satisfies joserfc's cryptography>=45.0.1 requirement.
-constraint-dependencies = ["cryptography<49"]
 
 [dependency-groups]
 dev = [

@@ -19,7 +19,8 @@ def blank(tmp_path, monkeypatch):
     main = dict(handle="10", pid=42, title="FL Studio 2026")
     state = dict(revision="current", dirty=0, is_playing=False, is_recording=False,
                  context=dict(session="s", project_generation=1, program_title=main["title"],
-                              project_title="", channels=[dict(index=0, name="Sampler", type=0)]),
+                              project_title="", pattern=1, pattern_name="Pattern 1",
+                              channels=[dict(index=0, name="Sampler", type=0)]),
                  values=dict(ppq=96, tempo_bpm=140))
     info = dict(version="24.2.99", ppq=96, tempo=140, channels=[dict(id=0, name="Sampler")],
                 patterns=[], clips=[], sample_references=[])
@@ -36,11 +37,12 @@ def blank(tmp_path, monkeypatch):
     def call(conn, action, params):
         rig.calls.append((action, params))
         if action == "bridge.ping":
-            return dict(project_native=dict(controller_pid=42), safe_to_edit=True)
+            return dict(project_native=dict(controller_pid=42, force_save_supported=True),
+                        safe_to_edit=True)
         if params["function"] == "patterns.patternCount":
             return dict(value=rig.pattern_count)
         if params["function"] == "patterns.setPatternName":
-            state["dirty"] = 1
+            state["context"]["pattern_name"] = params["args"][1]
             return dict(value=None)
         raise AssertionError(params)
 
@@ -53,7 +55,8 @@ def blank(tmp_path, monkeypatch):
         rig.main["title"] = source.name + " - FL Studio 2026"
         report.update(success=True, after=copy.deepcopy(state))
 
-    def save(conn, before, data):
+    def save(conn, before, data, *, force=False):
+        assert force is True  # Native metadata setters need not mark FL dirty.
         rig.saved = True
         state["dirty"] = 0
         final = dict(info, version="26.1.0", patterns=[dict(id=1, name="Pattern 1", notes=[])])
@@ -121,6 +124,21 @@ def test_existing_destination_is_preserved(blank):
     assert not blank.loads
 
 
+def test_old_controller_is_rejected_before_files_or_load(blank, monkeypatch):
+    call = project.bridge._call
+
+    def old_controller(conn, action, params):
+        result = call(conn, action, params)
+        if action == "bridge.ping":
+            result["project_native"].pop("force_save_supported")
+        return result
+
+    monkeypatch.setattr(project.bridge, "_call", old_controller)
+    with pytest.raises(RuntimeError, match="Reload the updated controller"):
+        project.create_blank_project(**blank.args)
+    assert not blank.loads and not Path(blank.args["path"]).exists()
+
+
 def test_unknown_load_is_not_retried_and_keeps_receipt(blank):
     blank.fail_load = True
     result = project.create_blank_project(**blank.args)
@@ -144,7 +162,7 @@ def test_project_change_after_load_prevents_initialization(blank, monkeypatch):
 
 
 def test_save_without_native_fl26_bytes_is_not_reported_as_success(blank, monkeypatch):
-    def unchanged(conn, before, data):
+    def unchanged(conn, before, data, *, force=False):
         blank.state["dirty"] = 0
         return data, blank.info
 
@@ -157,8 +175,8 @@ def test_save_without_native_fl26_bytes_is_not_reported_as_success(blank, monkey
 def test_project_change_during_final_save_prevents_verified_result(blank, monkeypatch):
     save = project._save_and_read
 
-    def changed(*args):
-        result = save(*args)
+    def changed(*args, **kwargs):
+        result = save(*args, **kwargs)
         blank.state["dirty"] = 1
         return result
 

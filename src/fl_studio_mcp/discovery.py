@@ -29,30 +29,43 @@ from fl_studio_mcp.utils.operator_contract import (
 )
 
 CATALOG = json.loads(Path(__file__).with_name("discovery_catalog.json").read_text("utf-8"))
-PINNED = frozenset({"fl_build_info", "fl_session_inspect"})
+PINNED = frozenset({
+    "fl_build_info", "fl_session_inspect", "fl_production_inspect", "fl_receipt",
+    "fl_find_assets", "fl_project_create", "fl_instrument_add", "fl_sample_add",
+    "fl_preset_load", "fl_background_effect_inspect", "fl_background_effect_load",
+    "fl_background_piano_inspect", "fl_background_piano_select", "fl_background_piano_write",
+    "fl_plugin_controls_inspect", "fl_plugin_controls_set", "fl_project_settings",
+    "fl_channel_configure", "fl_step_sequence_edit", "fl_playlist_file_inspect",
+    "fl_playlist_file_edit", "fl_project_open", "fl_project_file_inspect",
+    "fl_project_native_inspect", "fl_project_save_native", "fl_routing_inspect",
+    "fl_routing_scene", "fl_mixer_scene", "fl_get_transport_status", "fl_play",
+    "fl_stop", "fl_set_loop_mode",
+})
 DISCOVERY_INSTRUCTIONS = """
-SyncFL exposes six entry tools and discovers the full FL Studio toolset on demand.
-It can find/load sounds, samples, instruments, synths, VST plugins and presets;
-edit notes, arrange, mix, route, automate, record, render and analyze audio.
-Use fl_discover for these capabilities even when their individual APIs are hidden.
-Backend APIs include instrument/pattern selection, piano writing, WAV sample and
-FST instrument/preset/effect loading, plugin/synth controls, native saves and guarded
-FLP loading. Loading routes use the experimental native bridge and return receipts.
-For a clean unnamed blank project, use fl_project_create before adding sounds or
-notes. It creates, loads and saves the named FLP itself; never ask for a manual first save.
-Start with fl_build_info and, for live work, fl_session_inspect. Use fl_discover for
-the musical task, fl_workflows for supported routes, then fl_describe for the exact
-selected contracts. Execute via fl_call using the original tool name and arguments.
-Discovery is guidance, never authorization. The underlying guards remain authoritative.
-SyncFL is backend-only. Desktop input is unavailable. Never request an interactive
-mode or use external keyboard/mouse tools to work around an unsupported operation.
-Report the specific missing backend route. Reinspect target identities before writes;
-never reuse stale state after a mutation. Read filtered parameter pages instead of whole catalogs.
-After a timeout, partial result or unknown outcome, inspect the receipt and fresh state;
-never automatically replay or fall back to UI. Keep originals and recovery evidence.
-Normalized plugin values are not physical units; use qualified named controls for ms,
-Hz and dB. Job start is not completion: poll its status. Host readback is not proof of
-audio quality. fl_call preserves complete results, including errors and uncertainty.
+SyncFL controls FL Studio through backend APIs. Core production tools and their
+complete schemas are visible in every session; call them directly. No discovery
+round trip is required to find/load sounds, samples, instruments, synths, VST
+plugins and FST presets, write piano notes, arrange, mix, route, play or save.
+Start with fl_build_info and fl_session_inspect. For a clean unnamed blank project,
+fl_project_create creates and loads a named FLP before sounds or notes are added.
+Use fl_find_assets for installed sounds/plugins, fl_instrument_add/fl_sample_add/
+fl_preset_load to load them, and fl_background_piano_inspect/select/write for notes.
+Use fl_playlist_file_edit then fl_project_open for arrangement; use
+fl_project_native_inspect and fl_project_save_native for native saves.
+Loading uses the experimental native bridge; inspect receipts and live readback.
+For additional tools (automation, recording, audio analysis, specialist synth
+controls), use fl_discover then fl_describe and fl_call. fl_workflows states the
+implemented routes and limitations. Existing render jobs can be inspected;
+render start/cancel has no backend implementation in this build.
+SyncFL is backend-only. Never request interactive mode or external keyboard/mouse
+control. A failed or unverified call is not evidence that every backend capability
+is unavailable. Report the specific failed step. Do not substitute an offline
+Python-generated song for requested FL Studio work without the user's agreement.
+Reinspect identities/revisions after mutations. After timeouts or unknown outcomes,
+inspect receipts and fresh state; never automatically replay writes. Preserve
+original projects and recovery evidence. Use bounded parameter reads and qualified
+named controls for physical units; normalized values are not ms, Hz or dB.
+Host readback does not prove audio quality. fl_call preserves complete results.
 """
 
 # Musical language chooses a *workflow*, not a raw setter. Its companion tools
@@ -333,7 +346,9 @@ class DiscoveryTransform(CatalogTransform):
             ctx: Context = None,
         ) -> dict:
             """Discover FL Studio APIs to load sounds, samples, instruments, synths, VST
-            plugins and presets; write notes, mix, arrange, automate, record or render.
+            plugins and presets; write notes, mix, arrange, automate, record and analyze.
+            Core production tools are already directly callable. Render job inspection
+            is available; starting/cancelling renders is currently unsupported.
             Only suggests available backend routes; desktop input is unavailable.
             Search by task before concluding a hidden capability is unavailable.
             Returns bounded summaries; fetch exact schemas with fl_describe. No DAW access.
@@ -378,7 +393,7 @@ class DiscoveryTransform(CatalogTransform):
 
         async def fl_workflows(workflow: str | None = None, ctx: Context = None) -> dict:
             """Find supported FL Studio workflows: sound/plugin/preset loading, backend
-            piano and effect loading, synth controls, mixing, recording and rendering.
+            piano and effect loading, synth controls, mixing, recording and render status.
             Read one workflow's prerequisites, input requirements and verification limits.
             No live DAW access or execution.
             """

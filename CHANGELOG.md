@@ -1,5 +1,24 @@
 # Changelog
 
+## 2026-10-13 — reliable production discovery and blank-project loading
+
+- Advertise 32 core production APIs with complete schemas in every fresh session,
+  alongside four discovery helpers. Sound/plugin loading, notes, arrangement,
+  mixing and saving no longer require rediscovering hidden tool names.
+- Correct the startup and build descriptions: render status is available;
+  backend render start/cancel remains unimplemented. A failed operation must not
+  be generalized into lack of all backend capabilities or silently replaced with
+  an offline synthesized song.
+- Load projects through FL's desktop drop target instead of its Playlist. Wait
+  for panel layout and verify the exact native target before dispatching once.
+- Force a guarded native save when initializing a named blank project: metadata
+  changes can leave FL's changed flag clean. Older controllers are rejected before
+  creating files. Verify the saved FL26 bytes, empty pattern and live identities.
+- Live FL26 evidence: desktop load increased the project generation and changed
+  the title; the updated controller saved a clean-flag project as FL 26.1.4.5589
+  with one empty `Main` pattern. Full blank-project orchestration is also covered
+  by regression tests; these checks do not establish musical quality.
+
 ## Unreleased — public presentation
 
 - Made the controller round trip about 8x faster. The client checked the response file every 20 ms while FL answers a ping in about 2 ms; it now checks every 0.2 ms for the first 25 ms, then backs off to 1 ms and 5 ms. Measured on FL 2026 (API 45), 40 pings: median 22.8 ms before, 3.0 ms after. The cross-process bridge lock uses the same schedule.

@@ -223,13 +223,16 @@ def _prepare_roll(conn, before):
                 process=backend._process_identity(main["pid"]))
 
 
-def _save_and_read(conn, before, previous_data):
+def _save_and_read(conn, before, previous_data, *, force=False):
     native = backend._project(conn, time.monotonic() + 6)
     if native["context"] != before["context"] or native["is_playing"] or native["is_recording"]:
         raise RuntimeError("Project changed after import; inspect the receipt")
-    response = backend._call(conn, "project.save_current", dict(
+    params = dict(
         expected_revision=native["revision"], expected_window_title=before["window"]["title"],
-        dry_run=False))
+        dry_run=False)
+    if force:
+        params["force"] = True
+    response = backend._call(conn, "project.save_current", params)
     last, stable = None, 0
     for _ in range(20):
         time.sleep(.15)

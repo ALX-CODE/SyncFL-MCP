@@ -89,12 +89,14 @@ def unique_control(main, class_name, title=None):
     return matches[0]
 
 
-def point_belongs_to(point, parent):
+def point_belongs_to(point, parent, *, exact=False):
     """Accept the target or its children, excluding popups it merely owns."""
     user, _ = api()
     prior = user.SetThreadDpiAwarenessContext(w.HANDLE(-4))
     try:
         hwnd = user.WindowFromPoint(w.POINT(*point))
+        if exact:
+            return bool(hwnd and int(hwnd) == int(parent))
         while hwnd:
             if int(hwnd) == int(parent):
                 return True

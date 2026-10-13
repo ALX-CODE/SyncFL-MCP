@@ -219,17 +219,19 @@ def project_save_capability():
                  and getattr(midi, "FPT_Save", None) == 92
                  and getattr(midi, "GT_Global", None) == 8
                  and type(controller_pid) is int and controller_pid > 0)
-    return dict(protocol=1, available=available,
+    return dict(protocol=1, available=available, force_save_supported=True,
                 qualification="host_state_only",
                 controller_pid=controller_pid, desktop_input=False,
                 absolute_path_known=False)
 
 
 def project_save_current(p):
-    if set(p) - {"expected_revision", "expected_window_title", "dry_run"}:
+    if set(p) - {"expected_revision", "expected_window_title", "dry_run", "force"}:
         raise ValueError("Unknown save-current request fields")
     if type(p.get("dry_run", True)) is not bool:
         raise ValueError("dry_run must be boolean")
+    if type(p.get("force", False)) is not bool:
+        raise ValueError("force must be boolean")
     title = p.get("expected_window_title")
     if (not isinstance(title, str) or len(title) > 2048
             or not re.fullmatch(r"[^\r\n/\\]+\.flp - FL Studio(?: [^\r\n]*)?", title,
@@ -249,7 +251,7 @@ def project_save_current(p):
                   disk_verified=False)
     if type(before["dirty"]) is not int or before["dirty"] not in (0, 1, 2):
         raise ValueError("Save requires a recognized host changed flag")
-    if before["dirty"] == 0:
+    if before["dirty"] == 0 and not p.get("force", False):
         result.update(success=True, status="already_clean", dispatch_ack="not_dispatched")
         return result
     if result["dry_run"]:

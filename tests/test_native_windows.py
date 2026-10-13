@@ -79,6 +79,15 @@ def test_point_belongs_to_restores_dpi_context_after_error(monkeypatch):
     assert contexts == [native_windows.w.HANDLE(-4).value, 99]
 
 
+@pytest.mark.parametrize("hit,expected", [(200, True), (201, False), (None, False)])
+def test_exact_desktop_hit_rejects_covering_child_windows(monkeypatch, hit, expected):
+    api = SimpleNamespace(SetThreadDpiAwarenessContext=lambda _: 0,
+                          WindowFromPoint=lambda _: hit,
+                          GetAncestor=lambda *_: pytest.fail("Exact hit must not accept children"))
+    monkeypatch.setattr(native_windows, "api", lambda: (api, None))
+    assert native_windows.point_belongs_to([10, 20], "200", exact=True) is expected
+
+
 def test_expose_fl_uses_nonactivating_no_move_no_resize_flags(monkeypatch):
     row = dict(handle="100", pid=123, title="lab.flp - FL Studio", enabled=True,
                bounds=[0, 0, 1000, 700], **{"class": "TFruityLoopsMainForm"})

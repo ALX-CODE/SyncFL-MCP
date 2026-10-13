@@ -60,7 +60,7 @@ def render(tools: list[dict]) -> str:
         "# MCP tool reference",
         "",
         f"**{len(tools)} registered tools.** Generated from the server's actual MCP definitions.",
-        "The default [discovery interface](../TOOL-DISCOVERY.md) advertises six entry tools;",
+        "The default [discovery interface](../TOOL-DISCOVERY.md) advertises core production tools;",
         "this reference documents the complete underlying catalog (also available in `full` mode).",
         "Run `python scripts/generate_tool_docs.py --check` to detect drift.",
         "",

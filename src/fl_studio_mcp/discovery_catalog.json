@@ -1,608 +1,648 @@
 {
-  "schema_version": 1,
-  "domains": {
-    "session": "Connection, discovery and recovery",
-    "transport": "Transport and timeline",
-    "channels": "Channel Rack and step sequencing",
-    "piano": "Piano roll, persistent notes and MIDI references",
-    "mixer": "Mixer strips, built-in EQ and routing",
-    "plugins": "Generic plugins, calibrated controls and effect loading",
-    "serum": "Serum-specific sound design",
-    "assets": "Assets, samples and instruments",
-    "audio": "Offline audio analysis and editing",
-    "project": "Project files, saving and arrangement",
-    "automation": "Automation curves and target binding",
-    "jobs": "Recording and rendering jobs",
-    "advanced": "Expert escape hatches and UI fallback"
+ "schema_version": 1,
+ "domains": {
+  "session": "Connection, discovery and recovery",
+  "transport": "Transport and timeline",
+  "channels": "Channel Rack and step sequencing",
+  "piano": "Piano roll, persistent notes and MIDI references",
+  "mixer": "Mixer strips, built-in EQ and routing",
+  "plugins": "Generic plugins, calibrated controls and effect loading",
+  "serum": "Serum-specific sound design",
+  "assets": "Assets, samples and instruments",
+  "audio": "Offline audio analysis and editing",
+  "project": "Project files, saving and arrangement",
+  "automation": "Automation curves and target binding",
+  "jobs": "Recording and rendering jobs",
+  "advanced": "Expert escape hatches and UI fallback"
+ },
+ "tools": {
+  "fl_build_info": {
+   "domain": "session",
+   "purpose": "Identify the loaded build before relying on a tool or feature. This is a good always-visible entry point and does not prove FL is connected."
   },
-  "tools": {
-    "fl_build_info": {
-      "domain": "session",
-      "purpose": "Identify the loaded build before relying on a tool or feature. This is a good always-visible entry point and does not prove FL is connected."
-    },
-    "fl_connect": {
-      "domain": "session",
-      "purpose": "Reconnect the dedicated MIDI session and verify the controller handshake when connection diagnostics indicate a problem."
-    },
-    "fl_connection_status": {
-      "domain": "session",
-      "purpose": "Check whether endpoints merely exist or the live FL controller actually responds. Use before live work."
-    },
-    "fl_session_inspect": {
-      "domain": "session",
-      "purpose": "Preferred starting point for live work: inspect project identity, transport and dependencies without changing the project."
-    },
-    "fl_workflow_catalog": {
-      "domain": "session",
-      "purpose": "Find which workflows exist, their prerequisite tools and verification limits. This is the natural root for task-oriented discovery."
-    },
-    "fl_capabilities": {
-      "domain": "session",
-      "purpose": "Inspect the native API signatures actually advertised by the running controller. Use before an expert native call, not as a giant default prompt dump."
-    },
-    "fl_production_inspect": {
-      "domain": "session",
-      "purpose": "Obtain fresh identity and revision evidence for guarded channel, project or step edits. Inspect the exact scope that the next write needs."
-    },
-    "fl_project_snapshot": {
-      "domain": "session",
-      "purpose": "Broad whole-session inventory for orientation. Because it returns channels, mixer, effects and routes together, prefer narrower reads once the target is known."
-    },
-    "fl_receipt": {
-      "domain": "session",
-      "purpose": "Resolve an uncertain or timed-out controller command before deciding whether recovery is needed. It is evidence lookup, not undo or replay."
-    },
-    "fl_get_transport_status": {
-      "domain": "transport",
-      "purpose": "Read playback, recording, position and mode before deciding whether a guarded operation can run."
-    },
-    "fl_get_song_length": {
-      "domain": "transport",
-      "purpose": "Read the host timeline duration when planning bounded playback, export or recording checks."
-    },
-    "fl_play": {
-      "domain": "transport",
-      "purpose": "Toggle playback for an audition. This is a toggle, so inspect the acknowledged state instead of repeating a request blindly."
-    },
-    "fl_stop": {
-      "domain": "transport",
-      "purpose": "Stop playback and inspect the acknowledgement. Use as the transport stop primitive where appropriate."
-    },
-    "fl_record": {
-      "domain": "transport",
-      "purpose": "Toggle the recording latch. Prefer the recording job workflow for a bounded, verified take."
-    },
-    "fl_set_loop_mode": {
-      "domain": "transport",
-      "purpose": "Select song or pattern playback, which changes what the same Play action auditions."
-    },
-    "fl_set_song_position": {
-      "domain": "transport",
-      "purpose": "Seek to a location with an explicit unit/mode. Avoid confusing normalized position, milliseconds, seconds and ticks."
-    },
-    "fl_set_playback_speed": {
-      "domain": "transport",
-      "purpose": "Change the playback multiplier. This is distinct from setting the project BPM."
-    },
-    "fl_get_channel_count": {
-      "domain": "channels",
-      "purpose": "Count the relevant Channel Rack scope. Global versus current-group indexing matters when resolving later targets."
-    },
-    "fl_get_all_channels": {
-      "domain": "channels",
-      "purpose": "Inventory Channel Rack entries, selection, mute state and mixer destinations before targeting a channel."
-    },
-    "fl_get_channel_info": {
-      "domain": "channels",
-      "purpose": "Inspect one channel when its index is known; more compact than a complete project snapshot."
-    },
-    "fl_get_selected_channel": {
-      "domain": "channels",
-      "purpose": "Discover the selected channel before a selected-target operation; explicitly handle no selection."
-    },
-    "fl_channel_configure": {
-      "domain": "channels",
-      "purpose": "Preferred guarded multi-property channel edit. Bind gain, pan, pitch, mute or routing to a fresh global-channel revision and retain the receipt."
-    },
-    "fl_set_channel_name": {
-      "domain": "channels",
-      "purpose": "Basic channel-label setter. Renaming helps later human identification but does not create a stable unique ID."
-    },
-    "fl_set_channel_color": {
-      "domain": "channels",
-      "purpose": "Basic Channel Rack color setter using RGB components; a presentation change."
-    },
-    "fl_set_channel_volume": {
-      "domain": "channels",
-      "purpose": "Basic normalized channel gain setter. Prefer the guarded configure workflow when coordinating production edits."
-    },
-    "fl_set_channel_pan": {
-      "domain": "channels",
-      "purpose": "Basic channel balance setter in -1..1; this is not the normalized 0..1 automation representation."
-    },
-    "fl_mute_channel": {
-      "domain": "channels",
-      "purpose": "Set an explicit desired mute state; null means toggle and requires special care when recovering."
-    },
-    "fl_solo_channel": {
-      "domain": "channels",
-      "purpose": "Set an explicit solo state for auditioning one source; null means toggle."
-    },
-    "fl_select_channel": {
-      "domain": "channels",
-      "purpose": "Select or deselect one global channel; other selections may remain."
-    },
-    "fl_select_one_channel": {
-      "domain": "channels",
-      "purpose": "Make one channel the sole selection before a selected-channel workflow."
-    },
-    "fl_route_channel_to_mixer": {
-      "domain": "channels",
-      "purpose": "Assign a Channel Rack source to a mixer strip. This differs from a send between two mixer strips."
-    },
-    "fl_trigger_note": {
-      "domain": "channels",
-      "purpose": "Play or release a live note for audition. It does not compose or save piano-roll notes."
-    },
-    "fl_get_grid_bit": {
-      "domain": "channels",
-      "purpose": "Read one current-pattern step when checking a specific drum hit."
-    },
-    "fl_get_step_sequence": {
-      "domain": "channels",
-      "purpose": "Read a bounded span of current-pattern steps for rhythm inspection."
-    },
-    "fl_set_grid_bit": {
-      "domain": "channels",
-      "purpose": "Set one current-pattern step. For a complete planned pattern prefer the revision-guarded step editor."
-    },
-    "fl_set_step_sequence": {
-      "domain": "channels",
-      "purpose": "Basic bulk boolean step writer. Specify the intended target and span; it is a lower-level option than the guarded editor."
-    },
-    "fl_step_sequence_edit": {
-      "domain": "channels",
-      "purpose": "Preferred guarded step-pattern replacement. Explicit total_steps determines the clearing boundary, and later steps remain preserved."
-    },
-    "fl_background_piano_inspect": {
-      "domain": "piano",
-      "purpose": "Preferred inspection for the experimental script-free FL26 score workflow. Bind the saved FLP, target channel, sound and routing before writing."
-    },
-    "fl_background_piano_select": {
-      "domain": "piano",
-      "purpose": "Switch to an existing pattern and sound with verification. It also exposes the piano roll and routed mixer target, and may save recovery copies."
-    },
-    "fl_background_piano_write": {
-      "domain": "piano",
-      "purpose": "Replace one saved FL26 score without ComposeWithLLM. Use after background inspection; it supports the documented basic note fields, not every legacy expression field."
-    },
-    "fl_piano_roll_prepare": {
-      "domain": "piano",
-      "purpose": "Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable. Use fl_background_piano_inspect and fl_background_piano_select."
-    },
-    "fl_get_piano_roll_info": {
-      "domain": "piano",
-      "purpose": "Inspect bridge paths/protocol and pending work without triggering the FL piano script. Useful for diagnosing queues."
-    },
-    "fl_get_piano_roll_state": {
-      "domain": "piano",
-      "purpose": "Unavailable in backend-only SyncFL. Legacy script-based piano inspection is unavailable. Use fl_background_piano_inspect."
-    },
-    "fl_send_notes": {
-      "domain": "piano",
-      "purpose": "Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use fl_background_piano_write for persistent notes."
-    },
-    "fl_send_chord": {
-      "domain": "piano",
-      "purpose": "Convenience note-writing transaction for simultaneous pitches. It still needs the same target and verification discipline as other persistent notes."
-    },
-    "fl_delete_notes": {
-      "domain": "piano",
-      "purpose": "Delete matching pitches/times while retaining other notes. Specify exact matches and inspect the resulting score."
-    },
-    "fl_clear_piano_roll": {
-      "domain": "piano",
-      "purpose": "Clear notes from the inspected roll with recovery information. This is destructive musical editing, even though markers are preserved."
-    },
-    "fl_trigger_script": {
-      "domain": "piano",
-      "purpose": "Execute an already prepared piano request or refresh the queue. Correlation with the matching response matters more than a generic success flag."
-    },
-    "fl_clear_request_queue": {
-      "domain": "piano",
-      "purpose": "Acknowledge completed bridge work. It deliberately refuses to discard unresolved requests or recovery evidence."
-    },
-    "fl_write_pattern_bank": {
-      "domain": "piano",
-      "purpose": "Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is unavailable. Use native background piano tools or saved-FLP editing."
-    },
-    "fl_midi_reference_search": {
-      "domain": "piano",
-      "purpose": "Find and summarize local MIDI examples by filenames or musical fingerprints. Search completeness and musical relevance are separate questions."
-    },
-    "fl_notes_transform": {
-      "domain": "piano",
-      "purpose": "Propose deterministic transposition/quantization while retaining supported expression. It returns notes for review and never applies them to FL itself."
-    },
-    "fl_get_mixer_track_count": {
-      "domain": "mixer",
-      "purpose": "Read mixer capacity, including Master. A capacity count does not mean every strip contains useful material."
-    },
-    "fl_get_all_mixer_tracks": {
-      "domain": "mixer",
-      "purpose": "Inventory occupied strips, or include empty strips when planning destinations."
-    },
-    "fl_get_mixer_track_info": {
-      "domain": "mixer",
-      "purpose": "Read one strip and its gain/dB values before a targeted change."
-    },
-    "fl_mixer_scene": {
-      "domain": "mixer",
-      "purpose": "Preferred guarded balance edit across named strips. Supports explicit dB targets and a receipt, unlike a sequence of basic normalized setters."
-    },
-    "fl_set_track_volume": {
-      "domain": "mixer",
-      "purpose": "Basic mixer gain setter: unity is 0.8, not 1.0. Use observed dB or the scene tool for a musical level target."
-    },
-    "fl_set_track_pan": {
-      "domain": "mixer",
-      "purpose": "Basic mixer balance setter in -1..1."
-    },
-    "fl_set_stereo_separation": {
-      "domain": "mixer",
-      "purpose": "Adjust FL stereo separation on one strip. It is not a general stereo-imaging analysis or mid/side processor."
-    },
-    "fl_set_track_name": {
-      "domain": "mixer",
-      "purpose": "Rename a strip for readable targeting; inspect current identities again after changes."
-    },
-    "fl_set_track_color": {
-      "domain": "mixer",
-      "purpose": "Set mixer label color from RGB values."
-    },
-    "fl_mute_track": {
-      "domain": "mixer",
-      "purpose": "Set a desired mixer mute state. Null invokes a toggle, so retries can reverse the intended result."
-    },
-    "fl_solo_track": {
-      "domain": "mixer",
-      "purpose": "Solo with explicit source/send inclusion modes. These modes affect more than just the visible solo button."
-    },
-    "fl_arm_track": {
-      "domain": "mixer",
-      "purpose": "Legacy one-shot arm toggle. Prefer fl_recording_inspect plus fl_recording_arm for an exact desired recording state."
-    },
-    "fl_ensure_mixer_tracks": {
-      "domain": "mixer",
-      "purpose": "Unavailable in backend-only SyncFL. Appending mixer inserts has no backend implementation. Use native mixer tools with existing track indices."
-    },
-    "fl_mixer_controls_inspect": {
-      "domain": "mixer",
-      "purpose": "Inspect built-in mixer EQ and strip switches with revision evidence, rather than treating them as plugin controls."
-    },
-    "fl_mixer_controls_set": {
-      "domain": "mixer",
-      "purpose": "Guarded native changes to built-in EQ and polarity/swap/effect switches. Inputs are normalized even when reads report Hz or dB."
-    },
-    "fl_mixer_meter_watch": {
-      "domain": "mixer",
-      "purpose": "Observe bounded peak-meter behavior over time. Useful for activity/clipping evidence; it does not replace integrated loudness or listening."
-    },
-    "fl_routing_inspect": {
-      "domain": "mixer",
-      "purpose": "Inspect the complete mixer routing graph and obtain the revision needed for a guarded route edit."
-    },
-    "fl_routing_scene": {
-      "domain": "mixer",
-      "purpose": "Preferred sends/buses/sidechain routing workflow. Zero-level enabled routes carry sidechain signals, and receiving-plugin configuration remains separate."
-    },
-    "fl_is_plugin_valid": {
-      "domain": "plugins",
-      "purpose": "Check whether a generator/effect exists at an exact location before querying its controls."
-    },
-    "fl_get_plugin_name": {
-      "domain": "plugins",
-      "purpose": "Read the current plugin name; identical names alone do not uniquely identify plugin state or binary version."
-    },
-    "fl_get_plugin_color": {
-      "domain": "plugins",
-      "purpose": "Read host label color; this is metadata rather than sound information."
-    },
-    "fl_get_preset_count": {
-      "domain": "plugins",
-      "purpose": "Read the preset count the plugin exposes to FL; not every internal preset browser is represented."
-    },
-    "fl_get_plugin_param_count": {
-      "domain": "plugins",
-      "purpose": "Read the number of exposed parameters before a bounded inspection."
-    },
-    "fl_get_plugin_param_value": {
-      "domain": "plugins",
-      "purpose": "Read one normalized parameter plus its literal display string."
-    },
-    "fl_get_plugin_params": {
-      "domain": "plugins",
-      "purpose": "Read a bounded parameter set. Useful for narrow inspection without printing an entire large plugin catalog."
-    },
-    "fl_plugin_parameters": {
-      "domain": "plugins",
-      "purpose": "Search/paginate exposed parameters, omitting empty VST padding. Prefer a query over dumping every parameter."
-    },
-    "fl_plugin_inspect": {
-      "domain": "plugins",
-      "purpose": "Preferred indexed-plugin inspection: exact generator/effect context, all-state revision and a filtered parameter page."
-    },
-    "fl_plugin_apply": {
-      "domain": "plugins",
-      "purpose": "Preferred guarded indexed-control write when working in normalized values. Bind names/revision and verify expected displays; uncertainty stops replay."
-    },
-    "fl_plugin_adapter_catalog": {
-      "domain": "plugins",
-      "purpose": "Find packaged named-control profiles and calibration evidence before assuming physical-unit support."
-    },
-    "fl_plugin_controls_inspect": {
-      "domain": "plugins",
-      "purpose": "Preferred named-control read for a recognized exact layout. Returns physical-unit availability and conditions without probing or changing sound."
-    },
-    "fl_plugin_controls_set": {
-      "domain": "plugins",
-      "purpose": "Preferred calibrated physical-value or enum write. Change a mode selector separately, reinspect, then edit controls dependent on that mode."
-    },
-    "fl_set_plugin_param_value": {
-      "domain": "plugins",
-      "purpose": "Basic single normalized parameter setter. Prefer named calibrated controls for ms/Hz/dB and the guarded batch for coordinated changes."
-    },
-    "fl_plugin_set_many": {
-      "domain": "plugins",
-      "purpose": "Legacy normalized bulk setter with identity checks. Its verification guarantees are narrower than fl_plugin_apply."
-    },
-    "fl_plugin_set_display_value": {
-      "domain": "plugins",
-      "purpose": "Actively probe a continuous parameter toward a displayed physical value. This is a write/calibration operation, not a harmless read."
-    },
-    "fl_mix_profile": {
-      "domain": "plugins",
-      "purpose": "Apply a reusable group of named plugin controls with preflight and a recovery profile. Inspect its specific contract instead of assuming full new-adapter guarantees."
-    },
-    "fl_next_preset": {
-      "domain": "plugins",
-      "purpose": "Advance one host-exposed preset. This changes sound and may not correspond to the plugin internal browser."
-    },
-    "fl_prev_preset": {
-      "domain": "plugins",
-      "purpose": "Move back one host-exposed preset; use observed identity and preserve valuable sound edits."
-    },
-    "fl_effect_add": {
-      "domain": "plugins",
-      "purpose": "Load an exact effect file/name into an empty slot through the native backend and verify the loaded plugin."
-    },
-    "fl_plugin_add": {
-      "domain": "plugins",
-      "purpose": "Load an exact effect into an empty slot through the experimental native backend and verify its identity."
-    },
-    "fl_plugin_chain": {
-      "domain": "plugins",
-      "purpose": "Load several effects serially with a receipt for each verified slot. It is not an all-or-nothing rollback transaction."
-    },
-    "fl_plugin_remove": {
-      "domain": "plugins",
-      "purpose": "Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend implementation. Native controls can inspect and adjust an existing plugin."
-    },
-    "fl_background_effect_inspect": {
-      "domain": "plugins",
-      "purpose": "Inspect the experimental background effect target: an empty slot on the already selected visible mixer strip."
-    },
-    "fl_background_effect_load": {
-      "domain": "plugins",
-      "purpose": "Load one .fst via the experimental background route with one-shot dispatch and later identity checks. Selection and window prerequisites are strict."
-    },
-    "fl_serum_recipes": {
-      "domain": "serum",
-      "purpose": "Discover supported kick, 808, lead and pad templates and their editable settings before building a preset."
-    },
-    "fl_serum_inspect": {
-      "domain": "serum",
-      "purpose": "Read the 43 supported named Serum controls and confirm live mappings; do not infer unknown FX topology from these controls."
-    },
-    "fl_serum_apply": {
-      "domain": "serum",
-      "purpose": "Apply supported Serum controls in physical units with its own preflight/readback/rollback contract. This differs from the generic no-auto-rollback workflow."
-    },
-    "fl_serum_inspect_preset": {
-      "domain": "serum",
-      "purpose": "Read a supported native Serum preset file, including routing/envelopes and container checks. This is file evidence, not proof of a live loaded sound."
-    },
-    "fl_serum_build_preset": {
-      "domain": "serum",
-      "purpose": "Generate a new native preset from supported templates without opening FL. A valid file still needs loading and audition."
-    },
-    "fl_serum_edit_preset": {
-      "domain": "serum",
-      "purpose": "Create a modified preset copy while preserving unrelated DSP fields. Useful when a live host cache cannot be trusted."
-    },
-    "fl_serum_load_preset": {
-      "domain": "serum",
-      "purpose": "Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no backend implementation. Use offline Serum preset tools, or fl_preset_load for an existing FL .fst preset."
-    },
-    "fl_serum_probe": {
-      "domain": "serum",
-      "purpose": "Audition one temporary note and record system-loopback audio for measurement. Other application audio can contaminate the probe."
-    },
-    "fl_serum_analyze_audio": {
-      "domain": "serum",
-      "purpose": "Measure pitch/harmonics/activity for a rendered or probed sound. It cannot certify perceptual similarity or musical quality."
-    },
-    "fl_find_assets": {
-      "domain": "assets",
-      "purpose": "Search bounded local asset roots for exact sample, preset and plugin paths. Resolve duplicate names before loading."
-    },
-    "fl_sample_add": {
-      "domain": "assets",
-      "purpose": "Load a WAV sample into a new sampler through the native backend."
-    },
-    "fl_instrument_add": {
-      "domain": "assets",
-      "purpose": "Load a generator FST into a new Channel Rack channel through the native backend."
-    },
-    "fl_preset_load": {
-      "domain": "assets",
-      "purpose": "Load a plugin FST using the native backend with guarded channel or mixer targets."
-    },
-    "fl_audio_clip_add": {
-      "domain": "assets",
-      "purpose": "Unavailable in backend-only SyncFL. Creating a new Playlist audio channel has no backend implementation. Saved-FLP edits can reuse existing audio channels."
-    },
-    "fl_audio_inspect": {
-      "domain": "audio",
-      "purpose": "First read for an audio file: identity/hash, duration, levels and stereo/silence evidence. Use its source hash for subsequent guarded file edits."
-    },
-    "fl_audio_bpm": {
-      "domain": "audio",
-      "purpose": "Estimate fixed tempo and half/double-time candidates from WAV audio. A ranking is not a guaranteed musical tempo and never updates project BPM."
-    },
-    "fl_audio_key": {
-      "domain": "audio",
-      "purpose": "Estimate a global major/minor key with relative candidate confidence. It does not detect every modulation or tune the vocal automatically."
-    },
-    "fl_audio_loudness": {
-      "domain": "audio",
-      "purpose": "Measure full-file integrated loudness and true peaks through FFmpeg. Prefer it over raw RMS for delivery-level checks."
-    },
-    "fl_audio_compare": {
-      "domain": "audio",
-      "purpose": "Compare measured levels/stereo statistics against a reference. It does not time-align files or measure perceptual likeness."
-    },
-    "fl_mix_diagnose": {
-      "domain": "audio",
-      "purpose": "Turn rendered-file measurements into explicit gain proposals. It does not diagnose EQ/compression by track name or apply mastering."
-    },
-    "fl_audio_edit": {
-      "domain": "audio",
-      "purpose": "Make a new WAV with reviewed trim/reverse/fade/gain edits and exact readback. The original remains untouched, but cue/loop metadata is not preserved."
-    },
-    "fl_project_native_inspect": {
-      "domain": "project",
-      "purpose": "Read native project title/revision without desktop input. The title cannot prove an absolute project path or saved bytes."
-    },
-    "fl_project_save_native": {
-      "domain": "project",
-      "purpose": "Background save with host clean-state evidence. Distinguish its host-only guarantee from exact-path filesystem verification."
-    },
-    "fl_project_info": {
-      "domain": "project",
-      "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is unavailable. Use fl_project_native_inspect for native project state; the absolute path remains caller-declared."
-    },
-    "fl_project_save": {
-      "domain": "project",
-      "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable. Use fl_project_save_native to save the current named project."
-    },
-    "fl_project_save_as": {
-      "domain": "project",
-      "purpose": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no backend implementation. Use fl_project_save_native for an already named project."
-    },
-    "fl_project_open": {
-      "domain": "project",
-      "purpose": "Open a verified FLP after first preserving current edits in a new recovery file. It is a guarded project replacement, not a casual read."
-    },
-    "fl_project_settings": {
-      "domain": "project",
-      "purpose": "Guarded BPM/shuffle edits. It does not provide general PPQ or time-signature editing."
-    },
-    "fl_project_file_inspect": {
-      "domain": "project",
-      "purpose": "Read patterns, notes, Playlist and sample references from a saved FLP. Unsaved live edits are outside this snapshot."
-    },
-    "fl_project_package": {
-      "domain": "project",
-      "purpose": "Bundle a saved project and referenced media into a new folder with hashes. It cannot include commercial plugin binaries or licenses."
-    },
-    "fl_playlist_file_inspect": {
-      "domain": "project",
-      "purpose": "Read saved clip identities, tick positions and tracks before arrangement edits."
-    },
-    "fl_playlist_file_edit": {
-      "domain": "project",
-      "purpose": "Write a new FLP with exact supported clip placement changes. Preserve source offsets/opaque data; arbitrary trims/stretching and new note content are outside this tool."
-    },
-    "fl_automation_file_inspect": {
-      "domain": "automation",
-      "purpose": "Read saved automation curves and hashes. Point ticks are local to each clip rather than global song time."
-    },
-    "fl_automation_file_edit": {
-      "domain": "automation",
-      "purpose": "Edit existing saved curves into a new FLP with normalized values and explicit segment modes. Reopen the new file only after review."
-    },
-    "fl_automation_create_channel": {
-      "domain": "automation",
-      "purpose": "Unavailable in backend-only SyncFL. Creating a new automation link has no backend implementation. Use automation inspection and saved-FLP editing for existing automation."
-    },
-    "fl_automation_target_inspect": {
-      "domain": "automation",
-      "purpose": "Resolve the real native event ID and label for a specific channel, mixer or plugin target before attaching automation."
-    },
-    "fl_automation_links_inspect": {
-      "domain": "automation",
-      "purpose": "Read exact saved link identities with bounded results. Useful for diagnosing a curve that controls the wrong parameter."
-    },
-    "fl_automation_file_retarget": {
-      "domain": "automation",
-      "purpose": "Redirect one verified saved automation link into a new FLP, preserving its curve and placement. Target identity, file hash and link layout must all match."
-    },
-    "fl_recording_inspect": {
-      "domain": "jobs",
-      "purpose": "Read arm/path metadata and fresh target revisions. It explicitly cannot establish input-device, buffer or latency configuration."
-    },
-    "fl_recording_arm": {
-      "domain": "jobs",
-      "purpose": "Set a desired recording arm state once with later verification. Prefer this to the legacy toggle."
-    },
-    "fl_recording_configure_file": {
-      "domain": "jobs",
-      "purpose": "Unavailable in backend-only SyncFL. Setting a recording filename has no backend implementation. Use native recording inspection and arm controls for existing targets."
-    },
-    "fl_recording_start": {
-      "domain": "jobs",
-      "purpose": "Start a bounded owned recording worker after manual/input prerequisites and fresh inspection. A queued job is not a verified take."
-    },
-    "fl_recording_status": {
-      "domain": "jobs",
-      "purpose": "Read persistent job and decoded-take evidence. Check transport-stop and recorded_take_verified fields rather than interpreting success alone."
-    },
-    "fl_recording_stop": {
-      "domain": "jobs",
-      "purpose": "Ask the owned recording worker to stop early. Poll status afterward; writing a stop request does not prove FL has stopped."
-    },
-    "fl_render_start": {
-      "domain": "jobs",
-      "purpose": "Unavailable in backend-only SyncFL. Starting a render has no backend implementation. fl_render_status can observe an existing render."
-    },
-    "fl_render_status": {
-      "domain": "jobs",
-      "purpose": "Poll a render through completion and file/decode verification. Only the verified terminal state establishes completed output."
-    },
-    "fl_render_cancel": {
-      "domain": "jobs",
-      "purpose": "Unavailable in backend-only SyncFL. Cancelling a render has no backend implementation. fl_render_status can observe an existing render."
-    },
-    "fl_batch": {
-      "domain": "advanced",
-      "purpose": "Execute documented typed operations after preflight. Fewer round trips help, but partial application stops without universal rollback."
-    },
-    "fl_native_call": {
-      "domain": "advanced",
-      "purpose": "Expert escape hatch for an advertised FL native function. Positional arguments and an allow_write flag do not replace workflow-specific identity/recovery guards."
-    },
-    "fl_ui_inspect": {
-      "domain": "advanced",
-      "purpose": "Inspect FL-owned windows and semantic controls; request screenshots/OCR only as needed. Returned observations are short-lived targeting evidence."
-    },
-    "fl_ui_action": {
-      "domain": "advanced",
-      "purpose": "Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend operations; fl_ui_inspect provides observation only."
-    },
-    "fl_project_create": {
-      "domain": "project",
-      "purpose": "Create and load a named FL26 project from the clean unnamed Empty project before adding sounds or notes. Performs the first save through the backend; never ask the user to save a blank project manually."
-    }
+  "fl_connect": {
+   "domain": "session",
+   "purpose": "Reconnect the dedicated MIDI session and verify the controller handshake when connection diagnostics indicate a problem."
+  },
+  "fl_connection_status": {
+   "domain": "session",
+   "purpose": "Check whether endpoints merely exist or the live FL controller actually responds. Use before live work."
+  },
+  "fl_session_inspect": {
+   "domain": "session",
+   "purpose": "Preferred starting point for live work: inspect project identity, transport and dependencies without changing the project."
+  },
+  "fl_workflow_catalog": {
+   "domain": "session",
+   "purpose": "Find which workflows exist, their prerequisite tools and verification limits. This is the natural root for task-oriented discovery."
+  },
+  "fl_capabilities": {
+   "domain": "session",
+   "purpose": "Inspect the native API signatures actually advertised by the running controller. Use before an expert native call, not as a giant default prompt dump."
+  },
+  "fl_production_inspect": {
+   "domain": "session",
+   "purpose": "Obtain fresh identity and revision evidence for guarded channel, project or step edits. Inspect the exact scope that the next write needs."
+  },
+  "fl_project_snapshot": {
+   "domain": "session",
+   "purpose": "Broad whole-session inventory for orientation. Because it returns channels, mixer, effects and routes together, prefer narrower reads once the target is known."
+  },
+  "fl_receipt": {
+   "domain": "session",
+   "purpose": "Resolve an uncertain or timed-out controller command before deciding whether recovery is needed. It is evidence lookup, not undo or replay."
+  },
+  "fl_get_transport_status": {
+   "domain": "transport",
+   "purpose": "Read playback, recording, position and mode before deciding whether a guarded operation can run."
+  },
+  "fl_get_song_length": {
+   "domain": "transport",
+   "purpose": "Read the host timeline duration when planning bounded playback, export or recording checks."
+  },
+  "fl_play": {
+   "domain": "transport",
+   "purpose": "Toggle playback for an audition. This is a toggle, so inspect the acknowledged state instead of repeating a request blindly."
+  },
+  "fl_stop": {
+   "domain": "transport",
+   "purpose": "Stop playback and inspect the acknowledgement. Use as the transport stop primitive where appropriate."
+  },
+  "fl_record": {
+   "domain": "transport",
+   "purpose": "Toggle the recording latch. Prefer the recording job workflow for a bounded, verified take."
+  },
+  "fl_set_loop_mode": {
+   "domain": "transport",
+   "purpose": "Select song or pattern playback, which changes what the same Play action auditions."
+  },
+  "fl_set_song_position": {
+   "domain": "transport",
+   "purpose": "Seek to a location with an explicit unit/mode. Avoid confusing normalized position, milliseconds, seconds and ticks."
+  },
+  "fl_set_playback_speed": {
+   "domain": "transport",
+   "purpose": "Change the playback multiplier. This is distinct from setting the project BPM."
+  },
+  "fl_get_channel_count": {
+   "domain": "channels",
+   "purpose": "Count the relevant Channel Rack scope. Global versus current-group indexing matters when resolving later targets."
+  },
+  "fl_get_all_channels": {
+   "domain": "channels",
+   "purpose": "Inventory Channel Rack entries, selection, mute state and mixer destinations before targeting a channel."
+  },
+  "fl_get_channel_info": {
+   "domain": "channels",
+   "purpose": "Inspect one channel when its index is known; more compact than a complete project snapshot."
+  },
+  "fl_get_selected_channel": {
+   "domain": "channels",
+   "purpose": "Discover the selected channel before a selected-target operation; explicitly handle no selection."
+  },
+  "fl_channel_configure": {
+   "domain": "channels",
+   "purpose": "Preferred guarded multi-property channel edit. Bind gain, pan, pitch, mute or routing to a fresh global-channel revision and retain the receipt."
+  },
+  "fl_set_channel_name": {
+   "domain": "channels",
+   "purpose": "Basic channel-label setter. Renaming helps later human identification but does not create a stable unique ID."
+  },
+  "fl_set_channel_color": {
+   "domain": "channels",
+   "purpose": "Basic Channel Rack color setter using RGB components; a presentation change."
+  },
+  "fl_set_channel_volume": {
+   "domain": "channels",
+   "purpose": "Basic normalized channel gain setter. Prefer the guarded configure workflow when coordinating production edits."
+  },
+  "fl_set_channel_pan": {
+   "domain": "channels",
+   "purpose": "Basic channel balance setter in -1..1; this is not the normalized 0..1 automation representation."
+  },
+  "fl_mute_channel": {
+   "domain": "channels",
+   "purpose": "Set an explicit desired mute state; null means toggle and requires special care when recovering."
+  },
+  "fl_solo_channel": {
+   "domain": "channels",
+   "purpose": "Set an explicit solo state for auditioning one source; null means toggle."
+  },
+  "fl_select_channel": {
+   "domain": "channels",
+   "purpose": "Select or deselect one global channel; other selections may remain."
+  },
+  "fl_select_one_channel": {
+   "domain": "channels",
+   "purpose": "Make one channel the sole selection before a selected-channel workflow."
+  },
+  "fl_route_channel_to_mixer": {
+   "domain": "channels",
+   "purpose": "Assign a Channel Rack source to a mixer strip. This differs from a send between two mixer strips."
+  },
+  "fl_trigger_note": {
+   "domain": "channels",
+   "purpose": "Play or release a live note for audition. It does not compose or save piano-roll notes."
+  },
+  "fl_get_grid_bit": {
+   "domain": "channels",
+   "purpose": "Read one current-pattern step when checking a specific drum hit."
+  },
+  "fl_get_step_sequence": {
+   "domain": "channels",
+   "purpose": "Read a bounded span of current-pattern steps for rhythm inspection."
+  },
+  "fl_set_grid_bit": {
+   "domain": "channels",
+   "purpose": "Set one current-pattern step. For a complete planned pattern prefer the revision-guarded step editor."
+  },
+  "fl_set_step_sequence": {
+   "domain": "channels",
+   "purpose": "Basic bulk boolean step writer. Specify the intended target and span; it is a lower-level option than the guarded editor."
+  },
+  "fl_step_sequence_edit": {
+   "domain": "channels",
+   "purpose": "Preferred guarded step-pattern replacement. Explicit total_steps determines the clearing boundary, and later steps remain preserved."
+  },
+  "fl_background_piano_inspect": {
+   "domain": "piano",
+   "purpose": "Preferred inspection for the experimental script-free FL26 score workflow. Bind the saved FLP, target channel, sound and routing before writing."
+  },
+  "fl_background_piano_select": {
+   "domain": "piano",
+   "purpose": "Switch to an existing pattern and sound with verification. It also exposes the piano roll and routed mixer target, and may save recovery copies."
+  },
+  "fl_background_piano_write": {
+   "domain": "piano",
+   "purpose": "Replace one saved FL26 score without ComposeWithLLM. Use after background inspection; it supports the documented basic note fields, not every legacy expression field."
+  },
+  "fl_piano_roll_prepare": {
+   "domain": "piano",
+   "purpose": "Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable. Use fl_background_piano_inspect and fl_background_piano_select."
+  },
+  "fl_get_piano_roll_info": {
+   "domain": "piano",
+   "purpose": "Inspect bridge paths/protocol and pending work without triggering the FL piano script. Useful for diagnosing queues."
+  },
+  "fl_get_piano_roll_state": {
+   "domain": "piano",
+   "purpose": "Unavailable in backend-only SyncFL. Legacy script-based piano inspection is unavailable. Use fl_background_piano_inspect."
+  },
+  "fl_send_notes": {
+   "domain": "piano",
+   "purpose": "Unavailable in backend-only SyncFL. Legacy score delivery is unavailable. Use fl_background_piano_write for persistent notes."
+  },
+  "fl_send_chord": {
+   "domain": "piano",
+   "purpose": "Convenience note-writing transaction for simultaneous pitches. It still needs the same target and verification discipline as other persistent notes."
+  },
+  "fl_delete_notes": {
+   "domain": "piano",
+   "purpose": "Delete matching pitches/times while retaining other notes. Specify exact matches and inspect the resulting score."
+  },
+  "fl_clear_piano_roll": {
+   "domain": "piano",
+   "purpose": "Clear notes from the inspected roll with recovery information. This is destructive musical editing, even though markers are preserved."
+  },
+  "fl_trigger_script": {
+   "domain": "piano",
+   "purpose": "Execute an already prepared piano request or refresh the queue. Correlation with the matching response matters more than a generic success flag."
+  },
+  "fl_clear_request_queue": {
+   "domain": "piano",
+   "purpose": "Acknowledge completed bridge work. It deliberately refuses to discard unresolved requests or recovery evidence."
+  },
+  "fl_write_pattern_bank": {
+   "domain": "piano",
+   "purpose": "Unavailable in backend-only SyncFL. Legacy script-based pattern-bank writing is unavailable. Use native background piano tools or saved-FLP editing."
+  },
+  "fl_midi_reference_search": {
+   "domain": "piano",
+   "purpose": "Find and summarize local MIDI examples by filenames or musical fingerprints. Search completeness and musical relevance are separate questions."
+  },
+  "fl_notes_transform": {
+   "domain": "piano",
+   "purpose": "Propose deterministic transposition/quantization while retaining supported expression. It returns notes for review and never applies them to FL itself."
+  },
+  "fl_get_mixer_track_count": {
+   "domain": "mixer",
+   "purpose": "Read mixer capacity, including Master. A capacity count does not mean every strip contains useful material."
+  },
+  "fl_get_all_mixer_tracks": {
+   "domain": "mixer",
+   "purpose": "Inventory occupied strips, or include empty strips when planning destinations."
+  },
+  "fl_get_mixer_track_info": {
+   "domain": "mixer",
+   "purpose": "Read one strip and its gain/dB values before a targeted change."
+  },
+  "fl_mixer_scene": {
+   "domain": "mixer",
+   "purpose": "Preferred guarded balance edit across named strips. Supports explicit dB targets and a receipt, unlike a sequence of basic normalized setters."
+  },
+  "fl_set_track_volume": {
+   "domain": "mixer",
+   "purpose": "Basic mixer gain setter: unity is 0.8, not 1.0. Use observed dB or the scene tool for a musical level target."
+  },
+  "fl_set_track_pan": {
+   "domain": "mixer",
+   "purpose": "Basic mixer balance setter in -1..1."
+  },
+  "fl_set_stereo_separation": {
+   "domain": "mixer",
+   "purpose": "Adjust FL stereo separation on one strip. It is not a general stereo-imaging analysis or mid/side processor."
+  },
+  "fl_set_track_name": {
+   "domain": "mixer",
+   "purpose": "Rename a strip for readable targeting; inspect current identities again after changes."
+  },
+  "fl_set_track_color": {
+   "domain": "mixer",
+   "purpose": "Set mixer label color from RGB values."
+  },
+  "fl_mute_track": {
+   "domain": "mixer",
+   "purpose": "Set a desired mixer mute state. Null invokes a toggle, so retries can reverse the intended result."
+  },
+  "fl_solo_track": {
+   "domain": "mixer",
+   "purpose": "Solo with explicit source/send inclusion modes. These modes affect more than just the visible solo button."
+  },
+  "fl_arm_track": {
+   "domain": "mixer",
+   "purpose": "Legacy one-shot arm toggle. Prefer fl_recording_inspect plus fl_recording_arm for an exact desired recording state."
+  },
+  "fl_ensure_mixer_tracks": {
+   "domain": "mixer",
+   "purpose": "Unavailable in backend-only SyncFL. Appending mixer inserts has no backend implementation. Use native mixer tools with existing track indices."
+  },
+  "fl_mixer_controls_inspect": {
+   "domain": "mixer",
+   "purpose": "Inspect built-in mixer EQ and strip switches with revision evidence, rather than treating them as plugin controls."
+  },
+  "fl_mixer_controls_set": {
+   "domain": "mixer",
+   "purpose": "Guarded native changes to built-in EQ and polarity/swap/effect switches. Inputs are normalized even when reads report Hz or dB."
+  },
+  "fl_mixer_meter_watch": {
+   "domain": "mixer",
+   "purpose": "Observe bounded peak-meter behavior over time. Useful for activity/clipping evidence; it does not replace integrated loudness or listening."
+  },
+  "fl_routing_inspect": {
+   "domain": "mixer",
+   "purpose": "Inspect the complete mixer routing graph and obtain the revision needed for a guarded route edit."
+  },
+  "fl_routing_scene": {
+   "domain": "mixer",
+   "purpose": "Preferred sends/buses/sidechain routing workflow. Zero-level enabled routes carry sidechain signals, and receiving-plugin configuration remains separate."
+  },
+  "fl_is_plugin_valid": {
+   "domain": "plugins",
+   "purpose": "Check whether a generator/effect exists at an exact location before querying its controls."
+  },
+  "fl_get_plugin_name": {
+   "domain": "plugins",
+   "purpose": "Read the current plugin name; identical names alone do not uniquely identify plugin state or binary version."
+  },
+  "fl_get_plugin_color": {
+   "domain": "plugins",
+   "purpose": "Read host label color; this is metadata rather than sound information."
+  },
+  "fl_get_preset_count": {
+   "domain": "plugins",
+   "purpose": "Read the preset count the plugin exposes to FL; not every internal preset browser is represented."
+  },
+  "fl_get_plugin_param_count": {
+   "domain": "plugins",
+   "purpose": "Read the number of exposed parameters before a bounded inspection."
+  },
+  "fl_get_plugin_param_value": {
+   "domain": "plugins",
+   "purpose": "Read one normalized parameter plus its literal display string."
+  },
+  "fl_get_plugin_params": {
+   "domain": "plugins",
+   "purpose": "Read a bounded parameter set. Useful for narrow inspection without printing an entire large plugin catalog."
+  },
+  "fl_plugin_parameters": {
+   "domain": "plugins",
+   "purpose": "Search/paginate exposed parameters, omitting empty VST padding. Prefer a query over dumping every parameter."
+  },
+  "fl_plugin_inspect": {
+   "domain": "plugins",
+   "purpose": "Preferred indexed-plugin inspection: exact generator/effect context, all-state revision and a filtered parameter page."
+  },
+  "fl_plugin_apply": {
+   "domain": "plugins",
+   "purpose": "Preferred guarded indexed-control write when working in normalized values. Bind names/revision and verify expected displays; uncertainty stops replay."
+  },
+  "fl_plugin_adapter_catalog": {
+   "domain": "plugins",
+   "purpose": "Find packaged named-control profiles and calibration evidence before assuming physical-unit support."
+  },
+  "fl_plugin_controls_inspect": {
+   "domain": "plugins",
+   "purpose": "Preferred named-control read for a recognized exact layout. Returns physical-unit availability and conditions without probing or changing sound."
+  },
+  "fl_plugin_controls_set": {
+   "domain": "plugins",
+   "purpose": "Preferred calibrated physical-value or enum write. Change a mode selector separately, reinspect, then edit controls dependent on that mode."
+  },
+  "fl_set_plugin_param_value": {
+   "domain": "plugins",
+   "purpose": "Basic single normalized parameter setter. Prefer named calibrated controls for ms/Hz/dB and the guarded batch for coordinated changes."
+  },
+  "fl_plugin_set_many": {
+   "domain": "plugins",
+   "purpose": "Legacy normalized bulk setter with identity checks. Its verification guarantees are narrower than fl_plugin_apply."
+  },
+  "fl_plugin_set_display_value": {
+   "domain": "plugins",
+   "purpose": "Actively probe a continuous parameter toward a displayed physical value. This is a write/calibration operation, not a harmless read."
+  },
+  "fl_mix_profile": {
+   "domain": "plugins",
+   "purpose": "Apply a reusable group of named plugin controls with preflight and a recovery profile. Inspect its specific contract instead of assuming full new-adapter guarantees."
+  },
+  "fl_next_preset": {
+   "domain": "plugins",
+   "purpose": "Advance one host-exposed preset. This changes sound and may not correspond to the plugin internal browser."
+  },
+  "fl_prev_preset": {
+   "domain": "plugins",
+   "purpose": "Move back one host-exposed preset; use observed identity and preserve valuable sound edits."
+  },
+  "fl_effect_add": {
+   "domain": "plugins",
+   "purpose": "Load an exact effect file/name into an empty slot through the native backend and verify the loaded plugin."
+  },
+  "fl_plugin_add": {
+   "domain": "plugins",
+   "purpose": "Load an exact effect into an empty slot through the experimental native backend and verify its identity."
+  },
+  "fl_plugin_chain": {
+   "domain": "plugins",
+   "purpose": "Load several effects serially with a receipt for each verified slot. It is not an all-or-nothing rollback transaction."
+  },
+  "fl_plugin_remove": {
+   "domain": "plugins",
+   "purpose": "Unavailable in backend-only SyncFL. Removing a loaded plugin has no backend implementation. Native controls can inspect and adjust an existing plugin."
+  },
+  "fl_background_effect_inspect": {
+   "domain": "plugins",
+   "purpose": "Inspect the experimental background effect target: an empty slot on the already selected visible mixer strip."
+  },
+  "fl_background_effect_load": {
+   "domain": "plugins",
+   "purpose": "Load one .fst via the experimental background route with one-shot dispatch and later identity checks. Selection and window prerequisites are strict."
+  },
+  "fl_serum_recipes": {
+   "domain": "serum",
+   "purpose": "Discover supported kick, 808, lead and pad templates and their editable settings before building a preset."
+  },
+  "fl_serum_inspect": {
+   "domain": "serum",
+   "purpose": "Read the 43 supported named Serum controls and confirm live mappings; do not infer unknown FX topology from these controls."
+  },
+  "fl_serum_apply": {
+   "domain": "serum",
+   "purpose": "Apply supported Serum controls in physical units with its own preflight/readback/rollback contract. This differs from the generic no-auto-rollback workflow."
+  },
+  "fl_serum_inspect_preset": {
+   "domain": "serum",
+   "purpose": "Read a supported native Serum preset file, including routing/envelopes and container checks. This is file evidence, not proof of a live loaded sound."
+  },
+  "fl_serum_build_preset": {
+   "domain": "serum",
+   "purpose": "Generate a new native preset from supported templates without opening FL. A valid file still needs loading and audition."
+  },
+  "fl_serum_edit_preset": {
+   "domain": "serum",
+   "purpose": "Create a modified preset copy while preserving unrelated DSP fields. Useful when a live host cache cannot be trusted."
+  },
+  "fl_serum_load_preset": {
+   "domain": "serum",
+   "purpose": "Unavailable in backend-only SyncFL. Direct live loading of .SerumPreset files has no backend implementation. Use offline Serum preset tools, or fl_preset_load for an existing FL .fst preset."
+  },
+  "fl_serum_probe": {
+   "domain": "serum",
+   "purpose": "Audition one temporary note and record system-loopback audio for measurement. Other application audio can contaminate the probe."
+  },
+  "fl_serum_analyze_audio": {
+   "domain": "serum",
+   "purpose": "Measure pitch/harmonics/activity for a rendered or probed sound. It cannot certify perceptual similarity or musical quality."
+  },
+  "fl_find_assets": {
+   "domain": "assets",
+   "purpose": "Search bounded local asset roots for exact sample, preset and plugin paths. Resolve duplicate names before loading."
+  },
+  "fl_sample_add": {
+   "domain": "assets",
+   "purpose": "Load a WAV sample into a new sampler through the native backend."
+  },
+  "fl_instrument_add": {
+   "domain": "assets",
+   "purpose": "Load a generator FST into a new Channel Rack channel through the native backend."
+  },
+  "fl_preset_load": {
+   "domain": "assets",
+   "purpose": "Load a plugin FST using the native backend with guarded channel or mixer targets."
+  },
+  "fl_audio_clip_add": {
+   "domain": "assets",
+   "purpose": "Unavailable in backend-only SyncFL. Creating a new Playlist audio channel has no backend implementation. Saved-FLP edits can reuse existing audio channels."
+  },
+  "fl_audio_inspect": {
+   "domain": "audio",
+   "purpose": "First read for an audio file: identity/hash, duration, levels and stereo/silence evidence. Use its source hash for subsequent guarded file edits."
+  },
+  "fl_audio_bpm": {
+   "domain": "audio",
+   "purpose": "Estimate fixed tempo and half/double-time candidates from WAV audio. A ranking is not a guaranteed musical tempo and never updates project BPM."
+  },
+  "fl_audio_key": {
+   "domain": "audio",
+   "purpose": "Estimate a global major/minor key with relative candidate confidence. It does not detect every modulation or tune the vocal automatically."
+  },
+  "fl_audio_loudness": {
+   "domain": "audio",
+   "purpose": "Measure full-file integrated loudness and true peaks through FFmpeg. Prefer it over raw RMS for delivery-level checks."
+  },
+  "fl_audio_compare": {
+   "domain": "audio",
+   "purpose": "Compare measured levels/stereo statistics against a reference. It does not time-align files or measure perceptual likeness."
+  },
+  "fl_mix_diagnose": {
+   "domain": "audio",
+   "purpose": "Turn rendered-file measurements into explicit gain proposals. It does not diagnose EQ/compression by track name or apply mastering."
+  },
+  "fl_audio_edit": {
+   "domain": "audio",
+   "purpose": "Make a new WAV with reviewed trim/reverse/fade/gain edits and exact readback. The original remains untouched, but cue/loop metadata is not preserved."
+  },
+  "fl_project_native_inspect": {
+   "domain": "project",
+   "purpose": "Read native project title/revision without desktop input. The title cannot prove an absolute project path or saved bytes."
+  },
+  "fl_project_save_native": {
+   "domain": "project",
+   "purpose": "Background save with host clean-state evidence. Distinguish its host-only guarantee from exact-path filesystem verification."
+  },
+  "fl_project_info": {
+   "domain": "project",
+   "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact project-path discovery is unavailable. Use fl_project_native_inspect for native project state; the absolute path remains caller-declared."
+  },
+  "fl_project_save": {
+   "domain": "project",
+   "purpose": "Unavailable in backend-only SyncFL. Dialog-based exact-path saving is unavailable. Use fl_project_save_native to save the current named project."
+  },
+  "fl_project_save_as": {
+   "domain": "project",
+   "purpose": "Unavailable in backend-only SyncFL. Saving the active project under a new name has no backend implementation. Use fl_project_save_native for an already named project."
+  },
+  "fl_project_open": {
+   "domain": "project",
+   "purpose": "Open a verified FLP after first preserving current edits in a new recovery file. It is a guarded project replacement, not a casual read."
+  },
+  "fl_project_settings": {
+   "domain": "project",
+   "purpose": "Guarded BPM/shuffle edits. It does not provide general PPQ or time-signature editing."
+  },
+  "fl_project_file_inspect": {
+   "domain": "project",
+   "purpose": "Read patterns, notes, Playlist and sample references from a saved FLP. Unsaved live edits are outside this snapshot."
+  },
+  "fl_project_package": {
+   "domain": "project",
+   "purpose": "Bundle a saved project and referenced media into a new folder with hashes. It cannot include commercial plugin binaries or licenses."
+  },
+  "fl_playlist_file_inspect": {
+   "domain": "project",
+   "purpose": "Read saved clip identities, tick positions and tracks before arrangement edits."
+  },
+  "fl_playlist_file_edit": {
+   "domain": "project",
+   "purpose": "Write a new FLP with exact supported clip placement changes. Preserve source offsets/opaque data; arbitrary trims/stretching and new note content are outside this tool."
+  },
+  "fl_automation_file_inspect": {
+   "domain": "automation",
+   "purpose": "Read saved automation curves and hashes. Point ticks are local to each clip rather than global song time."
+  },
+  "fl_automation_file_edit": {
+   "domain": "automation",
+   "purpose": "Edit existing saved curves into a new FLP with normalized values and explicit segment modes. Reopen the new file only after review."
+  },
+  "fl_automation_create_channel": {
+   "domain": "automation",
+   "purpose": "Unavailable in backend-only SyncFL. Creating a new automation link has no backend implementation. Use automation inspection and saved-FLP editing for existing automation."
+  },
+  "fl_automation_target_inspect": {
+   "domain": "automation",
+   "purpose": "Resolve the real native event ID and label for a specific channel, mixer or plugin target before attaching automation."
+  },
+  "fl_automation_links_inspect": {
+   "domain": "automation",
+   "purpose": "Read exact saved link identities with bounded results. Useful for diagnosing a curve that controls the wrong parameter."
+  },
+  "fl_automation_file_retarget": {
+   "domain": "automation",
+   "purpose": "Redirect one verified saved automation link into a new FLP, preserving its curve and placement. Target identity, file hash and link layout must all match."
+  },
+  "fl_recording_inspect": {
+   "domain": "jobs",
+   "purpose": "Read arm/path metadata and fresh target revisions. It explicitly cannot establish input-device, buffer or latency configuration."
+  },
+  "fl_recording_arm": {
+   "domain": "jobs",
+   "purpose": "Set a desired recording arm state once with later verification. Prefer this to the legacy toggle."
+  },
+  "fl_recording_configure_file": {
+   "domain": "jobs",
+   "purpose": "Unavailable in backend-only SyncFL. Setting a recording filename has no backend implementation. Use native recording inspection and arm controls for existing targets."
+  },
+  "fl_recording_start": {
+   "domain": "jobs",
+   "purpose": "Start a bounded owned recording worker after manual/input prerequisites and fresh inspection. A queued job is not a verified take."
+  },
+  "fl_recording_status": {
+   "domain": "jobs",
+   "purpose": "Read persistent job and decoded-take evidence. Check transport-stop and recorded_take_verified fields rather than interpreting success alone."
+  },
+  "fl_recording_stop": {
+   "domain": "jobs",
+   "purpose": "Ask the owned recording worker to stop early. Poll status afterward; writing a stop request does not prove FL has stopped."
+  },
+  "fl_render_start": {
+   "domain": "jobs",
+   "purpose": "Unavailable in backend-only SyncFL. Starting a render has no backend implementation. fl_render_status can observe an existing render."
+  },
+  "fl_render_status": {
+   "domain": "jobs",
+   "purpose": "Poll a render through completion and file/decode verification. Only the verified terminal state establishes completed output."
+  },
+  "fl_render_cancel": {
+   "domain": "jobs",
+   "purpose": "Unavailable in backend-only SyncFL. Cancelling a render has no backend implementation. fl_render_status can observe an existing render."
+  },
+  "fl_batch": {
+   "domain": "advanced",
+   "purpose": "Execute documented typed operations after preflight. Fewer round trips help, but partial application stops without universal rollback."
+  },
+  "fl_native_call": {
+   "domain": "advanced",
+   "purpose": "Expert escape hatch for an advertised FL native function. Positional arguments and an allow_write flag do not replace workflow-specific identity/recovery guards."
+  },
+  "fl_ui_inspect": {
+   "domain": "advanced",
+   "purpose": "Inspect FL-owned windows and semantic controls; request screenshots/OCR only as needed. Returned observations are short-lived targeting evidence."
+  },
+  "fl_ui_action": {
+   "domain": "advanced",
+   "purpose": "Unavailable in backend-only SyncFL. Desktop input is unavailable. Use native backend operations; fl_ui_inspect provides observation only."
+  },
+  "fl_project_create": {
+   "domain": "project",
+   "purpose": "Create and load a named FL26 project from the clean unnamed Empty project before adding sounds or notes. Performs the first save through the backend; never ask the user to save a blank project manually."
+  },
+  "fl_undo_status": {
+   "domain": "session",
+   "purpose": "Read FL's own undo counters and the last undoable action name."
+  },
+  "fl_undo": {
+   "domain": "session",
+   "purpose": "Step FL's native undo stack back once; the undone action may not be the last tool call."
+  },
+  "fl_clear_dialog": {
+   "domain": "session",
+   "purpose": "Close FL's active popup menu without desktop input; needs FL_MCP_ACCESS=full."
+  },
+  "fl_plugin_mix": {
+   "domain": "mixer",
+   "purpose": "Read or set one effect slot's wet/dry level with readback."
+  },
+  "fl_track_slots": {
+   "domain": "mixer",
+   "purpose": "Read or set a mixer strip's whole effect rack on/off with readback."
+  },
+  "fl_event_inspect": {
+   "domain": "automation",
+   "purpose": "Read a native automation event's labels, raw value and smoothed value."
+  },
+  "fl_automate_event": {
+   "domain": "automation",
+   "purpose": "Preview/apply one native automation event write and verify it by readback."
+  },
+  "fl_rename_channel": {
+   "domain": "channels",
+   "purpose": "Rename a Channel Rack channel by global index with readback."
+  },
+  "fl_rename_pattern": {
+   "domain": "channels",
+   "purpose": "Rename a pattern by index with readback."
+  },
+  "fl_pattern_color": {
+   "domain": "channels",
+   "purpose": "Read or set a pattern's native color word with readback."
   }
+ }
 }

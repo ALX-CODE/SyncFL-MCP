@@ -222,6 +222,8 @@ def _inspect_target(conn, target):
     after = _resolve(conn, target)
     if before != after:
         raise RuntimeError("Automation target changed between independent observations")
+    # Keep the full resolution here: retarget_automation compares the live
+    # channel roster against a saved project. Only the tool boundary compacts.
     return dict(
         **after, revision=plugin_state._digest(after), success=True,
         status="native_target_resolved", limitations=list(LIMITATIONS),

@@ -1,6 +1,6 @@
 # MCP tool reference
 
-**147 registered tools.** Generated from the server's actual MCP definitions.
+**157 registered tools.** Generated from the server's actual MCP definitions.
 The default [discovery interface](../TOOL-DISCOVERY.md) advertises core production tools;
 this reference documents the complete underlying catalog (also available in `full` mode).
 Run `python scripts/generate_tool_docs.py --check` to detect drift.
@@ -32,6 +32,7 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_audio_inspect`](#fl_audio_inspect)
 - [`fl_audio_key`](#fl_audio_key)
 - [`fl_audio_loudness`](#fl_audio_loudness)
+- [`fl_automate_event`](#fl_automate_event)
 - [`fl_automation_create_channel`](#fl_automation_create_channel)
 - [`fl_automation_file_edit`](#fl_automation_file_edit)
 - [`fl_automation_file_inspect`](#fl_automation_file_inspect)
@@ -47,6 +48,7 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_build_info`](#fl_build_info)
 - [`fl_capabilities`](#fl_capabilities)
 - [`fl_channel_configure`](#fl_channel_configure)
+- [`fl_clear_dialog`](#fl_clear_dialog)
 - [`fl_clear_piano_roll`](#fl_clear_piano_roll)
 - [`fl_clear_request_queue`](#fl_clear_request_queue)
 - [`fl_connect`](#fl_connect)
@@ -54,6 +56,7 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_delete_notes`](#fl_delete_notes)
 - [`fl_effect_add`](#fl_effect_add)
 - [`fl_ensure_mixer_tracks`](#fl_ensure_mixer_tracks)
+- [`fl_event_inspect`](#fl_event_inspect)
 - [`fl_find_assets`](#fl_find_assets)
 - [`fl_get_all_channels`](#fl_get_all_channels)
 - [`fl_get_all_mixer_tracks`](#fl_get_all_mixer_tracks)
@@ -88,6 +91,7 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_native_call`](#fl_native_call)
 - [`fl_next_preset`](#fl_next_preset)
 - [`fl_notes_transform`](#fl_notes_transform)
+- [`fl_pattern_color`](#fl_pattern_color)
 - [`fl_piano_roll_prepare`](#fl_piano_roll_prepare)
 - [`fl_play`](#fl_play)
 - [`fl_playlist_file_edit`](#fl_playlist_file_edit)
@@ -99,6 +103,7 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_plugin_controls_inspect`](#fl_plugin_controls_inspect)
 - [`fl_plugin_controls_set`](#fl_plugin_controls_set)
 - [`fl_plugin_inspect`](#fl_plugin_inspect)
+- [`fl_plugin_mix`](#fl_plugin_mix)
 - [`fl_plugin_parameters`](#fl_plugin_parameters)
 - [`fl_plugin_remove`](#fl_plugin_remove)
 - [`fl_plugin_set_display_value`](#fl_plugin_set_display_value)
@@ -125,6 +130,8 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_recording_start`](#fl_recording_start)
 - [`fl_recording_status`](#fl_recording_status)
 - [`fl_recording_stop`](#fl_recording_stop)
+- [`fl_rename_channel`](#fl_rename_channel)
+- [`fl_rename_pattern`](#fl_rename_pattern)
 - [`fl_render_cancel`](#fl_render_cancel)
 - [`fl_render_start`](#fl_render_start)
 - [`fl_render_status`](#fl_render_status)
@@ -165,10 +172,13 @@ The [JSON reference](tools.json) contains the complete machine-readable schemas.
 - [`fl_solo_track`](#fl_solo_track)
 - [`fl_step_sequence_edit`](#fl_step_sequence_edit)
 - [`fl_stop`](#fl_stop)
+- [`fl_track_slots`](#fl_track_slots)
 - [`fl_trigger_note`](#fl_trigger_note)
 - [`fl_trigger_script`](#fl_trigger_script)
 - [`fl_ui_action`](#fl_ui_action)
 - [`fl_ui_inspect`](#fl_ui_inspect)
+- [`fl_undo`](#fl_undo)
+- [`fl_undo_status`](#fl_undo_status)
 - [`fl_workflow_catalog`](#fl_workflow_catalog)
 - [`fl_write_pattern_bank`](#fl_write_pattern_bank)
 
@@ -345,6 +355,32 @@ dual_mono=true models mono playback through two speakers. Does not use FL.
 | `timeout_seconds` | number | No | 120.0 |
 | `dual_mono` | boolean | No | false |
 
+## fl_automate_event
+
+Live / operation-dependent · Potential write policy
+
+Preview/apply one native automation event write and verify it by readback.
+
+Resolve the event id with fl_automation_target_inspect, then supply exactly
+one of value_normalized (0..1) or value_raw (native units, 1.0 == 2**30).
+The function refuses unresolved event ids. Preview is the default; apply
+needs a new absolute JSON receipt. mixer.automateEvent is a full-access
+function, so the controller only accepts it with FL_MCP_ACCESS=full.
+Writes once, reads back, records requested versus actual; never retries.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L72)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `event_id` | integer | Yes | — |
+| `value_normalized` | number or null | No | null |
+| `value_raw` | integer or null | No | null |
+| `flags` | integer | No | 0 |
+| `speed` | integer | No | 0 |
+| `is_increment` | integer | No | 0 |
+| `apply` | boolean | No | false |
+| `receipt_file` | string or null | No | null |
+
 ## fl_automation_create_channel
 
 Live / operation-dependent · Potential write policy
@@ -353,7 +389,7 @@ Unavailable in backend-only SyncFL. Creating a new automation link has no backen
 implementation. Use automation inspection and saved-FLP editing for existing
 automation.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L8)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L9)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -375,7 +411,7 @@ edits: [{channel,expected_name,operation:'upsert'|'replace',points:
 incoming segment. Values are normalized, never dB. Output must not exist.
 Inspect/review the result, then explicitly open that FLP to use it in FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L137)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L142)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -394,7 +430,7 @@ Read saved FLP automation names, local ticks, normalized values and SHA256.
 Saved-file state only. Call fl_project_save first to include unsaved edits.
 Local ticks start at each clip's start, not the song's start.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L126)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L131)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -418,7 +454,7 @@ other bytes remain intact. Apply writes output plus a new adjacent
 It never edits the source or live DAW. Reopen/save the output and inspect
 links, then audition/render to verify automation in FL.
 
-[Implementation](../../src/fl_studio_mcp/tools/automation_targets.py#L39)
+[Implementation](../../src/fl_studio_mcp/tools/automation_targets.py#L44)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -444,7 +480,7 @@ filter, limit 1..500. Reports source SHA256, native event IDs, raw link
 bytes and matching curve names/hashes. Unsupported link layouts fail
 explicitly. Never opens FL or returns giant point arrays.
 
-[Implementation](../../src/fl_studio_mcp/tools/automation_targets.py#L23)
+[Implementation](../../src/fl_studio_mcp/tools/automation_targets.py#L28)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -604,9 +640,14 @@ Offline · Read policy
 
 Identify the loaded server version and production workflow capabilities.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L77)
+deep=True also queries git for uncommitted/untracked changes. That runs a
+subprocess, so it is opt-in and never part of the default response.
 
-No input parameters.
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L78)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `deep` | boolean | No | false |
 
 ## fl_capabilities
 
@@ -636,6 +677,20 @@ channel revision and a new absolute receipt. Readback runs in new callbacks.
 | `expected_revision` | string | Yes | — |
 | `apply` | boolean | No | false |
 | `receipt_file` | string or null | No | null |
+
+## fl_clear_dialog
+
+Live / operation-dependent · Potential write policy
+
+Close FL's active popup menu without synthesizing desktop input.
+
+For recovering from a menu a previous step left open. Requires the server
+to run with FL_MCP_ACCESS=full, because ui.closeActivePopupMenu is a
+focus-adjacent function. Reports the observed popup state before and after.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L25)
+
+No input parameters.
 
 ## fl_clear_piano_roll
 
@@ -725,6 +780,23 @@ implementation. Use native mixer tools with existing track indices.
 | Parameter | Type | Required | Default |
 |---|---|---|---|
 | `last_insert` | integer | Yes | — |
+
+## fl_event_inspect
+
+Live / operation-dependent · Read policy
+
+Read a native automation event: its labels, raw value and smoothed value.
+
+Resolve event ids with fl_automation_target_inspect first. The normalized
+value is raw / 2**30 (measured on the Insert 1 volume event); treat the
+physical meaning as unverified until a readback confirms it. An unresolved
+event id is reported as such and must not be automated.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L59)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `event_id` | integer | Yes | — |
 
 ## fl_find_assets
 
@@ -1194,7 +1266,7 @@ Items: track,expected_name, optional volume (normalized) OR volume_db,
 pan (-1..1), stereo (-1..1). Requires a new receipt_file for apply.
 Automation can override faders during playback; edit its curve separately.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L156)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L161)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1298,6 +1370,21 @@ using the existing guarded note workflow. This never queues or applies notes.
 | `strength` | number | No | 1.0 |
 | `quantize_lengths` | boolean | No | false |
 
+## fl_pattern_color
+
+Live / operation-dependent · Potential write policy
+
+Read or set a pattern's native color word, with readback.
+
+Omit color to read. The color is FL's own packed word, not an RGB tuple.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L119)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `index` | integer | Yes | — |
+| `color` | integer or null | No | null |
+
 ## fl_piano_roll_prepare
 
 Live / operation-dependent · Potential write policy
@@ -1346,7 +1433,7 @@ audio/automation channels or new pattern data. Repeat templates as needed.
 Opaque events/clip bytes are preserved. Output is not
 automatically opened; original and unsaved live state remain unchanged.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L45)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L46)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1365,7 +1452,7 @@ Inspect exact saved FL26 Playlist clip identities, ticks, tracks and patterns.
 Save first to include current edits. Returns source/clip hashes needed by
 fl_playlist_file_edit. Each event_index scopes one saved Playlist event.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L34)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L35)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1426,7 +1513,7 @@ dispatch once, then need two later host readbacks. Partial/uncertain
 batches are never retried or rolled back. No unit conversion or DSP-state
 guarantee: inspect literal displays and render/audition to verify sound.
 
-[Implementation](../../src/fl_studio_mcp/tools/plugin_state.py#L24)
+[Implementation](../../src/fl_studio_mcp/tools/plugin_state.py#L42)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1527,6 +1614,10 @@ target name, project session/generations, normalized host values and
 literal displays. Query is a case-insensitive substring; offset/limit
 paginate matches, omitting blank padding. Limit 1..500, catalog <=10000.
 Revision covers all parameters, including those outside the returned page.
+FL's MIDI-CC pseudo-parameters are omitted unless include_midi_cc is set;
+target.parameter_count_exposed reports the real control count. The full
+channel roster is omitted unless include_project is set (use
+fl_production_inspect for the roster).
 Names are not unique instance IDs; host caches can be stale after preset loads.
 
 [Implementation](../../src/fl_studio_mcp/tools/plugin_state.py#L6)
@@ -1538,6 +1629,25 @@ Names are not unique instance IDs; host caches can be stale after preset loads.
 | `query` | string | No | "" |
 | `offset` | integer | No | 0 |
 | `limit` | integer | No | 100 |
+| `include_project` | boolean | No | false |
+| `include_midi_cc` | boolean | No | false |
+
+## fl_plugin_mix
+
+Live / operation-dependent · Potential write policy
+
+Read or set one effect slot's wet/dry level in 0..1, with readback.
+
+Omit mix to read. slot is the zero-based effect slot 0..9 on a mixer track.
+The readback is the host value, not proof of the audible result.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L37)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `track` | integer | Yes | — |
+| `slot` | integer | Yes | — |
+| `mix` | number or null | No | null |
 
 ## fl_plugin_parameters
 
@@ -1704,7 +1814,7 @@ Offline · Read policy
 
 Inspect a saved FLP's patterns, notes, playlist and external sample references.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L172)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L177)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -1772,7 +1882,7 @@ Does not save or mutate FL. Save once first for current edits. Copies only
 referenced assets; retains original FLP plus a portable copy. Plugin
 binaries/licenses are not included. Review missing/internal asset report.
 
-[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L179)
+[Implementation](../../src/fl_studio_mcp/tools/workflow.py#L184)
 
 | Parameter | Type | Required | Default |
 |---|---|---|---|
@@ -2021,6 +2131,32 @@ idempotent; a dead worker requires explicit host inspection/recovery.
 | Parameter | Type | Required | Default |
 |---|---|---|---|
 | `directory` | string | Yes | — |
+
+## fl_rename_channel
+
+Live / operation-dependent · Potential write policy
+
+Rename a Channel Rack channel by GLOBAL index, with readback.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L105)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `index` | integer | Yes | — |
+| `name` | string | Yes | — |
+
+## fl_rename_pattern
+
+Live / operation-dependent · Potential write policy
+
+Rename a pattern by index, with readback.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L112)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `index` | integer | Yes | — |
+| `name` | string | Yes | — |
 
 ## fl_render_cancel
 
@@ -2625,6 +2761,22 @@ Stop playback and return the controller acknowledgement.
 
 No input parameters.
 
+## fl_track_slots
+
+Live / operation-dependent · Potential write policy
+
+Read or set a mixer strip's whole effect rack on/off, with readback.
+
+Omit enabled to read. This is the strip-level effects switch, not a plugin
+bypass, so leaving it off silences every slot on that strip.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L48)
+
+| Parameter | Type | Required | Default |
+|---|---|---|---|
+| `track` | integer | Yes | — |
+| `enabled` | boolean or null | No | null |
+
 ## fl_trigger_note
 
 Live / operation-dependent · Potential write policy
@@ -2692,6 +2844,30 @@ coordinate actions or prove a semantic target. No model is called.
 | `include_screenshot` | boolean | No | false |
 | `max_depth` | integer | No | 6 |
 | `include_ocr` | boolean | No | false |
+
+## fl_undo
+
+Live / operation-dependent · Potential write policy
+
+Step FL's native undo stack back once and report the new position.
+
+Uses general.undo (ordinary native access, not full-access only). This is
+FL's undo, so it reverses the host's last action, which may not be the last
+tool call. Inspect the target before the next write.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L13)
+
+No input parameters.
+
+## fl_undo_status
+
+Live / operation-dependent · Read policy
+
+Read FL's own undo counters and the name of the last undoable action.
+
+[Implementation](../../src/fl_studio_mcp/tools/session.py#L6)
+
+No input parameters.
 
 ## fl_workflow_catalog
 

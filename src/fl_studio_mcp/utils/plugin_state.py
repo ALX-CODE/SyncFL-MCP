@@ -19,6 +19,10 @@ from fl_studio_mcp.utils.protocol import atomic_json, transaction_lock
 
 TOLERANCE = 0.00001
 MAX_PARAMETERS = 10000
+# FL exposes its MIDI-CC mapping as numbered pseudo-parameters ("MIDI CC #0 ...").
+# They have no display text and are not the plugin's own controls, so they are
+# excluded from parameter pages unless a caller asks for them.
+MIDI_CC_PREFIX = "MIDI CC #"
 LIMITATIONS = [
     "Normalized host values and literal plugin displays have no assumed dB/ms/Hz mapping.",
     "Plugins may quantize normalized requests. Only a caller-declared normalized_tolerance "
@@ -258,7 +262,47 @@ def _read_state(conn, index, slot):
     )
 
 
-def inspect_plugin(index, slot_index=-1, query="", offset=0, limit=100, connection=None):
+def _visible_parameters(parameters):
+    """Split the native catalog into real plugin controls and MIDI-CC stubs."""
+    real, cc = [], 0
+    for p in parameters:
+        if p["name"].strip().startswith(MIDI_CC_PREFIX):
+            cc += 1
+        else:
+            real.append(p)
+    return real, cc
+
+
+def _compact_project(project):
+    """Project identity without the full channel roster.
+
+    The roster is what the controller legitimately returns for identity checks, but
+    repeating every channel name in every plugin response made the smallest useful
+    inspection cost several kilobytes. Callers that need the roster can ask
+    fl_production_inspect(scope='project') or pass include_project=True.
+    """
+    if not isinstance(project, dict):
+        return project
+    channels = project.get("channels")
+    return dict(
+        session=project.get("session"),
+        project_generation=project.get("project_generation"),
+        channel_generation=project.get("channel_generation"),
+        project_title=project.get("project_title"),
+        channel_count=len(channels) if isinstance(channels, list) else None,
+    )
+
+
+def inspect_plugin(
+    index,
+    slot_index=-1,
+    query="",
+    offset=0,
+    limit=100,
+    connection=None,
+    include_project=False,
+    include_midi_cc=False,
+):
     """Return a compact page, with a revision covering the complete target state."""
     _target(index, slot_index)
     if not isinstance(query, str) or len(query) > 256:
@@ -267,16 +311,31 @@ def inspect_plugin(index, slot_index=-1, query="", offset=0, limit=100, connecti
         raise ValueError(f"offset must be 0..{MAX_PARAMETERS}")
     if type(limit) is not int or not 1 <= limit <= 500:
         raise ValueError("limit must be 1..500")
+    if type(include_project) is not bool or type(include_midi_cc) is not bool:
+        raise ValueError("include_project and include_midi_cc must be boolean")
     conn = connection if connection is not None else get_connection()
     with transaction_lock(conn._hardware_dir / "mcp-gui.lock", 5):
         _capabilities(conn, slot_index)
         state = _read_state(conn, index, slot_index)
-    matches = [
-        p
-        for p in state["parameters"]
-        if p["name"].strip() and query.casefold() in p["name"].casefold()
-    ]
+    exposed, midi_cc_count = _visible_parameters(state["parameters"])
+    if not include_midi_cc:
+        matches = [
+            p for p in exposed if query.casefold() in p["name"].casefold()
+        ]
+    else:
+        matches = [
+            p
+            for p in state["parameters"]
+            if p["name"].strip() and query.casefold() in p["name"].casefold()
+        ]
     state["parameters"] = matches[offset : offset + limit]
+    state["target"] = dict(
+        state["target"],
+        parameter_count_exposed=len(exposed),
+        parameter_count_midi_cc=midi_cc_count,
+    )
+    if not include_project:
+        state["project"] = _compact_project(state["project"])
     return dict(
         **state,
         success=True,
@@ -285,6 +344,7 @@ def inspect_plugin(index, slot_index=-1, query="", offset=0, limit=100, connecti
         offset=offset,
         next_offset=offset + limit if offset + limit < len(matches) else None,
         blank_parameters_omitted=True,
+        midi_cc_omitted=not include_midi_cc,
         revision_scope="complete target catalog, values and displays",
         limitations=list(LIMITATIONS),
     )

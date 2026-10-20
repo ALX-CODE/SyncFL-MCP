@@ -273,7 +273,10 @@ def test_exact_contracts_discovery_bounds_and_full_catalog_remain_available():
 
 
 @pytest.mark.parametrize("direct", [False, True])
-def test_backend_lease_held_once_and_errors_preserved(tmp_path, direct):
+def test_backend_lease_held_once_and_errors_preserved(tmp_path, direct, monkeypatch):
+    # This asserts the refusal path, not the 10 s default; waiting that long per
+    # run dominated the suite. The wait is an operator setting.
+    monkeypatch.setenv("FL_MCP_LEASE_WAIT_SECONDS", "0.25")
     backend = FastMCP("guarded canary")
     dispatched = []
     evidence = {"status": "dispatched_unverified", "receipt": "receipt-123", "success": False}

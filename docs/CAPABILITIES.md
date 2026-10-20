@@ -1,6 +1,6 @@
 # Capabilities and limits
 
-**147 compatibility contracts, workflow revision 16.** Discovery recommends supported backend routes and labels unavailable contracts. Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
+**157 compatibility contracts, workflow revision 18.** Discovery recommends supported backend routes and labels unavailable contracts. Registration is not proof that your host API, plugin or dependency is available. Inspect `fl_workflow_catalog` and `fl_session_inspect` in the running server.
 
 **Background** means no synthetic keyboard/mouse or activation. **Offline** operates on files without applying them to the live project. **Desktop input is unavailable**; there is no interactive mode. **Experimental** has narrower evidence; inspect failures rather than replaying them.
 

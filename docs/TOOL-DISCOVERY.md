@@ -27,7 +27,7 @@ and curated musical workflow terms next,
 and BM25 over current tool contracts last. It returns inspection/status companions
 alongside candidate writes, including alternative routes when useful. Named plugin
 controls handle supported physical units; legacy setters are not interchangeable.
-All 147 tools have an on-disk domain and usage note in `discovery_catalog.json`.
+All 157 tools have an on-disk domain and usage note in `discovery_catalog.json`.
 Tests check this index against actual registrations, so new tools cannot silently
 go missing from the audited inventory. Unrecognized language can still retrieve
 irrelevant candidates: inspect contracts and use a domain filter to narrow them.

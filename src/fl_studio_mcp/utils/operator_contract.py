@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 
-from fl_studio_mcp.utils.build_info import LOADED_BUILD
+from fl_studio_mcp.utils.build_info import build_metadata
 from fl_studio_mcp.utils.interaction_policy import policy_metadata
 
 # This is an explicit allowlist, never a name-prefix heuristic. Some apparent
@@ -16,6 +16,7 @@ fl_get_transport_status fl_get_song_length fl_get_channel_count
 fl_get_channel_info fl_get_all_channels fl_get_selected_channel
 fl_get_mixer_track_count fl_get_mixer_track_info fl_get_all_mixer_tracks
 fl_get_grid_bit fl_get_step_sequence fl_get_preset_count fl_get_plugin_color
+fl_undo_status fl_event_inspect
 fl_get_plugin_name fl_get_plugin_param_count fl_get_plugin_params
 fl_get_plugin_param_value fl_is_plugin_valid fl_plugin_parameters
 fl_production_inspect fl_receipt fl_find_assets fl_audio_inspect fl_audio_key fl_audio_bpm
@@ -325,11 +326,14 @@ WORKFLOWS = [
 ]
 
 
+WORKFLOW_REVISION = 18
+
+
 def workflow_catalog():
     return dict(
         success=True,
         schema_version=1,
-        workflow_revision=17,
+        workflow_revision=WORKFLOW_REVISION,
         workflows=WORKFLOWS,
         read_tools={name: {} for name in sorted(READ_TOOLS)},
         policy=dict(
@@ -387,7 +391,7 @@ def inspect_session(connection=None):
     report = dict(
         success=False,
         status="unavailable",
-        build=LOADED_BUILD,
+        build=build_metadata(),
         dependencies=dependency_status(),
         observations={},
         blockers=[],

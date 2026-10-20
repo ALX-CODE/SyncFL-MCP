@@ -2,7 +2,7 @@
 
 ![SyncFL logo](docs/assets/syncfl-logo.png)
 
-**147 tools. 4,872 named plugin controls. Music production from one conversation.**
+**157 tools. 4,872 named plugin controls. Music production from one conversation.**
 
 Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
@@ -12,7 +12,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 [![Code: MIT](https://img.shields.io/badge/Code-MIT-green)](LICENSE)
 [![MCP: local stdio](https://img.shields.io/badge/MCP-local_stdio-24292f)](docs/ARCHITECTURE.md)
 
-[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 147 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
+[SETUP | INSTALL](#setup--install) · [Capabilities](docs/CAPABILITIES.md) · [All 157 tools](docs/reference/TOOLS.md) · [Plugins](docs/PLUGIN-CONTROL-GUIDE.md) · [Landscape review](docs/COMPARISON-2026-10-12.md) · [Contribute](CONTRIBUTING.md)
 
 [Download a release](https://github.com/ALX-CODE/SyncFL-MCP/releases) · [Questions and demos](https://github.com/ALX-CODE/SyncFL-MCP/discussions) · [Report a bug](https://github.com/ALX-CODE/SyncFL-MCP/issues/new/choose)
 
@@ -20,7 +20,7 @@ Compose · Arrange · Mix · Design sounds · Automate · Analyze
 
 **SyncFL** (**SyncFL-MCP**) brings live session control, composition, arrangement, mixing, sound design, automation, audio analysis and project packaging into one local [Model Context Protocol](https://modelcontextprotocol.io/) server. Give a compatible AI assistant the tools to inspect your session, shape a synth, adjust a vocal chain, route a mix and work with your project files.
 
-| **147** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
+| **157** MCP tools | **4,872** named plugin controls | **1,148** qualified mappings | **10,703** calibration checks |
 |:---:|:---:|:---:|:---:|
 | Documented schemas | Across 50 profiles | Numeric units and menu values | Independent host-display holdouts |
 
@@ -46,7 +46,7 @@ The [capability matrix](docs/CAPABILITIES.md) explains input requirements and li
 
 **Core production tools visible in every session.** The default
 [discovery interface](docs/TOOL-DISCOVERY.md) advertises 32 production APIs with
-complete schemas, plus four discovery helpers for the rest of the 147-tool catalog.
+complete schemas, plus four discovery helpers for the rest of the 157-tool catalog.
 Loading sounds, writing notes, arranging, mixing and saving require no discovery step.
 Specialist tools remain available on demand through the same guarded backend.
 Set `FL_MCP_TOOL_MODE=full` for the complete initial tool list.

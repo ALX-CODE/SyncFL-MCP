@@ -58,7 +58,8 @@ jobs:
       - name: Install the optional CLI from this checkout
         run: uv pip install --python .venv/Scripts/python.exe --no-deps --editable ./agent-harness
       - name: Test without FL Studio or MIDI hardware
-        run: uv run --no-sync python -m pytest tests agent-harness/cli_anything/flstudio/tests -q
+        # addopts excludes process-spawning tests by default; CI runs them all.
+        run: uv run --no-sync python -m pytest tests agent-harness/cli_anything/flstudio/tests -q -m ""
       - name: Check public documentation and generated tool reference
         run: |
           uv run --no-sync python scripts/generate_tool_docs.py --check

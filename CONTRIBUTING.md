@@ -5,15 +5,18 @@ Contributions should make a concrete FL Studio task easier while preserving exac
 ## Running the tests
 
 ```sh
-pytest                  # fast unit suite (~25 s, process-spawning tests excluded)
-pytest -m integration   # cold server start, installer flows, release hashing
-pytest -m ""            # everything; CI runs this
+pytest                     # everything fast: ~25 s, 2836 tests
+pytest --lf                # only what failed last run (seconds)
+pytest -k plugin_state     # one area
+pytest -m integration      # cold server start, installer flows, release hashing
+pytest -m ""               # absolutely everything; this is what CI runs
 pytest -n0 -x path::test   # reproduce one failure serially
 ```
 
-The default run uses four xdist workers. More workers measured *slower* on a
-16-core hybrid CPU, so the count is pinned in `pyproject.toml`; override it with
-`-n N` when you want to test on different hardware.
+Wall time is dominated by per-test overhead, so the suite runs on six xdist
+workers (`pyproject.toml`). Four to eight all measure about the same; twelve or
+more is *slower* on this hybrid CPU. Wall time also moves by roughly 20% on a busy
+machine, so compare medians rather than single runs.
 
 ## Start here
 

@@ -209,22 +209,62 @@ def _identity(conn, index, slot, project):
     )
 
 
-def _read_state(conn, index, slot):
+# FL exposes MIDI-CC mapping as pseudo-parameters sitting after a large gap in the
+# index space (observed starting at 4096). Asking the controller for the whole
+# catalog means one host callback per index, which on a 4240-entry plugin blocked
+# FL's UI thread long enough to time out and wedge the host. The stubs are
+# contiguous at the end, so a small growing read finds the boundary and stops.
+CATALOG_READ_STEPS = (128, 512, 2048, 8192)
+
+
+def _is_midi_cc(name):
+    return name.strip().startswith(MIDI_CC_PREFIX)
+
+
+def _read_catalog(conn, index, slot, count):
+    """Read the plugin's real control catalog without walking its CC stubs.
+
+    Returns (rows, truncated) where truncated means the plugin exposes more
+    controls than the last read page covered.
+    """
+    if count == 0:
+        return [], False
+    rows = []
+    for step in CATALOG_READ_STEPS:
+        want = min(step, count)
+        rows = _call(
+            conn,
+            "plugins.getParams",
+            {"index": index, "slot_index": slot, "use_global": True, "max_params": want},
+        ).get("params")
+        if not isinstance(rows, list):
+            raise RuntimeError("Plugin parameter catalog is not a list")
+        # A short page means the host has nothing beyond it.
+        if len(rows) < want or want >= count:
+            return rows, False
+    return rows, True
+
+
+def _read_state(conn, index, slot, include_midi_cc=False):
     project, transport = _project(conn)
     identity = _identity(conn, index, slot, project)
     # Unlike legacy getName, this handler uses the correct four-argument global
     # parameter getters and reads the complete catalog in one controller callback.
-    rows = _call(
-        conn,
-        "plugins.getParams",
-        {
-            "index": index,
-            "slot_index": slot,
-            "use_global": True,
-            "max_params": identity["parameter_count"],
-        },
-    ).get("params")
-    if not isinstance(rows, list) or len(rows) != identity["parameter_count"]:
+    rows, catalog_truncated = _read_catalog(conn, index, slot, identity["parameter_count"])
+    # Trailing MIDI-CC stubs are not the plugin's controls; drop them before they
+    # become parameters, a revision digest input or an addressable index. Callers
+    # that explicitly ask for them still pay for the full read.
+    stripped_cc = 0
+    if not include_midi_cc:
+        while rows and _is_midi_cc(str(rows[-1].get("name", ""))):
+            rows = rows[:-1]
+            stripped_cc += 1
+    if not rows and identity["parameter_count"]:
+        raise RuntimeError("Incomplete plugin parameter catalog")
+    # With no CC block to explain a short catalog, the count must still agree with
+    # the host's own getParamCount. That keeps a dropped row detectable now that a
+    # short read page is a legitimate stopping point.
+    if not stripped_cc and not catalog_truncated and len(rows) != identity["parameter_count"]:
         raise RuntimeError("Incomplete plugin parameter catalog")
     parameters = []
     for number, row in enumerate(rows):
@@ -253,7 +293,10 @@ def _read_state(conn, index, slot):
     after_project, after_transport = _project(conn)
     if after_project != project or after_transport != transport:
         raise RuntimeError("Project or transport changed while reading plugin state")
-    state = dict(project=project, target=identity, parameters=parameters)
+    state = dict(
+        project=project, target=identity, parameters=parameters,
+        catalog_truncated=catalog_truncated,
+    )
     return dict(
         **state,
         revision=_digest(state),
@@ -316,7 +359,7 @@ def inspect_plugin(
     conn = connection if connection is not None else get_connection()
     with transaction_lock(conn._hardware_dir / "mcp-gui.lock", 5):
         _capabilities(conn, slot_index)
-        state = _read_state(conn, index, slot_index)
+        state = _read_state(conn, index, slot_index, include_midi_cc)
     exposed, midi_cc_count = _visible_parameters(state["parameters"])
     if not include_midi_cc:
         matches = [
@@ -428,7 +471,13 @@ def _same_identity(before, after):
 
 def _change_results(after, changes):
     results = []
+    known = len(after["parameters"])
     for change in changes:
+        if change["parameter"] >= known:
+            raise ValueError(
+                f"Parameter {change['parameter']} is outside the read catalog "
+                f"({known} controls); FL's MIDI-CC pseudo-parameters are not writable here"
+            )
         row = after["parameters"][change["parameter"]]
         delta = row["value"] - change["value"]
         tolerance = change["normalized_tolerance"]

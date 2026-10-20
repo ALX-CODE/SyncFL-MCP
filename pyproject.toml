@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "fl-studio-mcp"
-version = "0.2.0"
+version = "0.3.0"
 description = "SyncFL: local MCP tools for precise FL Studio control, composition, mixing, and verified audio workflows"
 readme = "README.md"
 license = "MIT"
@@ -69,6 +69,23 @@ dev = [
     "fl-studio-api-stubs>=37.0",
     "pytest>=8.0",
     "ruff>=0.8",
+    "pytest-xdist>=3.6",
+]
+
+[tool.pytest.ini_options]
+# The suite is ~3000 mostly-independent unit tests, so a serial run spends nearly
+# all of its wall time on per-test overhead. Measured on the 16-core dev box:
+# serial 182 s, -n 4 26 s, -n 8 27 s, -n 16 31 s (hybrid-core contention makes
+# high worker counts slower, so 4 is the deliberate default).
+#   pytest                  fast unit suite (~26 s)
+#   pytest -m integration   the process-spawning flows (server cold start,
+#                           installers, release hashing)
+#   pytest -m ""            everything; this is what CI runs
+#   pytest -n0 -x path::test   reproduce one failure serially
+testpaths = ["tests"]
+addopts = "-n 4 --dist load -m 'not integration'"
+markers = [
+    "integration: spawns the server, an installer flow or a release-wide hash; excluded by default",
 ]
 
 [tool.ruff]

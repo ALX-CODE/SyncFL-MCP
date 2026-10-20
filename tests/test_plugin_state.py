@@ -525,7 +525,8 @@ def test_tool_registration_has_both_workflows():
         def __init__(self):
             self.names = []
 
-        def tool(self):
+        def tool(self, **kwargs):
+            # Stands in for FastMCP's decorator, which accepts annotations=.
             def register(function):
                 self.names.append(function.__name__)
                 return function

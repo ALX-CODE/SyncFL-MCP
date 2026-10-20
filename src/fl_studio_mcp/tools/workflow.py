@@ -1,6 +1,7 @@
 """Project-level production workflows distilled from the remake session."""
 
-from fl_studio_mcp.utils.build_info import LOADED_BUILD
+from fl_studio_mcp.utils.build_info import build_metadata
+from fl_studio_mcp.utils.operator_contract import WORKFLOW_REVISION
 
 
 def register_workflow_tools(mcp):
@@ -74,15 +75,19 @@ def register_workflow_tools(mcp):
         return edit_playlist(source, output, expected_sha256, edits, dry_run)
 
     @mcp.tool()
-    def fl_build_info() -> dict:
-        """Identify the loaded server version and production workflow capabilities."""
+    def fl_build_info(deep: bool = False) -> dict:
+        """Identify the loaded server version and production workflow capabilities.
+
+        deep=True also queries git for uncommitted/untracked changes. That runs a
+        subprocess, so it is opt-in and never part of the default response.
+        """
         from fl_studio_mcp import __version__
         from fl_studio_mcp.utils.interaction_policy import policy_metadata
 
         return dict(
             version=__version__,
-            workflow_revision=17,
-            **LOADED_BUILD,
+            workflow_revision=WORKFLOW_REVISION,
+            **build_metadata(deep),
             interaction_policy=policy_metadata(),
             guarded_production="BPM, channel controls, scoped steps; optional native shuffle",
             native_mixer_controls="built-in EQ, effects enable, polarity and stereo swap",

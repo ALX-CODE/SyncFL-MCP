@@ -2,7 +2,7 @@
 
 
 def register_automation_target_tools(mcp):
-    @mcp.tool()
+    @mcp.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     def fl_automation_target_inspect(target: dict) -> dict:
         """Resolve a precise FL26.1 automation target through independent host readbacks.
 
@@ -16,8 +16,13 @@ def register_automation_target_tools(mcp):
         This only reads the host; it neither creates a clip nor moves a control.
         """
         from fl_studio_mcp.utils.automation_targets import inspect_target
+        from fl_studio_mcp.utils.plugin_state import _compact_project
 
-        return inspect_target(target)
+        resolved = inspect_target(target)
+        # Presentation only: the resolver keeps the full roster because
+        # retarget_automation compares it against a saved project.
+        resolved = dict(resolved, project=_compact_project(resolved.get("project")))
+        return resolved
 
     @mcp.tool()
     def fl_automation_links_inspect(

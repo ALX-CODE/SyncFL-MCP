@@ -2,6 +2,19 @@
 
 Contributions should make a concrete FL Studio task easier while preserving exact targets, source files and clear failure outcomes. Small, reviewable changes are easier to qualify than broad rewrites.
 
+## Running the tests
+
+```sh
+pytest                  # fast unit suite (~25 s, process-spawning tests excluded)
+pytest -m integration   # cold server start, installer flows, release hashing
+pytest -m ""            # everything; CI runs this
+pytest -n0 -x path::test   # reproduce one failure serially
+```
+
+The default run uses four xdist workers. More workers measured *slower* on a
+16-core hybrid CPU, so the count is pinned in `pyproject.toml`; override it with
+`-n N` when you want to test on different hardware.
+
 ## Start here
 
 Download the source ZIP and run **`Develop.cmd`**, or run it inside your existing

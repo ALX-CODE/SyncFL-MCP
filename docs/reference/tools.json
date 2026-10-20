@@ -350,6 +350,80 @@
     }
   },
   {
+    "name": "fl_automate_event",
+    "description": "Preview/apply one native automation event write and verify it by readback.\n\nResolve the event id with fl_automation_target_inspect, then supply exactly\none of value_normalized (0..1) or value_raw (native units, 1.0 == 2**30).\nThe function refuses unresolved event ids. Preview is the default; apply\nneeds a new absolute JSON receipt. mixer.automateEvent is a full-access\nfunction, so the controller only accepts it with FL_MCP_ACCESS=full.\nWrites once, reads back, records requested versus actual; never retries.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "integer"
+        },
+        "value_normalized": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value_raw": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "flags": {
+          "default": 0,
+          "type": "integer"
+        },
+        "speed": {
+          "default": 0,
+          "type": "integer"
+        },
+        "is_increment": {
+          "default": 0,
+          "type": "integer"
+        },
+        "apply": {
+          "default": false,
+          "type": "boolean"
+        },
+        "receipt_file": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "event_id"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
     "name": "fl_automation_create_channel",
     "description": "Unavailable in backend-only SyncFL. Creating a new automation link has no backend\nimplementation. Use automation inspection and saved-FLP editing for existing\nautomation.",
     "inputSchema": {
@@ -601,6 +675,10 @@
       "additionalProperties": true,
       "type": "object"
     },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
+    },
     "meta": {
       "fastmcp": {
         "tags": []
@@ -850,10 +928,15 @@
   },
   {
     "name": "fl_build_info",
-    "description": "Identify the loaded server version and production workflow capabilities.",
+    "description": "Identify the loaded server version and production workflow capabilities.\n\ndeep=True also queries git for uncommitted/untracked changes. That runs a\nsubprocess, so it is opt-in and never part of the default response.",
     "inputSchema": {
       "additionalProperties": false,
-      "properties": {},
+      "properties": {
+        "deep": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
       "type": "object"
     },
     "outputSchema": {
@@ -985,6 +1068,24 @@
         "changes",
         "expected_revision"
       ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_clear_dialog",
+    "description": "Close FL's active popup menu without synthesizing desktop input.\n\nFor recovering from a menu a previous step left open. Requires the server\nto run with FL_MCP_ACCESS=full, because ui.closeActivePopupMenu is a\nfocus-adjacent function. Reports the observed popup state before and after.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
       "type": "object"
     },
     "outputSchema": {
@@ -1186,6 +1287,35 @@
     "outputSchema": {
       "additionalProperties": true,
       "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_event_inspect",
+    "description": "Read a native automation event: its labels, raw value and smoothed value.\n\nResolve event ids with fl_automation_target_inspect first. The normalized\nvalue is raw / 2**30 (measured on the Insert 1 volume event); treat the\nphysical meaning as unverified until a readback confirms it. An unresolved\nevent id is reported as such and must not be automated.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event_id"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
     },
     "meta": {
       "fastmcp": {
@@ -2553,6 +2683,42 @@
     }
   },
   {
+    "name": "fl_pattern_color",
+    "description": "Read or set a pattern's native color word, with readback.\n\nOmit color to read. The color is FL's own packed word, not an RGB tuple.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "color": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
     "name": "fl_piano_roll_prepare",
     "description": "Unavailable in backend-only SyncFL. Legacy piano-script activation is unavailable.\nUse fl_background_piano_inspect and fl_background_piano_select.",
     "inputSchema": {
@@ -2964,7 +3130,7 @@
   },
   {
     "name": "fl_plugin_inspect",
-    "description": "Inspect an exact generator/effect, exposed controls and a complete-state revision.\n\nindex is a GLOBAL channel when slot_index=-1, otherwise a mixer track\nwith a zero-based effect slot 0..9. Reports actual and user plugin names,\ntarget name, project session/generations, normalized host values and\nliteral displays. Query is a case-insensitive substring; offset/limit\npaginate matches, omitting blank padding. Limit 1..500, catalog <=10000.\nRevision covers all parameters, including those outside the returned page.\nNames are not unique instance IDs; host caches can be stale after preset loads.",
+    "description": "Inspect an exact generator/effect, exposed controls and a complete-state revision.\n\nindex is a GLOBAL channel when slot_index=-1, otherwise a mixer track\nwith a zero-based effect slot 0..9. Reports actual and user plugin names,\ntarget name, project session/generations, normalized host values and\nliteral displays. Query is a case-insensitive substring; offset/limit\npaginate matches, omitting blank padding. Limit 1..500, catalog <=10000.\nRevision covers all parameters, including those outside the returned page.\nFL's MIDI-CC pseudo-parameters are omitted unless include_midi_cc is set;\ntarget.parameter_count_exposed reports the real control count. The full\nchannel roster is omitted unless include_project is set (use\nfl_production_inspect for the roster).\nNames are not unique instance IDs; host caches can be stale after preset loads.",
     "inputSchema": {
       "additionalProperties": false,
       "properties": {
@@ -2986,10 +3152,62 @@
         "limit": {
           "default": 100,
           "type": "integer"
+        },
+        "include_project": {
+          "default": false,
+          "type": "boolean"
+        },
+        "include_midi_cc": {
+          "default": false,
+          "type": "boolean"
         }
       },
       "required": [
         "index"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_plugin_mix",
+    "description": "Read or set one effect slot's wet/dry level in 0..1, with readback.\n\nOmit mix to read. slot is the zero-based effect slot 0..9 on a mixer track.\nThe readback is the host value, not proof of the audible result.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "slot": {
+          "type": "integer"
+        },
+        "mix": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track",
+        "slot"
       ],
       "type": "object"
     },
@@ -4076,6 +4294,64 @@
       },
       "required": [
         "directory"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_rename_channel",
+    "description": "Rename a Channel Rack channel by GLOBAL index, with readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "name"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_rename_pattern",
+    "description": "Rename a pattern by index, with readback.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "index",
+        "name"
       ],
       "type": "object"
     },
@@ -5605,6 +5881,42 @@
     }
   },
   {
+    "name": "fl_track_slots",
+    "description": "Read or set a mixer strip's whole effect rack on/off, with readback.\n\nOmit enabled to read. This is the strip-level effects switch, not a plugin\nbypass, so leaving it off silences every slot on that strip.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {
+        "track": {
+          "type": "integer"
+        },
+        "enabled": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "track"
+      ],
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
     "name": "fl_trigger_note",
     "description": "Send a live MIDI note (0..127); velocity 0 releases it. This does not write pattern\nnotes.",
     "inputSchema": {
@@ -6085,6 +6397,46 @@
         }
       },
       "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_undo",
+    "description": "Step FL's native undo stack back once and report the new position.\n\nUses general.undo (ordinary native access, not full-access only). This is\nFL's undo, so it reverses the host's last action, which may not be the last\ntool call. Inspect the target before the next write.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "meta": {
+      "fastmcp": {
+        "tags": []
+      }
+    }
+  },
+  {
+    "name": "fl_undo_status",
+    "description": "Read FL's own undo counters and the name of the last undoable action.",
+    "inputSchema": {
+      "additionalProperties": false,
+      "properties": {},
+      "type": "object"
+    },
+    "outputSchema": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "annotations": {
+      "readOnlyHint": true,
+      "destructiveHint": false
     },
     "meta": {
       "fastmcp": {

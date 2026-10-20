@@ -2,9 +2,15 @@
 
 
 def register_plugin_state_tools(mcp):
-    @mcp.tool()
+    @mcp.tool(annotations={"readOnlyHint": True, "destructiveHint": False})
     def fl_plugin_inspect(
-        index: int, slot_index: int = -1, query: str = "", offset: int = 0, limit: int = 100
+        index: int,
+        slot_index: int = -1,
+        query: str = "",
+        offset: int = 0,
+        limit: int = 100,
+        include_project: bool = False,
+        include_midi_cc: bool = False,
     ) -> dict:
         """Inspect an exact generator/effect, exposed controls and a complete-state revision.
 
@@ -14,11 +20,23 @@ def register_plugin_state_tools(mcp):
         literal displays. Query is a case-insensitive substring; offset/limit
         paginate matches, omitting blank padding. Limit 1..500, catalog <=10000.
         Revision covers all parameters, including those outside the returned page.
+        FL's MIDI-CC pseudo-parameters are omitted unless include_midi_cc is set;
+        target.parameter_count_exposed reports the real control count. The full
+        channel roster is omitted unless include_project is set (use
+        fl_production_inspect for the roster).
         Names are not unique instance IDs; host caches can be stale after preset loads.
         """
         from fl_studio_mcp.utils.plugin_state import inspect_plugin
 
-        return inspect_plugin(index, slot_index, query, offset, limit)
+        return inspect_plugin(
+            index,
+            slot_index,
+            query,
+            offset,
+            limit,
+            include_project=include_project,
+            include_midi_cc=include_midi_cc,
+        )
 
     @mcp.tool()
     def fl_plugin_apply(

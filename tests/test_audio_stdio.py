@@ -13,6 +13,7 @@ from fastmcp.client.transports import StdioTransport
 
 from fl_studio_mcp.utils import audio_files
 from fl_studio_mcp.utils.key_analysis import _progression
+from fl_studio_mcp.utils.operator_contract import WORKFLOW_REVISION
 
 
 def test_optional_audio_absence_does_not_prevent_midi_server_startup(monkeypatch):
@@ -76,7 +77,11 @@ def test_cold_stdio_key_analysis_completes_without_fl_or_midi(tmp_path):
             assert result["confidence_basis"] == (
                 "relative_softmax_over_all_24_keys_not_calibrated_probability"
             )
-            assert (await client.call_tool("fl_build_info", {})).data["workflow_revision"] == 17
+            # Compare against the constant so a revision bump never turns a
+            # cold-start test into a stale magic number.
+            assert (await client.call_tool("fl_build_info", {})).data["workflow_revision"] == (
+                WORKFLOW_REVISION
+            )
 
     asyncio.run(asyncio.wait_for(run(), 45))
     assert source.read_bytes() == before

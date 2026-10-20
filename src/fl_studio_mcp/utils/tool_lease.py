@@ -3,16 +3,13 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import os
 import time
 from contextlib import ExitStack, contextmanager
 
-from fastmcp.server.middleware import Middleware
-from fastmcp.tools.tool import ToolResult
-
-from fl_studio_mcp.utils.operator_contract import OFFLINE_TOOLS
-from fl_studio_mcp.utils.paths import get_fl_settings_dir
+# Re-exported on purpose: this is the single monkeypatch point for the lease
+# location, and tool_lease_middleware resolves it through this module.
+from fl_studio_mcp.utils.paths import get_fl_settings_dir  # noqa: F401
 
 WAIT_VARIABLE = "FL_MCP_LEASE_WAIT_SECONDS"
 DEFAULT_WAIT_SECONDS = 10.0
@@ -86,42 +83,10 @@ async def acquire_tool_lease(path, wait):
             await asyncio.sleep(min(wait - waited, 0.002 if waited < 0.25 else 0.01))
 
 
-class FLToolLeaseMiddleware(Middleware):
-    def __init__(self, wait_seconds=None):
-        self.wait_seconds = wait_seconds
+def __getattr__(name):
+    """Keep FLToolLeaseMiddleware importable from here without paying for FastMCP."""
+    if name == "FLToolLeaseMiddleware":
+        from fl_studio_mcp.utils.tool_lease_middleware import FLToolLeaseMiddleware
 
-    async def on_call_tool(self, context, call_next):
-        if context.message.name in OFFLINE_TOOLS or context.message.name in LEASE_FREE_TOOLS:
-            return await call_next(context)
-        path = get_fl_settings_dir() / "Hardware" / "FLStudioMCP" / "mcp-tool.lock"
-        wait = lease_wait_seconds() if self.wait_seconds is None else self.wait_seconds
-        try:
-            lease = await acquire_tool_lease(path, wait)
-        except ToolBusy as exc:
-            report = dict(
-                success=False,
-                status="busy",
-                outcome="not_dispatched",
-                retry_safe=True,
-                waited_seconds=round(wait, 3),
-                error=str(exc),
-                recovery="Wait for the active tool/job, then inspect again",
-            )
-            return ToolResult(content=json.dumps(report), structured_content=report, is_error=True)
-        with lease:
-            # A caller timeout must not release the DAW while an async
-            # workflow or synchronous worker is still applying its write.
-            task = asyncio.create_task(call_next(context))
-            try:
-                return await asyncio.shield(task)
-            except asyncio.CancelledError:
-                while not task.done():
-                    try:
-                        await asyncio.shield(task)
-                    except asyncio.CancelledError:
-                        continue
-                    except Exception:
-                        break
-                if task.done() and not task.cancelled():
-                    task.exception()
-                raise
+        return FLToolLeaseMiddleware
+    raise AttributeError(f"{__name__} has no attribute {name!r}")

@@ -1,5 +1,76 @@
 # Changelog
 
+## 2026-10-19 — session primitives, cheaper inspection, automation events
+
+Adds ten tools for work the controller already advertised but no typed tool
+exposed, and stops repeating the channel roster in every inspection.
+
+- `fl_plugin_inspect` no longer returns the whole global channel roster. It was
+  repeated on every call, which made the smallest useful inspection several
+  kilobytes; `include_project=True` restores it and `fl_production_inspect` still
+  returns it directly. The revision digest is unchanged, because it is still
+  computed over the complete catalog.
+- `fl_plugin_inspect` omits FL's numbered MIDI-CC pseudo-parameters unless
+  `include_midi_cc=True`. They inflated `matched` and the reported parameter count
+  (a 30-control plugin reported 4240); `target.parameter_count_exposed` now reports
+  the real control count and `parameter_count_midi_cc` the stubs.
+- `fl_automation_target_inspect` compacts its project block for the same reason.
+  The resolver keeps the full roster internally, because saved-link retargeting
+  compares the live roster against a saved project.
+- Undo: `fl_undo` steps FL's own undo stack back once and `fl_undo_status` reads its
+  counters and last action. `general.undo` is ordinary native access, not
+  full-access only, so this works under the default policy.
+- `fl_clear_dialog` closes FL's active popup menu through
+  `ui.closeActivePopupMenu` with no desktop input, for recovering from a menu an
+  earlier step left open. It reports the observed popup state before and after and
+  needs `FL_MCP_ACCESS=full`.
+- `fl_plugin_mix` reads or sets one effect slot's wet/dry level with readback, and
+  `fl_track_slots` reads or sets a strip's whole effect rack. Both are the fastest
+  way to A/B a chain without the plugin editor.
+- `fl_event_inspect` reads a native automation event's full and short labels, its
+  raw value and its smoothed value. `fl_automate_event` previews or applies one
+  event write, refuses unresolved event ids, dispatches once, then reads the value
+  back and receipts requested versus actual. Both document two different measured
+  scales: event values are 30-bit fixed point (1.0 == 2**30, confirmed by the
+  Insert 1 volume event reading 858993459 == 2**30 * 0.8) while
+  `getAutoSmoothEventValue` reports 16384 == 1.0.
+- `fl_rename_channel`, `fl_rename_pattern` and `fl_pattern_color` name and colour
+  channels and patterns through the native setters with readback.
+- `fl_plugin_inspect` and `fl_automation_target_inspect` are annotated read-only.
+- Live-verified against FL 26.1.4.5589 in a real session: undo counters read back,
+  the Insert 1 volume event resolves to `0x70401FC0 - "Insert 1 - Volume"` with a
+  value of exactly 0.8, a slot wet level re-set to its existing value verified by
+  readback, and the popup check reported `no_change` with no dialog open.
+  Workflow revision 18 exposes 157 contracts.
+
+### Test suite: 182 s → 28 s
+
+Working on this repo meant three minutes of tests per run. Four separate causes,
+all measured:
+
+- **Parallelism.** Added `pytest-xdist` and a default of four workers
+  (`--dist load`). Serial was 182 s; 4 workers 26 s; 8 workers 27 s; 16 workers
+  31 s — hybrid-core contention makes high counts slower, so the count is pinned
+  and documented rather than left at `auto`.
+- **Import-time subprocesses.** `utils/build_info.py` ran `git status` twice and
+  hashed a 2.5 MB JSON on import, in every process and every worker. HEAD is now
+  read from `.git` files, and the working-tree query became an opt-in
+  `build_metadata(deep=True)` behind `fl_build_info(deep=True)`. That query could
+  also hang a server started on piped stdio — a helper process inheriting the
+  handles — which is now detached, fsmonitor-free and killed on timeout.
+- **FastMCP on the lock path.** `utils/tool_lease.py` imported FastMCP (~2.1 s)
+  only to define the lease middleware, so every subprocess lease test paid it.
+  The middleware moved to `utils/tool_lease_middleware.py` behind a lazy re-export;
+  importing the lock primitive went from 2.4 s to 0.31 s.
+- **Suite split.** Tests that spawn the server, run installer flows or hash the
+  release are marked `integration` and excluded by default. CI runs `-m ""` so it
+  still covers everything. Two lease tests also waited the 10 s default
+  `FL_MCP_LEASE_WAIT_SECONDS`; they assert the refusal path, not the duration, so
+  they now set it to 0.25 s.
+- Two stale literals are gone: `fl_build_info` and `fl_workflow_catalog` each
+  carried their own `workflow_revision` copy, and one test pinned 17 by hand. All
+  three now read `WORKFLOW_REVISION`.
+
 ## 2026-10-13 — reliable production discovery and blank-project loading
 
 - Advertise 32 core production APIs with complete schemas in every fresh session,

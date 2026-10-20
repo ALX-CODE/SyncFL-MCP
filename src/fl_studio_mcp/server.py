@@ -153,6 +153,7 @@ REGISTRARS = [
     ("operator", "operator"),
     ("routing", "routing"),
     ("studio_ui", "studio_ui"),
+    ("session", "session"),
     ("plugin_state", "plugin_state"),
     ("plugin_adapters", "plugin_adapter"),
     ("project_native", "project_native"),

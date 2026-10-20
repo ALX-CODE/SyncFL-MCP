@@ -79,9 +79,11 @@ class Connection:
             )
         if action == "plugins.getParams":
             assert params["use_global"] is True
-            assert params["max_params"] == len(self.params)
+            # The reader pages upward until a short page or the whole catalog;
+            # the fake behaves like the host and returns a prefix of that length.
+            assert params["max_params"] >= 1
             self.read_count += 1
-            result = copy.deepcopy(self.params)
+            result = copy.deepcopy(self.params[: params["max_params"]])
             if self.catalog_mode == "missing":
                 result.pop()
             elif self.catalog_mode == "duplicate":

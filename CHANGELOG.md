@@ -43,6 +43,25 @@ exposed, and stops repeating the channel roster in every inspection.
   readback, and the popup check reported `no_change` with no dialog open.
   Workflow revision 18 exposes 157 contracts.
 
+### Plugin inspection no longer walks the whole parameter index space
+
+`fl_plugin_inspect` asked the controller for `getParams(max_params=parameter_count)`.
+On a plugin that reports 4240 parameters — 57 real controls plus FL's MIDI-CC
+stubs at index 4096 and up — that is one host callback per index inside FL's MIDI
+callback. It was slow enough to time out, and with two server processes it left FL
+Studio's UI thread wedged ("Not Responding").
+
+The catalog is now read in a growing ladder (128, 512, 2048, 8192) that stops at
+the first short page, and trailing `MIDI CC #n` stubs are dropped before they can
+become parameters, digest input or addressable indices. A plugin that needs only
+its own controls costs one 128-entry read instead of 4240. `include_midi_cc=True`
+still opts into the full read.
+
+Integrity is unchanged: a catalog whose length disagrees with the host's own
+`getParamCount`, when no CC block explains the difference, is still rejected as
+incomplete, and a write targeting an index outside the read catalog fails with an
+explicit message instead of an IndexError.
+
 ### Test suite: 182 s → 28 s
 
 Working on this repo meant three minutes of tests per run. Four separate causes,
@@ -64,7 +83,8 @@ all measured:
   importing the lock primitive went from 2.4 s to 0.31 s.
 - **Suite split.** Tests that spawn the server, run installer flows or hash the
   release are marked `integration` and excluded by default. CI runs `-m ""` so it
-  still covers everything. Two lease tests also waited the 10 s default
+  still covers everything. Six xdist workers became the default: 4 to 8 measure
+  about the same, 12+ is slower on this hybrid CPU. Two lease tests also waited the 10 s default
   `FL_MCP_LEASE_WAIT_SECONDS`; they assert the refusal path, not the duration, so
   they now set it to 0.25 s.
 - Two stale literals are gone: `fl_build_info` and `fl_workflow_catalog` each
